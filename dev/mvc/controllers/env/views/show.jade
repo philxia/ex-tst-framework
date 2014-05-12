@@ -7,11 +7,35 @@ if (hasMessages)
     each msg in messages
       li= msg
 
+
 if (env.packages.length)
-  p View #{env.name}'s packages:
-  ul
-    each pack in env.packages
-      li
-        a(href='/pack/#{env.id}&&#{pack.id}')= pack.name
+  div
+    table
+      thead
+        tr
+          th Product
+          th Version
+          th Build Time
+          th Smoke Status
+          th Run Test?
+          th Package
+        tbody
+          each pack in env.packages
+            tr
+              td
+                p #{pack.product}
+              td
+                p #{pack.version}
+              td
+                p #{pack.buildTime}
+              td
+                p #{pack.somkeTest}
+              td
+                if ( pack.runTest == "Run")
+                  a(href='/pack/#{env.id}&&#{pack.id}') #{pack.runTest}
+                else
+                  p #{pack.runTest}
+              td
+                a(href='/pack/#{env.id}&&#{pack.id}') #{pack.name}
 else
   p No packages!

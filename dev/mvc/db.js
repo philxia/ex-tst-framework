@@ -46,11 +46,13 @@ var envs = exports.envs = [];
 envs.push({
     name: 'Release',
     packages: null,
+    path: server_release,
     id: 0
 });
 envs.push({
     name: 'Development',
     packages: null,
+    path: server_dev,
     id: 1
 });
 

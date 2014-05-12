@@ -30,6 +30,35 @@ exports.list = function(req, res, next) {
 // };
 
 exports.show = function(req, res, next) {
+    // reconstruct the packages RevitExtractor_x64_2015.0.2014.0320.zip
+    // with the format as below.
+    // th Product
+    // th Version
+    // th Build Time
+    // th Smoke Status
+    // th Run Test?
+    // th Package
+    var newPackages = [];
+    for (var i = 0; i < req.env.packages.length; i++) {
+        var pack = req.env.packages[i];
+        var packFileName = pack.name;
+        var strs = packFileName.split('_');
+        if (strs.length !== 3)
+            throw "The package name is changed to " + packFileName + ".";
+        pack.product = strs[0];
+
+        var lastString = strs[2];
+        strs = lastString.split('.');
+        if (strs.length != 5)
+            throw "The package name is changed to " + packFileName + ".";
+        pack.version = strs[0];
+        pack.buildTime = strs[3][0] + strs[3][1] + "/" + strs[3][2] + strs[3][3] + "/" + strs[2];
+        pack.smokeStatus = "";
+        if (pack.smokeStatus === "")
+            pack.runTest = "Run";
+        else
+            pack.runTest = "Completed."
+    }
     res.render('show', {
         env: req.env
     });

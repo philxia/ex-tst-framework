@@ -1,0 +1,11 @@
+doctype html
+html
+	head
+		link(rel='stylesheet', href='/style.css')
+	body
+		block content
+		script(src='/js/jquery_1_11_1.min.js')
+		h1= pack.name
+		h2= "Status: " + "In process..."
+		div
+			p= pack.Message
