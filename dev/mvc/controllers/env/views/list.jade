@@ -1,0 +1,7 @@
+link(rel = 'stylesheet', href = '/style.css')
+h1 RCE Application Revit Extractor Testing Environment
+p Click a environment below to view their details.
+ul
+  each env in envs
+    li
+      a(href='/env/#{env.id}')= env.name

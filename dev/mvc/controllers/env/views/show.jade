@@ -1,0 +1,17 @@
+link(rel='stylesheet', href='/style.css')
+h1= env.name + ' '
+  a(href='/env/#{env.id}/edit') edit
+
+if (hasMessages)
+  ul#messages
+    each msg in messages
+      li= msg
+
+if (env.packages.length)
+  p View #{env.name}'s packages:
+  ul
+    each pack in env.packages
+      li
+        a(href='/pack/#{env.id}&&#{pack.id}')= pack.name
+else
+  p No packages!
