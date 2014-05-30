@@ -1,41 +1,68 @@
-link(rel='stylesheet', href='/style.css')
-h1= env.name + ' '
-  a(href='/env/#{env.id}/edit') edit
+doctype html
+html
+  head
+    link(rel='stylesheet', href='/style.css')
+    script(src='/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')
+    script(src='/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js')
+    link(rel='stylesheet' href='/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css')
+    script(src="/socket.io/socket.io.js")
+    script(src="/js/script.js")
 
-if (hasMessages)
-  ul#messages
-    each msg in messages
-      li= msg
+    link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css')
+    script(src='/bootstrap-3.1.1-dist/js/bootstrap.min.js')
+  body
+    h1= env.name
 
+    if (hasMessages)
+      ul#messages
+        each msg in messages
+          li= msg
 
-if (env.packages.length)
-  div
-    table
-      thead
-        tr
-          th Product
-          th Version
-          th Build Time
-          th Smoke Status
-          th Run Test?
-          th Package
-        tbody
-          each pack in env.packages
+    div#testing_information
+      h1#pack_name
+      h2#testStatus Status: In process...
+      div.container
+      h3 Test Console
+      div#test_console
+
+    if (env.packages.length)
+      div
+        table(class="table table-hover")
+          thead
             tr
-              td
-                p #{pack.product}
-              td
-                p #{pack.version}
-              td
-                p #{pack.buildTime}
-              td
-                p #{pack.somkeTest}
-              td
-                if ( pack.runTest == "Run")
-                  a(href='/pack/#{env.id}&&#{pack.id}') #{pack.runTest}
-                else
-                  p #{pack.runTest}
-              td
-                a(href='/pack/#{env.id}&&#{pack.id}') #{pack.name}
-else
-  p No packages!
+              th Product
+              th Version
+              th Build Time
+              th Smoke Status
+              th Action
+              th Package
+              th(class='show') Benchmark
+            tbody
+              each pack in env.packages
+                tr
+                  td
+                    p #{pack.product}
+                  td
+                    p #{pack.version}
+                  td
+                    p #{pack.buildTime}
+                  td
+                    p 
+                      span(id='ts_'+env.id+'_'+pack.id class=pack.smokeStatus) #{pack.smokeStatus}
+                  td
+                    if ( !pack.isTested )
+                      if (pack.status == 'disabled')
+                        button(id= 'runTest_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="runtest_button testinfo_btn btn btn-primary btn-block" disabled="disabled") Run Test
+                      else if (pack.status == 'onprocess')
+                        button(id= 'monitorTest_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="monitortest_button testinfo_btn btn btn-info btn-block") Monitor Process
+                      else if( pack.status == 'normal')
+                        button(id= 'runTest_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="runtest_button testinfo_btn btn btn-primary btn-block") Run Test
+                    else
+                      button(id= 'browseResult_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="browseResult_button testinfo_btn btn btn-default btn-block") Browse Result
+                  td
+                    a(href='/pack/#{env.id}&&#{pack.id}') #{pack.name}
+                  td
+                    button(id='genBenchmark_' + env.id + '_'+pack.id, class='show btn btn-primary') Generate
+    else
+      p No packages!

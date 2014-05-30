@@ -3,6 +3,7 @@
  */
 
 var db = require('../../db');
+var tstMgr_ns = require('../../testManager').testManager;
 
 exports.before = function(req, res, next) {
     var id = req.params.env_id;
@@ -38,6 +39,9 @@ exports.show = function(req, res, next) {
     // th Smoke Status
     // th Run Test?
     // th Package
+    var isInTesting = tstMgr_ns.Manager.isRunningTesting();
+    var currentRunningTestPackName = (!isInTesting) ? 'none' : tstMgr_ns.Manager.getCurrentTesting().pack.name;
+    var currentRunningTestEnvName = (!isInTesting) ? 'none' : tstMgr_ns.Manager.getCurrentTesting().envName;
     var newPackages = [];
     for (var i = 0; i < req.env.packages.length; i++) {
         var pack = req.env.packages[i];
@@ -53,11 +57,13 @@ exports.show = function(req, res, next) {
             throw "The package name is changed to " + packFileName + ".";
         pack.version = strs[0];
         pack.buildTime = strs[3][0] + strs[3][1] + "/" + strs[3][2] + strs[3][3] + "/" + strs[2];
-        pack.smokeStatus = "";
-        if (pack.smokeStatus === "")
-            pack.runTest = "Run";
-        else
-            pack.runTest = "Completed."
+
+        pack.status = 'normal';
+        if (isInTesting) {
+            pack.status = 'disabled';
+            if (pack.name === currentRunningTestPackName && req.env.name === currentRunningTestEnvName)
+                pack.status = 'onprocess';
+        }
     }
     res.render('show', {
         env: req.env

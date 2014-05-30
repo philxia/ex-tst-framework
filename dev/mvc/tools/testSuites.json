@@ -1,0 +1,12 @@
+{
+    "name": "smoke",
+    "suites": [{
+        "name": "Simple_model.rvt",
+        "path": ".\\2015\\",
+        "args": [".\\2015\\Simple_model\\index.json", ".\\2015\\Simple_model.rvt"]
+    }, {
+        "name": "SmallHouse_r2015.rvt",
+        "path": ".\\2015\\",
+        "args": [".\\2015\\SmallHouse_r2015\\index.json", ".\\2015\\SmallHouse_r2015.rvt"]
+    }]
+}

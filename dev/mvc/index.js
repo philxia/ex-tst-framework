@@ -9,6 +9,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 
+var fs = require('fs');
+var path = require('path');
+
+var tstMgr_ns = require('./testManager').testManager;
+
 var app = module.exports = express();
 
 // settings
@@ -22,13 +27,13 @@ app.set('views', __dirname + '/views');
 
 // define a custom res.message() method
 // which stores messages in the session
-app.response.message = function(msg){
-  // reference `req.session` via the `this.req` reference
-  var sess = this.req.session;
-  // simply add the msg to an array for later
-  sess.messages = sess.messages || [];
-  sess.messages.push(msg);
-  return this;
+app.response.message = function(msg) {
+    // reference `req.session` via the `this.req` reference
+    var sess = this.req.session;
+    // simply add the msg to an array for later
+    sess.messages = sess.messages || [];
+    sess.messages.push(msg);
+    return this;
 };
 
 // log
@@ -48,52 +53,242 @@ app.use(bodyParser());
 app.use(methodOverride());
 
 // expose the "messages" local variable when views are rendered
-app.use(function(req, res, next){
-  var msgs = req.session.messages || [];
+app.use(function(req, res, next) {
+    var msgs = req.session.messages || [];
 
-  // expose "messages" local variable
-  res.locals.messages = msgs;
+    // expose "messages" local variable
+    res.locals.messages = msgs;
 
-  // expose "hasMessages"
-  res.locals.hasMessages = !! msgs.length;
+    // expose "hasMessages"
+    res.locals.hasMessages = !! msgs.length;
 
-  /* This is equivalent:
+    /* This is equivalent:
    res.locals({
      messages: msgs,
      hasMessages: !! msgs.length
    });
   */
 
-  next();
-  // empty or "flush" the messages so they
-  // don't build up
-  req.session.messages = [];
+    next();
+    // empty or "flush" the messages so they
+    // don't build up
+    req.session.messages = [];
 });
 
 // load controllers
-require('./lib/boot')(app, { verbose: !module.parent });
+require('./lib/boot')(app, {
+    verbose: !module.parent
+});
 
 // assume "not found" in the error msgs
 // is a 404. this is somewhat silly, but
 // valid, you can do whatever you like, set
 // properties, use instanceof etc.
-app.use(function(err, req, res, next){
-  // treat as 404
-  if (~err.message.indexOf('not found')) return next();
+app.use(function(err, req, res, next) {
+    // treat as 404
+    if (~err.message.indexOf('not found')) return next();
 
-  // log it
-  console.error(err.stack);
+    // log it
+    console.error(err.stack);
 
-  // error page
-  res.status(500).render('5xx');
+    // error page
+    res.status(500).render('5xx');
 });
 
 // assume 404 since no middleware responded
-app.use(function(req, res, next){
-  res.status(404).render('404', { url: req.originalUrl });
+app.use(function(req, res, next) {
+    res.status(404).render('404', {
+        url: req.originalUrl
+    });
 });
 
+tstMgr_ns.Manager.setApplication(app);
+
 if (!module.parent) {
-  app.listen(3000);
-  console.log('\n  listening on port 3000\n');
+    var server = require('http').createServer(app),
+        io = require('socket.io').listen(server);
+
+    server.listen(3000);
+
+    app.get('/', function(req, res) {
+        res.sendfile(__dirname + '/index.html');
+    });
+
+    var socket_server = require('./socket');
+
+    io.sockets.on('connection', function(socket) {
+        socket.on('disconnect', function() {
+            if ( !! socket_server.socket_connections[socket.id])
+                delete socket_server.socket_connections[socket.id]
+
+        });
+        socket.on(tstMgr_ns.Action_MonitorTest, function(argument) {
+            console.log(argument);
+            try {
+                var tstObj = tstMgr_ns.Manager.getCurrentTesting();
+                for (var hh = 0; hh < tstObj.consoleLog.length; hh++) {
+                    var msg = tstObj.consoleLog[hh];
+                    sendMessagesToSingleConnection(socket, msg['err'], msg['stdout']);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        });
+        socket.on(tstMgr_ns.Action_BrowseResult, function(argument) {
+            console.log(argument);
+            var argStrings = argument.split(' ');
+            if (argStrings.length != 2)
+                throw 'The argument from client is invalid - ' + argument + '.';
+            var fargStrings = argStrings[0].split('_');
+            if (fargStrings.length != 3)
+                throw 'The argument from client is invalid - ' + argument + '.';
+            var action = fargStrings[0]
+            var envId = fargStrings[1];;
+            var packId = fargStrings[2];
+
+            var db = require('./db');
+            var env = db.envs[envId];
+            var envName = env.name;
+            var pack = env.packages[packId];
+
+            // try to load the result.
+            var packFileName = pack.name.substr(0, pack.name.length - '.zip'.length);
+            var resultFileName = pack.smokeStatus + '.txt';
+            var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envName, packFileName, resultFileName);
+            if (!fs.existsSync(resultFilePath))
+                return;
+
+            try {
+                var resultString = fs.readFileSync(resultFilePath, "utf8");
+                var resultObject = JSON.parse(resultString);
+                if (!Array.isArray(resultObject))
+                    throw 'The result is invalid.';
+
+                // var conns = socket_server.socket_connections;
+                // var countOfConns = Object.keys(conns).length;
+                for (var ii = 0; ii < resultObject.length; ii++) {
+                    var msg = resultObject[ii];
+                    sendMessagesToSingleConnection(socket, msg['err'], msg['stdout']);
+                }
+                socket.needUpdate_information = false;
+
+            } catch (err) {
+                console.log(err);
+            }
+        });
+        socket.on(tstMgr_ns.Action_RunTest, function(argument) {
+            console.log(argument);
+            var argStrings = argument.split(' ');
+            if (argStrings.length != 2)
+                throw 'The argument from client is invalid - ' + argument + '.';
+            var fargStrings = argStrings[0].split('_');
+            if (fargStrings.length != 3)
+                throw 'The argument from client is invalid - ' + argument + '.';
+            var action = fargStrings[0]
+            var envId = fargStrings[1];;
+            var packId = fargStrings[2];
+
+            var db = require('./db');
+            var env = db.envs[envId];
+            var envName = env.name;
+            var pack = env.packages[packId];
+
+            var socket_server = require('./socket');
+            tstMgr_ns.messages.length = 0; //clean the msgs.
+
+
+            var exec_ns = require('./execTest').runTest;
+            var testingObject = new exec_ns.Testing(pack, envName, env.path);
+            testingObject.envId = envId;
+            testingObject.packId = packId;
+            tstMgr_ns.Manager.setCurrentTesting(testingObject);
+            testingObject.doCheck(function(err, stdout, stderr) {
+                console.log(stdout);
+
+                if ( !! socket_server && !! socket_server.socket_connections) {
+                    var conns = socket_server.socket_connections;
+                    var countOfConns = Object.keys(conns).length;
+                    // caches the messages if the connections were not setup.
+                    if (countOfConns < 1) {
+                        tstMgr_ns.messages.push({
+                            'err': err,
+                            'stdout': stdout
+                        });
+                    } else {
+                        // send out the cached messages if the connection are setup.
+                        if (tstMgr_ns.messages.length > 0) {
+                            for (var jj = 0; jj < tstMgr_ns.messages.length; jj++) {
+                                var msg = tstMgr_ns.messages[jj];
+                                sendMessagesToConnections(conns, msg['err'], msg['stdout']);
+                            }
+                            tstMgr_ns.messages.length = 0; //clean the messages.
+                        }
+
+                        // caches the messages in the server side.
+                        testingObject.consoleLog.push({
+                            'err': err,
+                            'stdout': stdout
+                        });
+                        sendMessagesToConnections(conns, err, stdout);
+                    }
+
+                }
+            });
+        })
+        socket_server.socket_connections[socket.id] = socket;
+    });
+
+    var socket_client_io = require('socket.io-client');
+
+    // start the packages moniter.
+    setTimeout(function() {
+        if (tstMgr_ns.Manager.isRunningTesting())
+            return;
+
+        // 1. check the latest package of dev.
+        for (var ii = 0; ii < db.envs.length; ii++) {
+            var lastestpack = tstMgr_ns.getLatestPackage(db.envs[ii]);
+            if ( !! lastestpack) {
+                var socket_client = socket_client_io.connect(null, {
+                    'port': 3000,
+                    'force new connection': true
+                });
+                socket_client.on('connect', function() {
+                    console.log('socket client 2 server.');
+
+                    var packId = tstMgr_ns.Action_RunTest + '_' +
+                        db.envs[ii].id + '_' + lastestpack.id + ' ' + lastestpack.name;
+                    socket_client.emit(tstMgr_ns.Action_RunTest,
+                        packId)
+                    socket_client.disconnect();
+                });
+
+                socket_client.on('disconnect', function() {
+                    console.log('socket client disconnect.');
+                })
+            }
+        }
+
+    }, tstMgr_ns.Timeout_PackagesMonitor);
+
+}
+
+function sendMessagesToSingleConnection(socket, err, stdout) {
+    if (err === "INFO")
+        socket.emit('test_information_info', stdout);
+    else if (err === "SUCCESS")
+        socket.emit('test_information_success', stdout);
+    else if (err === "ERROR")
+        socket.emit('test_information_error', stdout);
+    else if (err === "UPDATE")
+        socket.emit('test_information_update', stdout);
+}
+
+function sendMessagesToConnections(conns, err, stdout) {
+    // body...
+    for (var id in conns) {
+        var socket = conns[id];
+        if (socket.needUpdate_information === undefined || socket.needUpdate_information)
+            sendMessagesToSingleConnection(socket, err, stdout);
+    }
 }

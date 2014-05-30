@@ -1,92 +1,86 @@
-// faux database
+var fs = require('fs');
+var path = require('path');
+var tstMgr_ns = require('./testManager').testManager;
+var checkPoint_ns = require('./lib/testing/checkPoint').checkPoint;
 
 
-// var pets = exports.pets = [];
 
-// pets.push({
-//     name: 'Tobi',
-//     id: 0
-// });
-// pets.push({
-//     name: 'Loki',
-//     id: 1
-// });
-// pets.push({
-//     name: 'Jane',
-//     id: 2
-// });
-// pets.push({
-//     name: 'Raul',
-//     id: 3
-// });
-
-// var users = exports.users = [];
-
-// users.push({
-//     name: 'TJ',
-//     pets: [pets[0], pets[1], pets[2]],
-//     id: 0
-// });
-// users.push({
-//     name: 'Guillermo',
-//     pets: [pets[3]],
-//     id: 1
-// });
-// users.push({
-//     name: 'Nathan',
-//     pets: [],
-//     id: 2
-// });
-
-// var server_release = '\\\\usmanpdglstr01\\revit\\Cloud\\RevitExtractor\\Dev\\';
-var server_dev = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Dev';
-var server_release = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Release';
+exports.server_ip = '';
 
 var envs = exports.envs = [];
 envs.push({
     name: 'Release',
     packages: null,
-    path: server_release,
+    path: tstMgr_ns.server_release,
     id: 0
 });
 envs.push({
     name: 'Development',
     packages: null,
-    path: server_dev,
+    path: tstMgr_ns.server_dev,
     id: 1
 });
 
 
-// get all the files in these two folders.
-var fs = require('fs');
-fs.readdir(server_dev, function(err, files) {
+
+
+function loadPackagesInformation(err, files, envIndex) {
     if ( !! err)
         console.log(err);
 
+    if (files.length < 1)
+        return;
+
+    var templateFilePrefix = files[0].substr(0, 'RevitExtractor_x64_XXXX.X.'.length);
+
+    var fileNameInInts = new Array();
+    for (var k = 0; k < files.length; k++) {
+        // sample: RevitExtractor_x64_2015.0.2014.0519.zip
+        var fileName = files[k];
+        fileName = fileName.substr(templateFilePrefix.length, '2014.0519'.length);
+        fileName = fileName.replace('.', '');
+        fileNameInInts.push(parseInt(fileName));
+    }
+    fileNameInInts.sort().reverse();
+
+
+
     var fileinfos = [];
-    for (var i = 0; i < files.length; i++) {
+    for (var i = 0; i < fileNameInInts.length; i++) {
+        var fileNameInInt = fileNameInInts[i];
+        var fileNamePart = fileNameInInt.toString();
+        var sfileName = templateFilePrefix + fileNamePart.substr(0, 4) + '.' + fileNamePart.substr(4, 4) + '.zip';
         fileinfos.push({
-            'name': files[i],
+            'name': sfileName,
+            'smokeStatus': 'unknown',
             'isTested': false,
-            'id': i
+            'id': (fileNameInInts.length - i - 1)
         });
     }
 
-    envs[1].packages = fileinfos;
+    for (var j = 0; j < fileinfos.length; j++) {
+        var name = fileinfos[j].name;
+        var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envs[envIndex].name, name.substr(0, name.length - '.zip'.length));
+        var isSuccess = fs.existsSync(path.join(resultFilePath, checkPoint_ns.SUCCESS + '.txt'));
+        var isFailure = fs.existsSync(path.join(resultFilePath, checkPoint_ns.FAILURE + '.txt'));
+        if (isSuccess || isFailure)
+            fileinfos[j].isTested = true;
+        if (isSuccess)
+            fileinfos[j].smokeStatus = checkPoint_ns.SUCCESS;
+        else if (isFailure)
+            fileinfos[j].smokeStatus = checkPoint_ns.FAILURE;
+    }
+
+    envs[envIndex].packages = fileinfos;
+}
+
+// get all the files in these two folders.
+var fs = require('fs');
+fs.readdir(tstMgr_ns.server_dev, function(err, files) {
+    loadPackagesInformation(err, files, 1);
 });
 
 
-fs.readdir(server_release, function(err, files) {
-    if ( !! err)
-        console.log(err);
-
-    var fileinfos = [];
-    for (var i = 0; i < files.length; i++) {
-        fileinfos.push({
-            'name': files[i],
-            'isTested': false,
-            'id': i
-        });
-    }
-    envs[0].packages = fileinfos;
+fs.readdir(tstMgr_ns.server_release, function(err, files) {
+    loadPackagesInformation(err, files, 0);
 });

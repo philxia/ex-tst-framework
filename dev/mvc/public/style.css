@@ -12,3 +12,36 @@ a:hover {
 h1 a {
   font-size: 16px;
 }
+table{
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  font: 16px "Helvetica Neue", Helvetica, Arial;
+}
+
+table th{
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div#test_console{
+	background: black;
+	font: 15px "Helvetica Neue", Helvetica, Arial;
+	width: 100%;
+  word-wrap: break-word;
+	overflow: auto;
+  overflow-x: hide;
+}
+
+span.success{
+  color: #00ff00;
+}
+
+span.failure{
+  color: #ff0000;
+}
+
+span.unknown{
+  color: #555555;
+}
