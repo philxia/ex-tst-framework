@@ -152,11 +152,18 @@ $(function() {
             //$("button[id='monitorTest_1_0 RevitExtractor_x64_2015.0.2014.0519.zip']") 
             var strs = btnId.split(' ');
             var prefixstrs = strs[0].split('_');
+            var monitorBtn = 'monitorTest_' + prefixstrs[1] + '_' + prefixstrs[2] +
+                ' ' + strs[1];
             var newBtnId = 'browseResult_' + prefixstrs[1] + '_' + prefixstrs[2] +
                 ' ' + strs[1];
+            // just return if the button is already the new button.
+            if ($("button[id='" + monitorBtn + "']").length === 0)
+                return;
 
             // replace the button with the browse result button.
-            $("button[id='" + btnId + "']").replaceWith('<button id="' + newBtnId +
+            // $("button[id='" + btnId + "']").replaceWith('<button id="' + newBtnId +
+            //     '" type="button" class="browseResult_button testinfo_btn btn btn-default btn-block">Browse Result</button>');
+            $("button[id='" + monitorBtn + "']").replaceWith('<button id="' + newBtnId +
                 '" type="button" class="browseResult_button testinfo_btn btn btn-default btn-block">Browse Result</button>');
 
             // update the status label.

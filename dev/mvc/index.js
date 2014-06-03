@@ -13,6 +13,7 @@ var fs = require('fs');
 var path = require('path');
 
 var tstMgr_ns = require('./testManager').testManager;
+var db = require('./db');
 
 var app = module.exports = express();
 
@@ -144,12 +145,14 @@ if (!module.parent) {
                 throw 'The argument from client is invalid - ' + argument + '.';
             var action = fargStrings[0]
             var envId = fargStrings[1];;
-            var packId = fargStrings[2];
+            var packId = parseInt(fargStrings[2]);
 
-            var db = require('./db');
+
             var env = db.envs[envId];
             var envName = env.name;
-            var pack = env.packages[packId];
+            var pack = env.packages[env.packages.length - packId - 1];
+            if (pack.id !== packId)
+                throw 'The pack is not we are looking for.';
 
             // try to load the result.
             var packFileName = pack.name.substr(0, pack.name.length - '.zip'.length);
@@ -186,12 +189,14 @@ if (!module.parent) {
                 throw 'The argument from client is invalid - ' + argument + '.';
             var action = fargStrings[0]
             var envId = fargStrings[1];;
-            var packId = fargStrings[2];
+            var packId = parseInt(fargStrings[2]);
 
-            var db = require('./db');
+
             var env = db.envs[envId];
             var envName = env.name;
-            var pack = env.packages[packId];
+            var pack = env.packages[env.packages.length - packId - 1];
+            if (pack.id !== packId)
+                throw 'The pack is not we are looking for.';
 
             var socket_server = require('./socket');
             tstMgr_ns.messages.length = 0; //clean the msgs.

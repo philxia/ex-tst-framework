@@ -27,7 +27,7 @@ testManager.Action_BrowseResult = 'browseResult';
 testManager.Action_MonitorTest = 'monitorTest';
 
 
-testManager.Timeout_PackagesMonitor = 600000; // 10 min
+testManager.Timeout_PackagesMonitor = 60000; // 10 min
 
 
 

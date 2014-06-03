@@ -37,7 +37,7 @@ html
               th Smoke Status
               th Action
               th Package
-              th(class='show') Benchmark
+              th(class='hide') Benchmark
             tbody
               each pack in env.packages
                 tr
@@ -63,6 +63,6 @@ html
                   td
                     a(href='/pack/#{env.id}&&#{pack.id}') #{pack.name}
                   td
-                    button(id='genBenchmark_' + env.id + '_'+pack.id, class='show btn btn-primary') Generate
+                    button(id='genBenchmark_' + env.id + '_'+pack.id, class='hide btn btn-primary') Generate
     else
       p No packages!
