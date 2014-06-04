@@ -1,5 +1,5 @@
 var fs = require('fs');
-
+var fse = require('fs.extra');
 var http = require('http');
 var fs = require('fs');
 var unzip = require('unzip');
@@ -51,8 +51,10 @@ http.createServer(function(req, res) {
         })
     }
     if (url.match('rename') !== null) {
-        var folderPath = "D:\\tf\\output\\Development\\RevitExtractor_x64_2015.0.2014.0519";
-        fs.rename(folderPath, 'D:\\')
+        var folderPath = "D:\\tf\\output\\Development\\RevitExtractor_x64_2015.0.2014.0519\\";
+        fse.copyRecursive(folderPath, 'D:\\tf\\result\\Development\\RevitExtractor_x64_2015.0.2014.0519\\', function(argument) {
+            console.log(argument);
+        });
     }
 
 
