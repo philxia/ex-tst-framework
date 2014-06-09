@@ -35,7 +35,7 @@ checker.RunExtractorCommand.prototype.checks = function(callback) {
         };
         callback('UPDATE', JSON.stringify(updateObj));
 
-        var args = new Array(scope.testcase.args.length);
+        var args = new Array(scope.testcase.args.length + 1); // append the "/test" option.
         for (var ii = 0; ii < args.length; ii++) {
             var arg = scope.testcase.args[ii];
             if (ii == 0) {
@@ -45,6 +45,7 @@ checker.RunExtractorCommand.prototype.checks = function(callback) {
             }
             args[ii] = arg;
         }
+        args.push("/test");
         var cmd = scope.context.packExePath;
         var util = require('util'),
             spawn = require('child_process').spawn,

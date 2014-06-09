@@ -1,4 +1,5 @@
 var fs = require('fs');
+var fsextra = require('fs.extra');
 var path = require('path');
 var unzip = require('unzip');
 
@@ -59,6 +60,19 @@ checker.ProcessPackageCommand.prototype.extractPackage = function(localPath, cal
             scope.returnCode = 0;
 
             callback('SUCCESS', 'Finished the extraction for the package to - ' + exFolder + '\\Program\\*.*.\n');
+
+            // add NoDynamicText.testconfig file to the 2014 and 2015 folders.
+            var programFolderPath = path.join(exFolder, '\\Program\\');
+            var files = fs.readdirSync(programFolderPath);
+            for (var ii = 0; ii < files.length; ii++) {
+                if (fs.lstatSync(path.join(programFolderPath, files[ii])).isDirectory()) {
+                    var destPath = path.join(exFolder, '\\Program\\', files[ii], 'NoDynamicText.testconfig');
+                    fsextra.copy('.\\mvc\\NoDynamicText.testconfig', destPath, function(err) {
+                        if (err)
+                            console.log(err);
+                    });
+                }
+            }
         });
         fs.createReadStream(localPath).pipe(unzipExtractor);
     } else {
