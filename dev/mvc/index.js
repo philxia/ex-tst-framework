@@ -248,9 +248,9 @@ if (!module.parent) {
     // mockup testing.
     // setTimeout(function() {
     //     console.log('start the testing.');
-    //     runTest("runTest_0_105 RevitExtractor_x64_CL410751_20140609_0440.zip");
+    //     runTest("runTest_0_106 RevitExtractor_x64_CL410964_20140610_0353.zip");
 
-    // }, 10000);
+    // }, 20000);
 
     // var socket_client_io = require('socket.io-client');
 

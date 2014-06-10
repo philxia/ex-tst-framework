@@ -96,7 +96,7 @@ testManager.getLatestPackage = function(env) {
 
     for (var ii = dbpacks.length; ii < sortedPacksInServer.length; ii++) {
         env.packages.splice(0, 0, {
-            'name': sortedPacksInServer[ii],
+            'name': sortedPacksInServer[ii - dbpacks.length],
             'smokeStatus': 'unknown',
             'isTested': false,
             'id': ii
@@ -104,7 +104,7 @@ testManager.getLatestPackage = function(env) {
     }
 
     // 2. get the latest one.
-    return sortedPacksInServer[0];
+    return env.packages[0];
 }
 
 /////////////////////////////////////////////////////////////////////////////
