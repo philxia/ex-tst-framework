@@ -70,7 +70,7 @@ checker.Dwfx2ImageCommand.prototype.checks = function(callback) {
             scope.context.checkPoints.splice(
                 scope.context.currentCheckPointIndex + 1, // inserts the new check points to the next position.
                 0, // no removing.
-                new imageChecker.imageChecker.ImageChecker(scope.context, scope.testcase, scope.outputImagePath)
+                new imageChecker.imageChecker.ImageChecker(scope.context, scope.testcase, scope.outputImagePath, 50)
             );
             callback('SUCCESS', scope.testcase.prefix + 'Generates the image for the give dwfx at ' +
                 scope.outputImagePath + '.');

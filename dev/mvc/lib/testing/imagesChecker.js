@@ -6,7 +6,7 @@ var tstMgr_ns = require('../../testManager').testManager;
 var checker = exports.imageChecker = {}; // new namespace.
 
 
-checker.ImageChecker = function(context, testcase, genImageFilePath) {
+checker.ImageChecker = function(context, testcase, genImageFilePath, tolerance) {
     this.testcase = testcase;
     this.context = context;
     this.isExecuted = false;
@@ -23,7 +23,7 @@ checker.ImageChecker = function(context, testcase, genImageFilePath) {
     if (!fs.existsSync(this.benImagePath))
         throw 'The file does not existed at the give path - ' + this.benImagePath;
     // sample: Dwf2Png.exe .\2d.dwfx .\2d.png
-    this.imageCompareToolArgs = [this.genImageFilePath, this.benImagePath, '50'];
+    this.imageCompareToolArgs = [this.genImageFilePath, this.benImagePath, tolerance.toString()];
 
     this.checkPoint = new checkPoint_ns.CheckPoint(checkPoint_ns.View2DCheck_ImageCompareCheck);
     this.testcase.checkPoints.push(this.checkPoint);
@@ -64,12 +64,12 @@ checker.ImageChecker.prototype.checks = function(callback) {
         scope.context.executingCmd = false;
         if (scope.returnCode === 0) {
             scope.checkPoint.setStatus(checkPoint_ns.SUCCESS);
-            callback('SUCCESS', scope.testcase.prefix + 'The image generated with the dwfx is identical with the benchmarks.');
+            callback('SUCCESS', scope.testcase.prefix + 'The image generated is identical with the benchmarks.');
 
         } else
             scope.checkPoint.postCallback(callback, 'ERROR',
                 scope.testcase.prefix +
-                'The image generated with the dwfx is different with the benchmarks and produce the different image at ' +
-                '' + '.');
+                'The image generated is different with the benchmarks and produce the different image at ' +
+                scope.benImagePath + '.');
     }
 }

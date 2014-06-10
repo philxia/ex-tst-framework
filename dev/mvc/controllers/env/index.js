@@ -39,6 +39,8 @@ exports.show = function(req, res, next) {
     // th Smoke Status
     // th Run Test?
     // th Package
+    var env = req.env;
+    var fieldcount = env.perChangelist ? 5 : 3;
     var isInTesting = tstMgr_ns.Manager.isRunningTesting();
     var currentRunningTestPackName = (!isInTesting) ? 'none' : tstMgr_ns.Manager.getCurrentTesting().pack.name;
     var currentRunningTestEnvName = (!isInTesting) ? 'none' : tstMgr_ns.Manager.getCurrentTesting().envName;
@@ -47,17 +49,24 @@ exports.show = function(req, res, next) {
         var pack = req.env.packages[i];
         var packFileName = pack.name;
         var strs = packFileName.split('_');
-        if (strs.length !== 3)
+        // RevitExtractor_x64_CL398396_20140603_0440.zip
+        // RevitExtractor_x64_2015.0.2014.0320.zip
+        if (strs.length !== fieldcount)
             throw "The package name is changed to " + packFileName + ".";
         pack.product = strs[0];
 
-        var lastString = strs[2];
-        strs = lastString.split('.');
-        if (strs.length != 5)
-            throw "The package name is changed to " + packFileName + ".";
-        pack.version = strs[0];
-        pack.buildTime = strs[3][0] + strs[3][1] + "/" + strs[3][2] + strs[3][3] + "/" + strs[2];
-
+        if (env.perChangelist) {
+            pack.changelist = strs[2];
+            pack.buildTime = strs[4][0] + strs[4][1] + ':' + strs[4][2] + strs[4][3] + ' ' +
+                strs[3][4] + strs[3][5] + "/" + strs[3][6] + strs[3][7] + "/" + strs[3][0] + strs[3][1] + strs[3][2] + strs[3][3];
+        } else {
+            var lastString = strs[2];
+            strs = lastString.split('.');
+            if (strs.length != 5)
+                throw "The package name is changed to " + packFileName + ".";
+            pack.version = strs[0];
+            pack.buildTime = strs[3][0] + strs[3][1] + "/" + strs[3][2] + strs[3][3] + "/" + strs[2];
+        }
         pack.status = 'normal';
         if (isInTesting) {
             pack.status = 'disabled';

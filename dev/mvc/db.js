@@ -9,16 +9,18 @@ exports.server_ip = '';
 
 var envs = exports.envs = [];
 envs.push({
-    name: 'Release',
+    name: 'DevelopmentPerCL',
     packages: null,
-    path: tstMgr_ns.server_release,
-    id: 0
+    path: tstMgr_ns.server_devperchangelist,
+    id: 0,
+    perChangelist: true
 });
 envs.push({
     name: 'Development',
     packages: null,
     path: tstMgr_ns.server_dev,
-    id: 1
+    id: 1,
+    perChangelist: false
 });
 
 
@@ -31,30 +33,18 @@ function loadPackagesInformation(err, files, envIndex) {
     if (files.length < 1)
         return;
 
-    var templateFilePrefix = files[0].substr(0, 'RevitExtractor_x64_XXXX.X.'.length);
+    var env = envs[envIndex];
 
-    var fileNameInInts = new Array();
-    for (var k = 0; k < files.length; k++) {
-        // sample: RevitExtractor_x64_2015.0.2014.0519.zip
-        var fileName = files[k];
-        fileName = fileName.substr(templateFilePrefix.length, '2014.0519'.length);
-        fileName = fileName.replace('.', '');
-        fileNameInInts.push(parseInt(fileName));
-    }
-    fileNameInInts.sort().reverse();
-
-
+    var sortedfiles = tstMgr_ns.sortPackagesWithDate(files, env.perChangelist);
 
     var fileinfos = [];
-    for (var i = 0; i < fileNameInInts.length; i++) {
-        var fileNameInInt = fileNameInInts[i];
-        var fileNamePart = fileNameInInt.toString();
-        var sfileName = templateFilePrefix + fileNamePart.substr(0, 4) + '.' + fileNamePart.substr(4, 4) + '.zip';
+    for (var i = 0; i < sortedfiles.length; i++) {
+        var sfileName = sortedfiles[i];
         fileinfos.push({
             'name': sfileName,
             'smokeStatus': 'unknown',
             'isTested': false,
-            'id': (fileNameInInts.length - i - 1)
+            'id': (sortedfiles.length - i - 1)
         });
     }
 
@@ -76,11 +66,11 @@ function loadPackagesInformation(err, files, envIndex) {
 
 // get all the files in these two folders.
 var fs = require('fs');
-fs.readdir(tstMgr_ns.server_dev, function(err, files) {
-    loadPackagesInformation(err, files, 1);
+fs.readdir(tstMgr_ns.server_devperchangelist, function(err, files) {
+    loadPackagesInformation(err, files, 0);
 });
 
 
-fs.readdir(tstMgr_ns.server_release, function(err, files) {
-    loadPackagesInformation(err, files, 0);
+fs.readdir(tstMgr_ns.server_dev, function(err, files) {
+    loadPackagesInformation(err, files, 1);
 });

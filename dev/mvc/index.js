@@ -243,39 +243,132 @@ if (!module.parent) {
         socket_server.socket_connections[socket.id] = socket;
     });
 
-    var socket_client_io = require('socket.io-client');
+    doLoopCheckPackagesAndRunTest();
 
-    // start the packages moniter.
+    // mockup testing.
+    // setTimeout(function() {
+    //     console.log('start the testing.');
+    //     runTest("runTest_0_105 RevitExtractor_x64_CL410751_20140609_0440.zip");
+
+    // }, 10000);
+
+    // var socket_client_io = require('socket.io-client');
+
+    // // start the packages moniter.
+    // setTimeout(function() {
+    //     if (tstMgr_ns.Manager.isRunningTesting())
+    //         return;
+
+    //     // 1. check the latest package of dev.
+    //     for (var ii = 0; ii < db.envs.length; ii++) {
+    //         var lastestpack = tstMgr_ns.getLatestPackage(db.envs[ii]);
+    //         if ( !! lastestpack) {
+    //             var socket_client = socket_client_io.connect(null, {
+    //                 'port': 3000,
+    //                 'force new connection': true
+    //             });
+    //             socket_client.on('connect', function() {
+    //                 console.log('socket client 2 server.');
+
+    //                 var packId = tstMgr_ns.Action_RunTest + '_' +
+    //                     db.envs[ii].id + '_' + lastestpack.id + ' ' + lastestpack.name;
+    //                 socket_client.emit(tstMgr_ns.Action_RunTest,
+    //                     packId)
+    //                 socket_client.disconnect();
+    //             });
+
+    //             socket_client.on('disconnect', function() {
+    //                 console.log('socket client disconnect.');
+    //             })
+    //         }
+    //     }
+
+    // }, tstMgr_ns.Timeout_PackagesMonitor);
+
+}
+
+function runTest(argument) {
+    console.log(argument);
+    var argStrings = argument.split(' ');
+    if (argStrings.length != 2)
+        throw 'The argument from client is invalid - ' + argument + '.';
+    var fargStrings = argStrings[0].split('_');
+    if (fargStrings.length != 3)
+        throw 'The argument from client is invalid - ' + argument + '.';
+    var action = fargStrings[0]
+    var envId = fargStrings[1];;
+    var packId = parseInt(fargStrings[2]);
+
+
+    var env = db.envs[envId];
+    var envName = env.name;
+    var pack = env.packages[env.packages.length - packId - 1];
+    if (pack.id !== packId)
+        throw 'The pack is not we are looking for.';
+
+    var socket_server = require('./socket');
+    tstMgr_ns.messages.length = 0; //clean the msgs.
+
+
+    var exec_ns = require('./execTest').runTest;
+    var testingObject = new exec_ns.Testing(pack, envName, env.path);
+    testingObject.envId = envId;
+    testingObject.packId = packId;
+    tstMgr_ns.Manager.setCurrentTesting(testingObject);
+    testingObject.doCheck(function(err, stdout, stderr) {
+        console.log(stdout);
+
+        if ( !! socket_server && !! socket_server.socket_connections) {
+            var conns = socket_server.socket_connections;
+            var countOfConns = Object.keys(conns).length;
+            // caches the messages if the connections were not setup.
+            if (countOfConns < 1) {
+                tstMgr_ns.messages.push({
+                    'err': err,
+                    'stdout': stdout
+                });
+            } else {
+                // send out the cached messages if the connection are setup.
+                if (tstMgr_ns.messages.length > 0) {
+                    for (var jj = 0; jj < tstMgr_ns.messages.length; jj++) {
+                        var msg = tstMgr_ns.messages[jj];
+                        sendMessagesToConnections(conns, msg['err'], msg['stdout']);
+                    }
+                    tstMgr_ns.messages.length = 0; //clean the messages.
+                }
+
+                // caches the messages in the server side.
+                testingObject.consoleLog.push({
+                    'err': err,
+                    'stdout': stdout
+                });
+                sendMessagesToConnections(conns, err, stdout);
+            }
+
+        }
+    });
+}
+
+function doLoopCheckPackagesAndRunTest() {
+    // this will make sure the next timeout call will set the this 
+    // pointer to ExecutionSequence instead of window object.
+    var self = this;
+    var callee = arguments.callee;
     setTimeout(function() {
-        if (tstMgr_ns.Manager.isRunningTesting())
-            return;
+        callee.call(self);
+    }, tstMgr_ns.Timeout_PackagesMonitor);
 
+    if (!tstMgr_ns.Manager.isRunningTesting()) {
         // 1. check the latest package of dev.
         for (var ii = 0; ii < db.envs.length; ii++) {
             var lastestpack = tstMgr_ns.getLatestPackage(db.envs[ii]);
             if ( !! lastestpack) {
-                var socket_client = socket_client_io.connect(null, {
-                    'port': 3000,
-                    'force new connection': true
-                });
-                socket_client.on('connect', function() {
-                    console.log('socket client 2 server.');
-
-                    var packId = tstMgr_ns.Action_RunTest + '_' +
-                        db.envs[ii].id + '_' + lastestpack.id + ' ' + lastestpack.name;
-                    socket_client.emit(tstMgr_ns.Action_RunTest,
-                        packId)
-                    socket_client.disconnect();
-                });
-
-                socket_client.on('disconnect', function() {
-                    console.log('socket client disconnect.');
-                })
+                var packId = tstMgr_ns.Action_RunTest + '_' +
+                    db.envs[ii].id + '_' + lastestpack.id + ' ' + lastestpack.name;
+                runTest(packId);
             }
         }
-
-    }, tstMgr_ns.Timeout_PackagesMonitor);
-
+    }
 }
 
 function sendMessagesToSingleConnection(socket, err, stdout) {

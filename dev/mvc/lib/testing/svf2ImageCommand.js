@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var checkPoint_ns = require('./checkPoint').checkPoint;
 var tstMgr_ns = require('../../testManager').testManager;
+var imageChecker = require('./imagesChecker');
 
 var checker = exports.svf2ImageCommand = {}; // new namespace.
 
@@ -17,13 +18,13 @@ checker.Svf2ImageCommand = function(context, testcase, svfFilePath) {
         throw 'The tool does not existed at the give path - ' + this.svf2ImageToolPath;
     if (!fs.existsSync(this.svfFilePath))
         throw 'The file does not existed at the give path - ' + this.svfFilePath;
-    var outputImage = '';
+    this.outputImagePath = this.svfFilePath + '.png01_thumb_512x512.png';
     // sample: svf_thumb.exe .\Result\RME_One_of_Each_Imperial\output\Resource\3D_View\_3D_\_3D_.svf -size=1024 -outpath=./Result/RME_One_of_Each_Imperial/
     // The svf_thumb is using GI with path tracing. If you want consistent renders you can use an
     // image compare with tolerance (I can give you one) or you can generate the thumbnail use –bounce=0 
     // to turn off path tracing. This will ensure that only the geometry + direct light is rendered and 
     // allows you to validate consistently over time.
-    this.svf2ImageToolArgs = [this.svfFilePath, '-size=1024', '–bounce=0'];
+    this.svf2ImageToolArgs = [this.svfFilePath, '-size=512', '-depth=2'];
 
     this.checkPoint = new checkPoint_ns.CheckPoint(checkPoint_ns.View3DCheck_Svf2Image);
     this.testcase.checkPoints.push(this.checkPoint);
@@ -69,7 +70,12 @@ checker.Svf2ImageCommand.prototype.checks = function(callback) {
         if (scope.returnCode === 0) {
             this.checkPoint.setStatus(checkPoint_ns.SUCCESS);
             // add a image compare checker to the next for benchmark.
-            callback('SUCCESS', this.testcase.prefix + 'Generates the image for the give svf at ' + '.');
+            scope.context.checkPoints.splice(
+                scope.context.currentCheckPointIndex + 1, // inserts the new check points to the next position.
+                0, // no removing.
+                new imageChecker.imageChecker.ImageChecker(scope.context, scope.testcase, scope.outputImagePath, 1000)
+            );
+            callback('SUCCESS', this.testcase.prefix + 'Generates the image for the give svf at ' + scope.outputImagePath + '.');
 
         } else
             this.checkPoint.postCallback(callback, 'ERROR',

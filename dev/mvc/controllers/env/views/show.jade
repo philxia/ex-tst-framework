@@ -32,7 +32,10 @@ html
           thead
             tr
               th Product
-              th Version
+              if (!!env.packages[0].version)
+                th Version
+              else
+                th Changelist
               th Build Time
               th Smoke Status
               th Action
@@ -44,7 +47,10 @@ html
                   td
                     p #{pack.product}
                   td
-                    p #{pack.version}
+                    if (!!pack.version)
+                      p #{pack.version}
+                    else
+                      p #{pack.changelist}
                   td
                     p #{pack.buildTime}
                   td
@@ -61,7 +67,7 @@ html
                     else
                       button(id= 'browseResult_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="browseResult_button testinfo_btn btn btn-default btn-block") Browse Result
                   td
-                    a(href='/pack/#{env.id}&&#{pack.id}') #{pack.name}
+                    p #{pack.name}
                   td
                     button(id='genBenchmark_' + env.id + '_'+pack.id, class='hide btn btn-primary') Generate
     else
