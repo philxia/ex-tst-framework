@@ -78,7 +78,7 @@ checker.Dwfx2ImageCommand.prototype.checks = function(callback) {
         } else
             scope.checkPoint.postCallback(callback, 'ERROR',
                 scope.testcase.prefix +
-                'Failed to generate the image for the give svf file - ' +
+                'Failed to generate the image for the give dwfx file - ' +
                 scope.dwfxFilePath + '.');
     }
 }
