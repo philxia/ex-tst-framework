@@ -18,7 +18,7 @@ testManager.BenchmarksFolder = 'd:\\tf\\benchmarks\\';
 
 testManager.ToolsFolder = 'd:\\tf\\tools\\';
 
-testManager.server_dev = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Dev';
+testManager.server_dev = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Dev'; //'\\\\Shasrvbsd02\\Dataxfer\\Phil Xia\\pack';
 testManager.server_devperchangelist = '\\\\usmanpdglstr01\\revit\\Cloud\\RevitExtractor\\Dev';
 testManager.server_release = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Release';
 
