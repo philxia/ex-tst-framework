@@ -57,6 +57,12 @@ $(function() {
         window.testjob_id = idstr;
 
         $("#testing_information").dialog("open");
+    });
+
+    $('.generateBenchmarks_button').button().click(function() {
+        var idstr = $(this).attr('id');
+        window.testjob_id = idstr;
+        $("#testing_information").dialog("open");
     })
 
     // runtest_button onclick event.

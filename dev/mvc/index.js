@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 
 var fs = require('fs');
+var fsextra = require('fs.extra');
 var path = require('path');
 
 var tstMgr_ns = require('./testManager').testManager;
@@ -239,6 +240,11 @@ if (!module.parent) {
 
                 }
             });
+        });
+
+        socket.on(tstMgr_ns.Action_GenerateBenchmarks, function(argument) {
+            console.log(argument);
+            runTest(argument, true);
         })
         socket_server.socket_connections[socket.id] = socket;
     });
@@ -251,43 +257,9 @@ if (!module.parent) {
     //     runTest("runTest_0_106 RevitExtractor_x64_CL410964_20140610_0353.zip");
 
     // }, 20000);
-
-    // var socket_client_io = require('socket.io-client');
-
-    // // start the packages moniter.
-    // setTimeout(function() {
-    //     if (tstMgr_ns.Manager.isRunningTesting())
-    //         return;
-
-    //     // 1. check the latest package of dev.
-    //     for (var ii = 0; ii < db.envs.length; ii++) {
-    //         var lastestpack = tstMgr_ns.getLatestPackage(db.envs[ii]);
-    //         if ( !! lastestpack) {
-    //             var socket_client = socket_client_io.connect(null, {
-    //                 'port': 3000,
-    //                 'force new connection': true
-    //             });
-    //             socket_client.on('connect', function() {
-    //                 console.log('socket client 2 server.');
-
-    //                 var packId = tstMgr_ns.Action_RunTest + '_' +
-    //                     db.envs[ii].id + '_' + lastestpack.id + ' ' + lastestpack.name;
-    //                 socket_client.emit(tstMgr_ns.Action_RunTest,
-    //                     packId)
-    //                 socket_client.disconnect();
-    //             });
-
-    //             socket_client.on('disconnect', function() {
-    //                 console.log('socket client disconnect.');
-    //             })
-    //         }
-    //     }
-
-    // }, tstMgr_ns.Timeout_PackagesMonitor);
-
 }
 
-function runTest(argument) {
+function runTest(argument, genBenchmarks) {
     console.log(argument);
     var argStrings = argument.split(' ');
     if (argStrings.length != 2)
@@ -314,6 +286,16 @@ function runTest(argument) {
     var testingObject = new exec_ns.Testing(pack, envName, env.path);
     testingObject.envId = envId;
     testingObject.packId = packId;
+    testingObject.genBenchmarks = !!genBenchmarks;
+    //
+    if(testingObject.genBenchmarks){
+        // setup the directories for this benchmarks.
+        var benchmarksPath = path.join(tstMgr_ns.BenchmarksFolder, envName, 
+            pack.name.substr(0, pack.name.lastIndexOf('.')));
+        if(!fs.existsSync(benchmarksPath))
+            fsextra.mkdirRecursiveSync(benchmarksPath);
+    }
+
     tstMgr_ns.Manager.setCurrentTesting(testingObject);
     testingObject.doCheck(function(err, stdout, stderr) {
         console.log(stdout);

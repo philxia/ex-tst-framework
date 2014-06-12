@@ -18,7 +18,7 @@ testManager.BenchmarksFolder = 'd:\\tf\\benchmarks\\';
 
 testManager.ToolsFolder = 'd:\\tf\\tools\\';
 
-testManager.server_dev = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Dev';
+testManager.server_dev = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Dev'; //'\\\\Shasrvbsd02\\Dataxfer\\Phil Xia\\pack';
 testManager.server_devperchangelist = '\\\\usmanpdglstr01\\revit\\Cloud\\RevitExtractor\\Dev';
 testManager.server_release = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Release';
 
@@ -26,6 +26,7 @@ testManager.server_release = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Re
 testManager.Action_RunTest = 'runTest';
 testManager.Action_BrowseResult = 'browseResult';
 testManager.Action_MonitorTest = 'monitorTest';
+testManager.Action_GenerateBenchmarks = 'generateBenchmarks';
 
 
 testManager.Timeout_PackagesMonitor = 600000; // 10 min

@@ -53,6 +53,14 @@ checker.ImageChecker.prototype.checks = function(callback) {
             // callback('ERROR', data);
         });
 
+        exec.on('error', function(data) {
+            var buff = new Buffer(data);
+            var info = buff.toString('utf8');
+            console.log('stderr: ' + info);    
+            scope.isDone = true;
+            scope.returnCode = -1;
+        })
+
         exec.on('exit', function(code) {
             scope.isDone = true;
             scope.returnCode = code;
