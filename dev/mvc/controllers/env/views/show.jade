@@ -40,7 +40,8 @@ html
               th Smoke Status
               th Action
               th Package
-              th(class='hide') Benchmark
+              // th(class='hide') Benchmark
+              th Benchmark
             tbody
               each pack in env.packages
                 tr
@@ -69,6 +70,6 @@ html
                   td
                     p #{pack.name}
                   td
-                    button(id='genBenchmark_' + env.id + '_'+pack.id, class='hide btn btn-primary') Generate
+                    button(id='generateBenchmarks_' + env.id + '_'+pack.id + ' ' + pack.name, class='generateBenchmarks_button btn btn-primary') Generate
     else
       p No packages!

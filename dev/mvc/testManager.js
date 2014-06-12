@@ -26,6 +26,7 @@ testManager.server_release = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Re
 testManager.Action_RunTest = 'runTest';
 testManager.Action_BrowseResult = 'browseResult';
 testManager.Action_MonitorTest = 'monitorTest';
+testManager.Action_GenerateBenchmarks = 'generateBenchmarks';
 
 
 testManager.Timeout_PackagesMonitor = 600000; // 10 min
