@@ -286,14 +286,14 @@ function runTest(argument, genBenchmarks) {
     var testingObject = new exec_ns.Testing(pack, envName, env.path);
     testingObject.envId = envId;
     testingObject.packId = packId;
-    testingObject.genBenchmarks = !!genBenchmarks;
-    //
-    if(testingObject.genBenchmarks){
+    testingObject.genBenchmarks = !! genBenchmarks;
+    // create the benchmarks folder in this mode.
+    if (testingObject.genBenchmarks) {
         // setup the directories for this benchmarks.
-        var benchmarksPath = path.join(tstMgr_ns.BenchmarksFolder, envName, 
+        testingObject.benchmarksPath = path.join(tstMgr_ns.BenchmarksFolder, envName,
             pack.name.substr(0, pack.name.lastIndexOf('.')));
-        if(!fs.existsSync(benchmarksPath))
-            fsextra.mkdirRecursiveSync(benchmarksPath);
+        if (!fs.existsSync(testingObject.benchmarksPath))
+            fsextra.mkdirRecursiveSync(testingObject.benchmarksPath);
     }
 
     tstMgr_ns.Manager.setCurrentTesting(testingObject);

@@ -1,4 +1,6 @@
 var fs = require('fs');
+var fsextra = require('fs.extra');
+var path = require('path');
 
 var checkPoint_bubbleJsonFile = require('./bubbleJsonFileChecker');
 var checkPoint_keyFiles = require('./keyFilesChecker');
@@ -14,6 +16,12 @@ bubbleValidator.BubbleValidator = function(execTestsObject, testcase) {
 
 // this validator only push the sub-checkers.
 bubbleValidator.BubbleValidator.prototype.checks = function(callback) {
+    if (this.context.genBenchmarks) {
+        // create the folder for test case.
+        this.testcase.benchmarksPath = path.join(this.context.benchmarksPath, this.testcase.args[1]);
+        if (!fs.existsSync(this.testcase.benchmarksPath))
+            fsextra.mkdirRecursiveSync(this.testcase.benchmarksPath);
+    }
     // locates the index to insert these check points.
     this.context.checkPoints.splice(
         this.context.currentCheckPointIndex + 1, // inserts the new check points to the next position.
@@ -23,4 +31,3 @@ bubbleValidator.BubbleValidator.prototype.checks = function(callback) {
         new checkPoint_resultNotification.resultNotification.ResultNotification(this.context, this.testcase)
     );
 }
-

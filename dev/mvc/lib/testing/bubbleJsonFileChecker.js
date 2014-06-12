@@ -1,4 +1,5 @@
 var fs = require('fs');
+var fsextra = require('fs.extra');
 var path = require('path');
 var jsonComparer = require('./jsonComparer').JsonComparer;
 var checkPoint_ns = require('./checkPoint').checkPoint;
@@ -56,21 +57,31 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
         var genBubbleJsonString = fs.readFileSync(generatedBubbleJsonFilePath, "utf8");
         genBubbleJsonObj = JSON.parse(genBubbleJsonString);
 
-        var bmBubbleJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, this.context.envName, this.testcase.args[1], '\\bubble.json');
-        if (!fs.existsSync(bmBubbleJsonFilePath))
-            throw 'The benchmark bubble.json for this case does not existed.';
-        var bmBubbleJsonString = fs.readFileSync(bmBubbleJsonFilePath, 'utf8');
-        var bmBubbleJsonObj = JSON.parse(bmBubbleJsonString);
+        if (scope.context.genBenchmarks) {
+            var bmBubbleJsonFilePath = path.join(scope.context.benchmarksPath, this.testcase.args[1], '\\bubble.json');
+            fsextra.copy(generatedBubbleJsonFilePath, bmBubbleJsonFilePath, function(err) {
+                if (err)
+                    console.log(err);
+                else
+                    console.log('Copy the bubble to benchmark folder.');
+            });
 
-        // compare the 2 json objects.
-        if (!jsonComparer.deepCompare(genBubbleJsonObj, bmBubbleJsonObj, function(p, gen, bm) {
-            checkPoint.postCallback(callback, 'ERROR', scope.testcase.prefix + 'Bubble.json file validation failed, because the values of property -' + p + '- are different for generated bubble (' +
-                gen + ') and benchmark bubble (' + bm + ').');
-        })) {
-            checkPoint.postCallback(callback, 'ERROR', this.testcase.prefix + 'Bubble.json file validation failed.');
-        } else
-            callback('SUCCESS', this.testcase.prefix + 'The bubble.json file is identical with the benchmark.')
+        } else {
+            var bmBubbleJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, this.context.envName, this.testcase.args[1], '\\bubble.json');
+            if (!fs.existsSync(bmBubbleJsonFilePath))
+                throw 'The benchmark bubble.json for this case does not existed.';
+            var bmBubbleJsonString = fs.readFileSync(bmBubbleJsonFilePath, 'utf8');
+            var bmBubbleJsonObj = JSON.parse(bmBubbleJsonString);
 
+            // compare the 2 json objects.
+            if (!jsonComparer.deepCompare(genBubbleJsonObj, bmBubbleJsonObj, function(p, gen, bm) {
+                checkPoint.postCallback(callback, 'ERROR', scope.testcase.prefix + 'Bubble.json file validation failed, because the values of property -' + p + '- are different for generated bubble (' +
+                    gen + ') and benchmark bubble (' + bm + ').');
+            })) {
+                checkPoint.postCallback(callback, 'ERROR', this.testcase.prefix + 'Bubble.json file validation failed.');
+            } else
+                callback('SUCCESS', this.testcase.prefix + 'The bubble.json file is identical with the benchmark.')
+        }
     } catch (err) {
         checkPoint.postCallback(callback, 'ERROR', this.testcase.prefix +
             'Exception thrown when parse bubble.json with message - ' +
