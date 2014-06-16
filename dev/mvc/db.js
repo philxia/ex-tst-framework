@@ -22,6 +22,20 @@ envs.push({
     id: 1,
     perChangelist: false
 });
+envs.push({
+    name: 'ReleasePerCL',
+    packages: null,
+    path: tstMgr_ns.server_relperchangelist,
+    id: 2,
+    perChangelist: true
+});
+envs.push({
+    name: 'Release',
+    packages: null,
+    path: tstMgr_ns.server_release,
+    id: 3,
+    perChangelist: false
+});
 
 
 
@@ -70,7 +84,14 @@ fs.readdir(tstMgr_ns.server_devperchangelist, function(err, files) {
     loadPackagesInformation(err, files, 0);
 });
 
-
 fs.readdir(tstMgr_ns.server_dev, function(err, files) {
     loadPackagesInformation(err, files, 1);
+});
+
+fs.readdir(tstMgr_ns.server_relperchangelist, function(err, files) {
+    loadPackagesInformation(err, files, 2);
+});
+
+fs.readdir(tstMgr_ns.server_release, function(err, files) {
+    loadPackagesInformation(err, files, 3);
 });

@@ -1,4 +1,15 @@
 $(function() {
+    // setup the tables.
+    $('#testcontrolpanel').tabs({
+        beforeLoad: function( event, ui ) {
+                ui.jqXHR.error(function() {
+                  ui.panel.html(
+                    "Couldn't load this tab. We'll try to fix this as soon as possible. " +
+                    "If this wouldn't be a demo." );
+                });
+              }
+    });
+
 
     //Socket.io 'http://10.148.205.1:3000'
     window.socket = io.connect(null, {
@@ -30,7 +41,7 @@ $(function() {
 
             $("#testStatus").html('Status: <span style=color:#00ff00;"> In process.</span>');
 
-            var consoleHeight = $('#testing_information')[0].clientHeight - 220;
+            var consoleHeight = $('#testing_information')[0].clientHeight - 250;
             // var consoleWidth = $('#testing_information')[0].clientWidth - 220;
             consoleElem.style.height = consoleHeight + 'px';
             // consoleElem.style.width = consoleWidth + 'px';
@@ -149,6 +160,8 @@ $(function() {
                     $("#testStatus").html('Status: <span style=color:#ff0000;"> Test completed! - Success: ' + updateObj.result.success + '| Failures: ' + updateObj.result.failures + '| Totals: ' + updateObj.result.count + '.</span>');
             }
             $("#test_console").scrollTop($("#test_console")[0].scrollHeight);
+
+            $(".check_result").switchClass('hide', 'show');
         }
 
         if ( !! updateObj.result && !! updateObj.result.buttonId) {

@@ -22,9 +22,23 @@ html
     div#testing_information
       h1#pack_name
       h2#testStatus Status: In process...
-      div.container
-      h3 Test Console
-      div#test_console
+      div(id="testcontrolpanel", class="container", style="width:100%;")
+        ul
+          li 
+            a(href='#test_console') Console
+          li(class="check_result hide")
+            a(href='#check_bubblejson') Bubble.json Check
+          li(class="check_result hide")
+            a(href='#check_3d') 3D Check
+          li(class="check_result hide")
+            a(href='#check_2d') 2D Check
+          li(class="check_result hide")
+            a(href='#check_db') Database Check
+        div(id="test_console")
+        div(id="check_bubblejson" class="show")
+        div(id="check_3d" class="show")
+        div(id="check_2d" class="show")
+        div(id="check_db" class="show")
 
     if (env.packages.length)
       div

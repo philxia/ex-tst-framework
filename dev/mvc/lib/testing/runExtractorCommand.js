@@ -35,8 +35,8 @@ checker.RunExtractorCommand.prototype.checks = function(callback) {
         };
         callback('UPDATE', JSON.stringify(updateObj));
 
-        var args = new Array(scope.testcase.args.length + 1); // append the "/test" option.
-        for (var ii = 0; ii < args.length; ii++) {
+        var args = new Array(); 
+        for (var ii = 0; ii < scope.testcase.args.length; ii++) {
             var arg = scope.testcase.args[ii];
             if (ii == 0) {
                 arg = path.join(tstMgr.OutputFolder, scope.context.envName, scope.context.packNameWithoutExtension, arg);
@@ -45,7 +45,7 @@ checker.RunExtractorCommand.prototype.checks = function(callback) {
             }
             args[ii] = arg;
         }
-        args.push("/test");
+        args.push("/test"); // append the "/test" option.
         var cmd = scope.context.packExePath;
         var util = require('util'),
             spawn = require('child_process').spawn,
@@ -63,6 +63,14 @@ checker.RunExtractorCommand.prototype.checks = function(callback) {
             var info = buff.toString('utf8');
             console.log('stdout: ' + info);
             callback('ERROR', info);
+        });
+
+        exec.on('error', function(data) {
+            var buff = new Buffer(data);
+            var info = buff.toString('utf8');
+            console.log('stderr: ' + info);    
+            scope.isDone = true;
+            scope.returnCode = -1;
         });
 
         exec.on('exit', function(code) {
