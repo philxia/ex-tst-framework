@@ -1,4 +1,5 @@
 var fs = require('fs');
+var fsextra = require('fs.extra');
 var unzip = require('unzip');
 var zlib = require('zlib');
 var path = require('path');
@@ -39,6 +40,24 @@ checker.DatabaseChecker.prototype.checks = function(callback) {
     if (!scope.isExecuted) {
         scope.context.executingCmd = true;
         scope.isExecuted = true;
+
+        if (scope.context.genBenchmarks) {
+            // copy the database to benchmarks.
+            var destPath = path.join(scope.testcase.benchmarksPath,
+                scope.dbFilePath.substr(scope.dbFilePath.lastIndexOf('\\')));
+            fsextra.copy(scope.dbFilePath, destPath, function(err) {
+                if (err)
+                    console.log(err);
+                else
+                    console.log('Copy the datebase to benchmark folder.');
+            });
+
+            scope.isDone = true;
+            scope.returnCode = 0;
+            scope.context.executingCmd = false;
+            scope.checkPoint.setStatus(checkPoint_ns.SUCCESS);
+            return;
+        }
 
         var exFolder = scope.dbFilePath.substr(0, scope.dbFilePath.lastIndexOf('\\') + 1);
 

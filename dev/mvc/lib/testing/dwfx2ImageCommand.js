@@ -1,4 +1,5 @@
 var fs = require('fs');
+var fsextra = require('fs.extra');
 var path = require('path');
 var checkPoint_ns = require('./checkPoint').checkPoint;
 var tstMgr_ns = require('../../testManager').testManager;
@@ -58,7 +59,7 @@ checker.Dwfx2ImageCommand.prototype.checks = function(callback) {
         exec.on('error', function(data) {
             var buff = new Buffer(data);
             var info = buff.toString('utf8');
-            console.log('stderr: ' + info);    
+            console.log('stderr: ' + info);
             scope.isDone = true;
             scope.returnCode = -1;
         });
@@ -74,19 +75,30 @@ checker.Dwfx2ImageCommand.prototype.checks = function(callback) {
         scope.context.executingCmd = false;
         if (scope.returnCode === 0) {
             scope.checkPoint.setStatus(checkPoint_ns.SUCCESS);
-            // add a image compare checker to the next for benchmark.
-            scope.context.checkPoints.splice(
-                scope.context.currentCheckPointIndex + 1, // inserts the new check points to the next position.
-                0, // no removing.
-                new imageChecker.imageChecker.ImageChecker(scope.context, scope.testcase, scope.outputImagePath, 50)
-            );
+            if (scope.context.genBenchmarks) {
+                var destPath = path.join(scope.testcase.benchmarksPath,
+                    scope.outputImagePath.substr(scope.outputImagePath.lastIndexOf('\\')));
+                fsextra.copy(scope.outputImagePath, destPath, function(err) {
+                    if (err)
+                        console.log(err);
+                    else
+                        console.log('Copy the generated image to benchmark folder.');
+                });
+            } else {
+                // add a image compare checker to the next for benchmark.
+                scope.context.checkPoints.splice(
+                    scope.context.currentCheckPointIndex + 1, // inserts the new check points to the next position.
+                    0, // no removing.
+                    new imageChecker.imageChecker.ImageChecker(scope.context, scope.testcase, scope.outputImagePath, 50)
+                );
+            }
             callback('SUCCESS', scope.testcase.prefix + 'Generates the image for the give dwfx at ' +
                 scope.outputImagePath + '.');
 
         } else
             scope.checkPoint.postCallback(callback, 'ERROR',
                 scope.testcase.prefix +
-                'Failed to generate the image for the give svf file - ' +
+                'Failed to generate the image for the give dwfx file - ' +
                 scope.dwfxFilePath + '.');
     }
 }
