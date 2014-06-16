@@ -161,12 +161,15 @@ $(function() {
             }
             $("#test_console").scrollTop($("#test_console")[0].scrollHeight);
 
-            $(".check_result").switchClass('hide', 'show');
         }
 
         if ( !! updateObj.result && !! updateObj.result.buttonId) {
             var btnId = updateObj.result.buttonId;
             var statusString = (updateObj.result.success == updateObj.result.count) ? 'success' : 'failure';
+
+            // show the detail checkers only when the dialog is open and the result is failure.
+            if(window.isTestingInformationPanelVisible && statusString === 'failure')
+                $(".check_result").switchClass('hide', 'show');
 
             //$("button[id='monitorTest_1_0 RevitExtractor_x64_2015.0.2014.0519.zip']") 
             var strs = btnId.split(' ');

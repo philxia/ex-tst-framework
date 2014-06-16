@@ -109,9 +109,9 @@ checker.ResultNotification.prototype.checks = function(callback) {
         // clean the output for this package.
         var outputFolderPath = path.join(tstMgr_ns.OutputFolder, this.context.envName, packFolderName);
         //rimraf.sync(outputFolderPath);
-        // rimraf(outputFolderPath, function() {
-        //     console.log('The package output at ' + outputFolderPath + ' has been removed successfully.');
-        // })
+        rimraf(outputFolderPath, function() {
+            console.log('The package output at ' + outputFolderPath + ' has been removed successfully.');
+        })
         // update the paga.
         if ( !! tstMgr_ns.Manager)
             tstMgr_ns.Manager.resetCurrentTesting();
