@@ -41,7 +41,7 @@ $(function() {
 
             $("#testStatus").html('Status: <span style=color:#00ff00;"> In process.</span>');
 
-            var consoleHeight = $('#testing_information')[0].clientHeight - 250;
+            var consoleHeight = $('#testing_information')[0].clientHeight - 220;
             // var consoleWidth = $('#testing_information')[0].clientWidth - 220;
             consoleElem.style.height = consoleHeight + 'px';
             // consoleElem.style.width = consoleWidth + 'px';
