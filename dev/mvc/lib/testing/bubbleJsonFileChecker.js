@@ -36,6 +36,7 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
     var scope = this;
     var checkPoint = new checkPoint_ns.CheckPoint(checkPoint_ns.BubbleFileCheck);
     this.testcase.checkPoints.push(checkPoint);
+    var result = false;
 
     // 1. check if the test case bubble json is existed.
     var indexJsonPath = this.testcase.args[0];
@@ -79,8 +80,10 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
                     gen + ') and benchmark bubble (' + bm + ').');
             })) {
                 checkPoint.postCallback(callback, 'ERROR', this.testcase.prefix + 'Bubble.json file validation failed.');
-            } else
-                callback('SUCCESS', this.testcase.prefix + 'The bubble.json file is identical with the benchmark.')
+            } else{
+                callback('SUCCESS', this.testcase.prefix + 'The bubble.json file is identical with the benchmark.');
+                result = true;
+            }
         }
     } catch (err) {
         checkPoint.postCallback(callback, 'ERROR', this.testcase.prefix +
@@ -124,7 +127,8 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
     }
 
     // update the context.
-    checkPoint.setStatus(checkPoint_ns.SUCCESS);
+    if(result)
+        checkPoint.setStatus(checkPoint_ns.SUCCESS);
 
     // send the filesPath to testcase.
     this.testcase.keyFilesPath = filesPath;
