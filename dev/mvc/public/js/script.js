@@ -208,6 +208,9 @@ $(function() {
             var hintObj = JSON.parse(msg);
             if(hintObj.checkType === 1008) //View2DCheck_ImageCompareCheck
             {
+                var width = getCssValue('#test_console', 'width');
+                var fcwidth = width*0.1;
+                var otwidth = width*0.25;
                 var urlhead = "http://localhost:8081/";
                 var genImageUrl = hintObj.outputPath.replace(/\\/g, '/');
                 genImageUrl = urlhead + 'results/' + genImageUrl.substr('e:/tf/output/'.length);
@@ -217,8 +220,14 @@ $(function() {
                 // "e:\tf\output\ReleasePerCL\RevitExtractor_x64_CL410709_20140608_2235\2015\rac_advanced_sample_project\output\Resource\Sheet\A2___Sections\A2___Sections.dwfx.png_diffImage.bmp"
                 var diffImageUrl = hintObj.diffImagePath.replace(/\\/g, '/');
                 diffImageUrl = urlhead + 'results/' +diffImageUrl.substr('e:/tf/output/'.length);
-                var htmlText = '<tr class="temp"><td align="center" style="width:200px;"><div class="tdhead">' + hintObj.message + 
-                    '</div></td><td align="center"><a href="'+genImageUrl+'" title="generated image" data-gallery><img src="' + genImageUrl + '" style="width: 400px; height:400px;"></a></td><td align="center"><a href="'+benImageUrl+'" title="baseline image" data-gallery><img src="' + benImageUrl + '" style="width: 400px; height:400px;"></td><td align="center"><a href="'+diffImageUrl+'" title="different image" data-gallery><img src="' + diffImageUrl + '" style="width: 400px; height:400px;"></td></tr>';
+                var htmlText = '<tr class="temp"><td align="center" style="width:'+ fcwidth +'px;"><div class="tdhead">' + hintObj.message + 
+                    '</div></td><td align="center"><a href="'+genImageUrl+
+                    '" title="generated image" data-gallery><img src="' + genImageUrl + 
+                    '" style="width:'+ otwidth + 'px; height:'+ otwidth + 'px;"></a></td><td align="center"><a href="'+benImageUrl+
+                    '" title="baseline image" data-gallery><img src="' + benImageUrl + 
+                    '" style="width: '+ otwidth + 'px; height:'+ otwidth + 'px;"></td><td align="center"><a href="'+diffImageUrl+
+                    '" title="different image" data-gallery><img src="' + diffImageUrl + 
+                    '" style="width: '+ otwidth + 'px; height:'+ otwidth + 'px;"></td></tr>';
                 $("#check_2d_tbody tr:last").after(htmlText);
                 if(!window.carouselLinks && Array.isArray(window.carouselLinks)){
                     window.carouselLinks.push({
