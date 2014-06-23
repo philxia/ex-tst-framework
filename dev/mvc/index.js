@@ -12,6 +12,7 @@ var methodOverride = require('method-override');
 var fs = require('fs');
 var fsextra = require('fs.extra');
 var path = require('path');
+var http = require('http');
 
 var tstMgr_ns = require('./testManager').testManager;
 var db = require('./db');
@@ -245,6 +246,38 @@ if (!module.parent) {
         socket.on(tstMgr_ns.Action_GenerateBenchmarks, function(argument) {
             console.log(argument);
             runTest(argument, true);
+        });
+
+        socket.on(tstMgr_ns.Action_RunTestForCustomPackage, function(argument) {
+            console.log(argument);
+            var uploadResult = JSON.parse(argument);
+            var url = uploadResult.files[0].url;
+            var filename = uploadResult.files[0].name;
+
+            var filePath = path.join(tstMgr_ns.PackageFolder, 'Custom', filename)
+            var file = fs.createWriteStream(filePath);
+            http.get(url, function(res) {
+              console.log("Got response: " + res.statusCode);
+              res.pipe(file);
+            }).on('error', function(e) {
+              console.log("Got error: " + e.message);
+            });
+
+            file.on("close", function(ex) {
+                // finished the download.
+                // env id for custom is 4.
+                var count = fs.readdirSync( path.join(tstMgr_ns.PackageFolder, 'Custom')).length;
+                // update the new pack.
+                var packId = count - 1;
+                db.envs[4].packages.splice(0,0, {
+                    'name': filename,
+                    'smokeStatus': 'unknown',
+                    'isTested': false,
+                    'id': packId
+                });
+                var argument = 'runTest_4_'+packId+' ' + filename;
+                runTest(argument);
+            });
         })
         socket_server.socket_connections[socket.id] = socket;
     });
@@ -362,6 +395,8 @@ function sendMessagesToSingleConnection(socket, err, stdout) {
         socket.emit('test_information_error', stdout);
     else if (err === "UPDATE")
         socket.emit('test_information_update', stdout);
+    else if(err === "HINT")
+        socket.emit('test_information_hint', stdout);
 }
 
 function sendMessagesToConnections(conns, err, stdout) {

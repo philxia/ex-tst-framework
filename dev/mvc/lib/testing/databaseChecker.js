@@ -69,6 +69,7 @@ checker.DatabaseChecker.prototype.checks = function(callback) {
 
         outstream.on('close', function(argument) {
             scope.extractCount++;
+            scope.checkPoint.setBenchmarkPath(scope.genDbJsonFilePath);
         });
 
         // extracts the benchmarks.
@@ -82,6 +83,7 @@ checker.DatabaseChecker.prototype.checks = function(callback) {
 
         outstreambm.on('close', function(argument) {
             scope.extractCount++;
+            scope.checkPoint.setBenchmarkPath(scope.genBmDbJsonFilePath);
         });
     }
 

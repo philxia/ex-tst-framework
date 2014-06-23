@@ -16,6 +16,9 @@ checker.ProcessPackageCommand = function(context) {
 
     this.packName = this.context.pack.name;
     this.serverPath = this.context.serverPath;
+    this.ziptoolPath = path.join(tstMgr.testManager.ToolsFolder, '7Zip\\7z.exe');
+    if(!fs.existsSync(this.ziptoolPath))
+        throw 'The zip tool does not exist.';
 }
 
 checker.ProcessPackageCommand.prototype.copyFile = function(source, target, cb) {
@@ -42,8 +45,70 @@ checker.ProcessPackageCommand.prototype.copyFile = function(source, target, cb) 
     }
 }
 
-
 checker.ProcessPackageCommand.prototype.extractPackage = function(localPath, callback) {
+    var scope = this;
+
+    var exFolder = localPath.substr(0, localPath.length - 4); //remove the extension.
+    var outputFolder = (scope.context.envId == 4)? "ReleaseX64" : "Program";
+    if(!fs.existsSync(exFolder))
+        fs.mkdirSync(exFolder);
+    this.context.packExePath = path.join(exFolder, outputFolder, 'RevitExtractor.exe');    
+    if (!fs.existsSync(this.context.packExePath)) {
+        var util = require('util'),
+            spawn = require('child_process').spawn,
+            exec = spawn(this.ziptoolPath, ["x", localPath, "-o" + exFolder + ""]);
+
+        exec.stdout.on('data', function(data) {
+            var buff = new Buffer(data);
+            var info = buff.toString('utf8');
+            console.log('stdout: ' + info);
+            callback('INFO', info);
+        });
+
+        exec.stderr.on('data', function(data) {
+            var buff = new Buffer(data);
+            var info = buff.toString('utf8');
+            console.log('stdout: ' + info);
+            callback('ERROR', info);
+        });
+
+        exec.on('error', function(data) {
+            var buff = new Buffer(data);
+            var info = buff.toString('utf8');
+            console.log('stderr: ' + info);    
+            scope.isDone = true;
+            scope.returnCode = -1;
+        });
+
+        exec.on('exit', function(code) {
+            scope.isDone = true;
+            scope.returnCode = 0;
+
+            callback('SUCCESS', 'Finished the extraction for the package to - ' + exFolder + '\\'+ outputFolder +
+                '\\*.*.\n');
+
+            // add NoDynamicText.testconfig file to the 2014 and 2015 folders.
+            var programFolderPath = path.join(exFolder, outputFolder);
+            var files = fs.readdirSync(programFolderPath);
+            for (var ii = 0; ii < files.length; ii++) {
+                if (fs.lstatSync(path.join(programFolderPath, files[ii])).isDirectory()) {
+                    var destPath = path.join(exFolder, outputFolder, files[ii], 'NoDynamicText.testconfig');
+                    fsextra.copy('.\\mvc\\NoDynamicText.testconfig', destPath, function(err) {
+                        if (err)
+                            console.log(err);
+                    });
+                }
+            }
+        });
+    } else {
+        callback('SUCCESS', 'The package is already existed at - ' + exFolder + '\\Program\\*.*.\n');
+        scope.isDone = true;
+        scope.returnCode = 0;
+    }
+}
+
+
+checker.ProcessPackageCommand.prototype.extractPackage2 = function(localPath, callback) {
     var scope = this;
     // unzip the package.
     var exFolder = localPath.substr(0, localPath.length - 4); //remove the extension.

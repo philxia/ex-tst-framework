@@ -29,6 +29,21 @@ http.createServer(function(req, res) {
         res.end('This is the RevitExtractor testing server.\n');
     }
 
+    if(url.match("unzip") !== null){
+        var localPath = 'E:\\tf\\packs\\Custom\\RevitExtractor_x64_2015.0.2014.0623.152750.zip';
+        var exFolder = 'E:\\tf\\packs\\Custom\\RevitExtractor_x64_2015.0.2014.0623.152750';
+        var unzipExtractor = unzip.Extract({
+            path: exFolder
+        });
+        unzipExtractor.on('error', function(err) {
+            console.log(err);
+        });
+        unzipExtractor.on('close', function() {
+            console.log('success');            
+        });
+        fs.createReadStream(localPath).pipe(unzipExtractor);
+    }
+
     if (url.match("loadsuites") !== null) {
         var suitesString = fs.readFileSync(".\\testSuites.json", "utf8");
         var suites = JSON.parse(suitesString);

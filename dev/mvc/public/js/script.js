@@ -1,4 +1,32 @@
 $(function() {
+
+    function getCssValue (selector, cssname) {
+        var v = $(selector).css(cssname);
+        v = v.substr(0, v.length -2);
+        v = parseInt(v);
+        return v;
+    }
+
+    function getHeight (selector, ignoreMargin) {
+        var height = getCssValue(selector, 'height');
+
+        if(!ignoreMargin)
+        {
+            var mh = getCssValue(selector, 'margin-top');
+            height += mh;
+            var mb = getCssValue(selector, 'margin-bottom');
+            height += mb;
+        }
+        return height;
+    }
+    function getResultPanelHeight () {
+        var consoleHeight = $('#testing_information')[0].clientHeight - 
+            getHeight('#pack_name') -
+            getHeight('#testStatus');
+        consoleHeight -= getHeight('.ui-tabs-nav') + 15;
+        return consoleHeight + 'px';
+    }
+
     // setup the tables.
     $('#testcontrolpanel').tabs({
         beforeLoad: function( event, ui ) {
@@ -7,7 +35,27 @@ $(function() {
                     "Couldn't load this tab. We'll try to fix this as soon as possible. " +
                     "If this wouldn't be a demo." );
                 });
-              }
+              },
+        activate: function(event, ui) {
+            var tab = ui.newTab[0];
+            if(!tab)
+                return;
+            var atag = tab.firstChild;
+            if(!atag)
+                return;
+            var ahref = atag.href;
+            if(!ahref)
+                return;
+            var divId = ahref.substr(ahref.lastIndexOf('#'));
+            if($(divId).length < 1)
+                return;
+
+
+
+            var consoleHeight = $('#testing_information')[0].clientHeight - 220;
+            if(consoleHeight > 0)
+                $(divId)[0].style.height = getResultPanelHeight();
+        }
     });
 
 
@@ -16,6 +64,8 @@ $(function() {
         'port': 3000,
         'force new connection': true
     });
+
+
 
     // initialize the modal form.
     $("#testing_information").dialog({
@@ -34,6 +84,9 @@ $(function() {
 
             window.isTestingInformationPanelVisible = true;
 
+            // always set the console as the active tab.
+            $( "#testcontrolpanel" ).tabs( "option", "active", 0 );
+
             var actionString = window.testjob_id.split('_')[0];
             $('#pack_name')[0].innerText = window.testjob_id.split(' ')[1];
             var consoleElem = $('#test_console')[0];
@@ -41,14 +94,17 @@ $(function() {
 
             $("#testStatus").html('Status: <span style=color:#00ff00;"> In process.</span>');
 
-            var consoleHeight = $('#testing_information')[0].clientHeight - 220;
-            // var consoleWidth = $('#testing_information')[0].clientWidth - 220;
-            consoleElem.style.height = consoleHeight + 'px';
-            // consoleElem.style.width = consoleWidth + 'px';
+            consoleElem.style.height = getResultPanelHeight();
 
             if ( !! window.socket)
                 window.socket.emit(actionString, window.testjob_id);
 
+            if(!window.carouselLinks)
+                window.carouselLinks = new Array();
+        },
+        resize: function (event, ui) {
+            var consoleElem = $('#test_console')[0];
+            consoleElem.style.height = getResultPanelHeight();
         },
         close: function() {
             // if ( !! window.socket) {
@@ -56,6 +112,14 @@ $(function() {
             //     delete window.socket;
             // }
             window.isTestingInformationPanelVisible = false;
+
+            if(window.carouselLinks)
+                delete window.carouselLinks;
+
+            // clean the checkers.
+            $(".check_result").switchClass('show', 'hide');
+            $("#check_2d_tbody .temp").remove();
+
         }
     });
 
@@ -107,12 +171,6 @@ $(function() {
                     $("#testing_information").dialog("open");
                 });
             }
-            // $("id=['" + btnId + "']").button().click(function() {
-            //     var idstr = $(this).attr('id');
-            //     window.testjob_id = idstr;
-
-            //     $("#testing_information").dialog("open");
-            // })
         }, 500);
 
     });
@@ -142,7 +200,44 @@ $(function() {
             $("#test_console").append('<p><span style=color:#ff0000;">' + msg + '</span></p>');
             $("#test_console").scrollTop($("#test_console")[0].scrollHeight);
         }
-    })
+    });
+
+    window.socket.on('test_information_hint', function(msg) {
+        if(window.isTestingInformationPanelVisible){
+            console.log(msg);
+            var hintObj = JSON.parse(msg);
+            if(hintObj.checkType === 1008) //View2DCheck_ImageCompareCheck
+            {
+                var urlhead = "http://localhost:8081/";
+                var genImageUrl = hintObj.outputPath.replace(/\\/g, '/');
+                genImageUrl = urlhead + 'results/' + genImageUrl.substr('e:/tf/output/'.length);
+                // "e:\tf\benchmarks\ReleasePerCL\2015\rac_advanced_sample_project.rvt\A2___Sections.dwfx.png"
+                var benImageUrl = hintObj.benchmarkPath.replace(/\\/g, '/');
+                benImageUrl = urlhead + benImageUrl.substr('e:/tf/'.length);
+                // "e:\tf\output\ReleasePerCL\RevitExtractor_x64_CL410709_20140608_2235\2015\rac_advanced_sample_project\output\Resource\Sheet\A2___Sections\A2___Sections.dwfx.png_diffImage.bmp"
+                var diffImageUrl = hintObj.diffImagePath.replace(/\\/g, '/');
+                diffImageUrl = urlhead + 'results/' +diffImageUrl.substr('e:/tf/output/'.length);
+                var htmlText = '<tr class="temp"><td align="center" style="width:200px;"><div class="tdhead">' + hintObj.message + 
+                    '</div></td><td align="center"><a href="'+genImageUrl+'" title="generated image" data-gallery><img src="' + genImageUrl + '" style="width: 400px; height:400px;"></a></td><td align="center"><a href="'+benImageUrl+'" title="baseline image" data-gallery><img src="' + benImageUrl + '" style="width: 400px; height:400px;"></td><td align="center"><a href="'+diffImageUrl+'" title="different image" data-gallery><img src="' + diffImageUrl + '" style="width: 400px; height:400px;"></td></tr>';
+                $("#check_2d_tbody tr:last").after(htmlText);
+                if(!window.carouselLinks && Array.isArray(window.carouselLinks)){
+                    window.carouselLinks.push({
+                        href: genImageUrl,
+                        title: "generated image"
+                    });
+                    window.carouselLinks.push({
+                        href: benImageUrl,
+                        title: "baseline image"
+                    });
+                    window.carouselLinks.push({
+                        href: diffImageUrl,
+                        title: "different image"
+                    });
+                }
+                //blueimp.Gallery($('#check_2d_tbody a'), $('#blueimp-gallery').data());
+            }
+        }
+    });
 
     window.socket.on('test_information_update', function(msg) {
         console.log(msg);
@@ -169,7 +264,15 @@ $(function() {
 
             // show the detail checkers only when the dialog is open and the result is failure.
             if(window.isTestingInformationPanelVisible && statusString === 'failure')
+            {
                 $(".check_result").switchClass('hide', 'show');
+                // Initialize the Gallery as image carousel:
+                blueimp.Gallery(window.carouselLinks, {
+                    container: '#blueimp-gallery',
+                    carousel: true,
+                    transitionSpeed: 1
+                });
+            }
 
             //$("button[id='monitorTest_1_0 RevitExtractor_x64_2015.0.2014.0519.zip']") 
             var strs = btnId.split(' ');

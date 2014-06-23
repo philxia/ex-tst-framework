@@ -17,6 +17,7 @@ table{
   margin-left: auto;
   margin-right: auto;
   font: 16px "Helvetica Neue", Helvetica, Arial;
+
 }
 
 table th{
@@ -25,13 +26,25 @@ table th{
   margin-right: auto;
 }
 
+table td{
+  margin: 5px;
+  padding: 5px;
+}
+
+
 div#test_console{
 	background: black;
 	font: 15px "Helvetica Neue", Helvetica, Arial;
 	width: 100%;
+  height: auto;
   word-wrap: break-word;
 	overflow: auto;
   overflow-x: hide;
+}
+
+div.tdhead{ 
+  word-wrap: break-word;
+  width: 200px;
 }
 
 span.success{

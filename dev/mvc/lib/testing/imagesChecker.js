@@ -26,6 +26,8 @@ checker.ImageChecker = function(context, testcase, genImageFilePath, tolerance) 
     this.imageCompareToolArgs = [this.genImageFilePath, this.benImagePath, tolerance.toString()];
 
     this.checkPoint = new checkPoint_ns.CheckPoint(checkPoint_ns.View2DCheck_ImageCompareCheck);
+    this.checkPoint.setOutputPath(this.genImageFilePath);
+    this.checkPoint.setBenchmarkPath(this.benImagePath);
     this.testcase.checkPoints.push(this.checkPoint);
 }
 
@@ -74,10 +76,14 @@ checker.ImageChecker.prototype.checks = function(callback) {
             scope.checkPoint.setStatus(checkPoint_ns.SUCCESS);
             callback('SUCCESS', scope.testcase.prefix + 'The image generated is identical with the benchmarks.');
 
-        } else
+        } else{
+            var diffImagePath = scope.genImageFilePath + '_diffImage.bmp';
+            if(fs.existsSync(diffImagePath))
+                scope.checkPoint.diffImagePath = diffImagePath;
             scope.checkPoint.postCallback(callback, 'ERROR',
                 scope.testcase.prefix +
                 'The image generated is different with the benchmarks and produce the different image at ' +
                 scope.benImagePath + '.');
+        }
     }
 }

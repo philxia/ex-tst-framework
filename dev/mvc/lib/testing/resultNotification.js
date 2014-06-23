@@ -16,6 +16,22 @@ checker.ResultNotification = function(context, testcase) {
 }
 
 
+checker.ResultNotification.prototype.safeDelete = function(folder) {
+    var scope = this;
+    if(scope.isSafeToDel){
+        rimraf(folder, function() {
+            console.log('The package output at ' + folder + ' has been removed successfully.');
+        });        
+    }
+    else{
+        setTimeout(function () {
+           scope.safeDelete(folder);
+        }, 10000);        
+    }
+
+}
+
+
 checker.ResultNotification.prototype.checks = function(callback) {
     var checkPntCount = this.testcase.checkPoints.length;
     if (checkPntCount < 1)
@@ -51,11 +67,14 @@ checker.ResultNotification.prototype.checks = function(callback) {
                 this.context.packNameWithoutExtension,
                 this.testcase.path,
                 testcaseNameWithoutExtension);
+            var scope = this;
+            scope.isSafeToDel = false;
             fsextra.copyRecursive(outputPathForThisCase, resultPathForThisCase, function() {
                 console.log('Copy the result from ' + outputPathForThisCase + ' to ' + resultPathForThisCase);
 
                 // remove this output.
                 fsextra.removeSync(outputPathForThisCase);
+                scope.isSafeToDel = true;
             });
         }
     }
@@ -109,9 +128,10 @@ checker.ResultNotification.prototype.checks = function(callback) {
         // clean the output for this package.
         var outputFolderPath = path.join(tstMgr_ns.OutputFolder, this.context.envName, packFolderName);
         //rimraf.sync(outputFolderPath);
-        rimraf(outputFolderPath, function() {
-            console.log('The package output at ' + outputFolderPath + ' has been removed successfully.');
-        })
+
+        // loop delay 1 min the delete in case we are still in copying action.
+        this.safeDelete(outputFolderPath);
+
         // update the paga.
         if ( !! tstMgr_ns.Manager)
             tstMgr_ns.Manager.resetCurrentTesting();

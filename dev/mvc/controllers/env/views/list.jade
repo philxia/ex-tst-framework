@@ -1,7 +1,39 @@
-link(rel = 'stylesheet', href = '/style.css')
-h1 RCE Application Revit Extractor Testing Environment
-p Click a environment below to view their details.
-ul
-  each env in envs
-    li
-      a(href='/env/#{env.id}')= env.name
+doctype html
+html
+	head
+		script(src='/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')
+		link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap.min.css')
+		link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css')
+		script(src='/bootstrap-3.1.1-dist/js/bootstrap.min.js')
+		
+		link(rel = 'stylesheet', href = '/style.css')
+		script(src="/socket.io/socket.io.js")
+
+		script(src='jQueryFileUpload/js/vendor/jquery.ui.widget.js')
+		script(src='jQueryFileUpload/js/jquery.iframe-transport.js')
+		script(src='jQueryFileUpload/js/jquery.fileupload.js')
+	body
+		h1 RCE Application Revit Extractor Testing environment
+		p Click a environment below to view their details.
+		ul
+			each env in envs
+				li
+					a(href='/env/#{env.id}')= env.name
+
+		h1 Upload package for Testing
+		input(type="file" id="packageupload" webkitdirectory directory data-url="http://localhost:8888/server/node/")
+		progress(id="progress-export-zip" class="progress-export-zip")
+
+		h1 Testing Jobs
+		table(class="table table-hover")
+			thead
+				tr
+					th Job name
+					th Tests
+					th All | Pass | Abort | Failed
+					th Progress
+
+	script(src='zip/zip.js')
+	script(src='zip/zip-fs.js')
+	script(src='zip/mime-types.js')
+	script(src='js/main.js')

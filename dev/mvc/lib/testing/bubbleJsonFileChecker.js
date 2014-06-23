@@ -45,12 +45,14 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
         this.context.envName,
         this.context.packNameWithoutExtension,
         genBubbleOutputPath);
+
     var generatedBubbleJsonFilePath = path.join(genBubbleOutputPath, 'output\\bubble.json');
     if (!fs.existsSync(generatedBubbleJsonFilePath)) {
         checkPoint.postCallback(callback, 'ERROR', this.testcase.prefix + 'Failed to generate the bubble.json file.');
         return false;
     } else
         callback('SUCCESS', this.testcase.prefix + 'The bubble.json file is generated.');
+    checkPoint.setOutputPath(genBubbleOutputPath);
 
     // 2. read the json to object.
     var genBubbleJsonObj = null;
@@ -71,6 +73,7 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
             var bmBubbleJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, this.context.envName, this.testcase.args[1], '\\bubble.json');
             if (!fs.existsSync(bmBubbleJsonFilePath))
                 throw 'The benchmark bubble.json for this case does not existed.';
+            checkPoint.setBenchmarkPath(bmBubbleJsonFilePath);
             var bmBubbleJsonString = fs.readFileSync(bmBubbleJsonFilePath, 'utf8');
             var bmBubbleJsonObj = JSON.parse(bmBubbleJsonString);
 

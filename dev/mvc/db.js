@@ -36,6 +36,13 @@ envs.push({
     id: 3,
     perChangelist: false
 });
+envs.push({
+    name: 'Custom',
+    packages: null,
+    path: tstMgr_ns.CustomPacksFolder,
+    id: 4,
+    perChangelist: false
+})
 
 
 
@@ -45,8 +52,11 @@ function loadPackagesInformation(err, files, envIndex) {
         console.log(err);
 
     if (files.length < 1)
+    {
+        envs[envIndex].packages = new Array();
         return;
-
+    }
+    
     var env = envs[envIndex];
 
     var sortedfiles = tstMgr_ns.sortPackagesWithDate(files, env.perChangelist);
@@ -94,4 +104,8 @@ fs.readdir(tstMgr_ns.server_relperchangelist, function(err, files) {
 
 fs.readdir(tstMgr_ns.server_release, function(err, files) {
     loadPackagesInformation(err, files, 3);
+});
+
+fs.readdir(tstMgr_ns.CustomPacksFolder, function(err, files) {
+    loadPackagesInformation(err, files, 4);
 });

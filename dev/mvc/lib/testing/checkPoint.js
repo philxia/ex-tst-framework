@@ -22,14 +22,21 @@ checkPoint.CheckPoint = function(checkType) {
     this.checkType = checkType;
     this.status = 'failure'; // success or failure.
     this.message = '';
+    this.outputPath = '';
+    this.benchmarkPath = '';
 }
 
 checkPoint.CheckPoint.prototype.postCallback = function(callback, err, stdout, stderr) {
-    if ( !! callback)
-        callback(err, stdout, stderr);
+
     if (err === 'ERROR') {
         this.setStatus(checkPoint.FAILURE);
         this.setMessage(stdout);
+    }
+    if ( !! callback)
+    {
+        callback(err, stdout, stderr);  
+        if(err === 'ERROR')
+            callback('HINT', JSON.stringify(this));
     }
 }
 
@@ -50,4 +57,20 @@ checkPoint.CheckPoint.prototype.setMessage = function(msg) {
 
 checkPoint.CheckPoint.prototype.getMessage = function() {
     return this.message;
+}
+
+checkPoint.CheckPoint.prototype.setOutputPath = function(path) {
+    this.outputPath = path;
+}
+
+checkPoint.CheckPoint.prototype.getOutputPath = function() {
+    return this.outputPath;
+}
+
+checkPoint.CheckPoint.prototype.setBenchmarkPath = function(path) {
+    this.benchmarkPath = path;
+}
+
+checkPoint.CheckPoint.prototype.getBenchmarkPath = function() {
+    return this.benchmarkPath;
 }
