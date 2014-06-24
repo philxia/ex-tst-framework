@@ -266,9 +266,9 @@ if (!module.parent) {
             file.on("close", function(ex) {
                 // finished the download.
                 // env id for custom is 4.
-                var count = fs.readdirSync( path.join(tstMgr_ns.PackageFolder, 'Custom')).length;
+                var count = fs.readdirSync( path.join(tstMgr_ns.ResultsFolder, 'Custom')).length;
                 // update the new pack.
-                var packId = count - 1;
+                var packId = count;
                 db.envs[4].packages.splice(0,0, {
                     'name': filename,
                     'smokeStatus': 'unknown',

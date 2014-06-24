@@ -30,7 +30,8 @@ checker.RunExtractorCommand.prototype.checks = function(callback) {
         var updateObj = {
             testcase: {
                 current: this.testcase.index,
-                count: this.context.testcaseCount
+                count: this.context.testcaseCount,
+                testid: this.context.packNameWithoutExtension
             }
         };
         callback('UPDATE', JSON.stringify(updateObj));

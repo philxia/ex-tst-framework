@@ -1,8 +1,23 @@
 (function(obj) {
+	var progressbar = $( "#progress-export-zip" ),
+	progressLabel = $( "#progress-export-zip > .progress-label" );
+	progressbar.progressbar({
+		value: false,
+		change: function() {
+			progressLabel.text( progressbar.progressbar( "value" ) + "%" );
+		},
+		complete: function() {
+			progressLabel.text( "Complete!" );
+			setTimeout(function () {
+				progressbar.hide();
+			}, 500);
+		}
+	});
+	progressbar.hide();
 
 	var model = (function() {
 		var fs = new zip.fs.FS(), requestFileSystem = obj.webkitRequestFileSystem || obj.mozRequestFileSystem || obj.requestFileSystem, URL = obj.webkitURL
-				|| obj.mozURL || obj.URL;
+		|| obj.mozURL || obj.URL;
 		zip.workerScriptsPath = 'zip/'
 
 		function createTempFile(callback, filename) {
@@ -40,6 +55,11 @@
 			},
 			rename : function(entry, name) {
 				entry.name = name;
+			},
+			reset : function() {
+				// body...
+				for(var ii=0; ii<fs.root.children.length; ii++)
+					fs.remove(fs.root.children[ii]);
 			},
 			exportZip : function(entry, filename, onend, onprogress, onerror) {
 				var zipFileEntry;
@@ -83,12 +103,52 @@
 
 		//Socket.io 'http://10.148.205.1:3000'
 		window.socket = io.connect(null, {
-		    'port': 3000,
-		    'force new connection': true
+			'port': 3000,
+			'force new connection': true
 		});
 
 		window.socket.on('connect', function(msg) {
 		    // socket.emit('start_testjob', idstr);
+		});
+
+		window.socket.on('test_information_update', function(msg) {
+			console.log(msg);
+			var updateObj = JSON.parse(msg);
+			var jobresult = updateObj.jobresult;
+			if(jobresult === undefined)
+				return;
+
+			var testid = jobresult.id; 
+			var trObj = document.getElementById(testid);
+			if(!trObj)
+				return;
+
+			// {"testcase":{"current":1,"count":9,"testid":"RevitExtractor_x64_2015.0.2014.0624.141616"}}
+			var count = jobresult.count;
+			var success = jobresult.success;
+			var fails = jobresult.failures;
+			var totalHTML = '<div class="col-md-3"><span class="label label-info">'+ count +'</span></div>';
+			var successHTML = '<div class="col-md-3">'+'</div>';
+			if(success>0)
+				successHTML = '<div class="col-md-3"><span class="label label-success">'
+					+ success +'</span></div>';
+			var abortHTML = '<div class="col-md-3">'+'</div>';
+			var failHTML = '<div class="col-md-3">'+'</div>';
+			if(fails>0)
+				failHTML = '<div class="col-md-3"><span class="label label-danger">'
+					+ fails +'</span></div>';
+			
+			$(trObj).find('td:eq(0)')[0].innerHTML = '<span class="label label-info">phil.xia@autodesk.com</span>';
+			$(trObj).find('td:eq(2)')[0].innerHTML = ((fails+success) == count)? "complete":"in process";
+			$(trObj).find('td:eq(3)')[0].innerHTML = totalHTML + successHTML +
+				abortHTML + failHTML;
+			var progress = Math.ceil(100*(success+fails)/count);
+			if(progress>1)
+				$(trObj).find('td:eq(4) > .progressbar').progressbar('value', progress);
+		});
+
+		window.socket.on('test_information_hint', function(msg) {
+			console.log(msg);
 		});
 
 		function onerror(message) {
@@ -114,10 +174,8 @@
 			function downloadBlobURL(target, filename) {
 				return function(blobURL) {
 					progressExport.style.opacity = 0.2;
-					progressExport.value = 0;
-					progressExport.max = 0;
 					window.resolveLocalFileSystemURL = window.resolveLocalFileSystemURL ||
-					                                   window.webkitResolveLocalFileSystemURL;
+					window.webkitResolveLocalFileSystemURL;
 					window.resolveLocalFileSystemURL(blobURL, function(fileEntry) {
 						fileEntry.file(function(content) {
 							content.rename = filename;
@@ -129,8 +187,8 @@
 			}
 
 			function onprogress(index, end) {
-				progressExport.value = index;
-				progressExport.max = end;
+				var p = Math.ceil(index*100/end);
+				progressbar.progressbar( "value", p );
 			}
 
 			return function(event) {
@@ -140,7 +198,7 @@
 					filename = event.filename;//prompt("Filename", isFile ? node.name : node.parent ? node.name + ".zip" : "example.zip");
 					if (filename) {
 						progressExport.style.opacity = 1;
-						progressExport.offsetHeight;
+						// progressExport.offsetHeight;
 						if (isFile)
 							model.getBlobURL(node, downloadBlobURL(target, filename), onprogress, onerror);
 						else
@@ -188,12 +246,14 @@
 			var minstr = (date.getMinutes() > 9)? '':'0';
 			var secstr = (date.getSeconds() > 9)? '':'0';
 			var filename = 'RevitExtractor_x64_2015.0.' + date.getFullYear() + '.' + 
-				monthstr + (date.getMonth() + 1).toString() + 
-				datestr + date.getDate() + '.' + 
-				hourstr + (date.getHours()+1).toString() +
-				minstr + date.getMinutes() + 
-				secstr + date.getSeconds() + 
-				'.zip';
+			monthstr + (date.getMonth() + 1).toString() + 
+			datestr + date.getDate() + '.' + 
+			hourstr + (date.getHours()+1).toString() +
+			minstr + date.getMinutes() + 
+			secstr + date.getSeconds() + 
+			'.zip';
+
+			progressbar.show();
 			var func = onexport(false);
 			func({
 				'target':packageinput, 
@@ -201,14 +261,11 @@
 				'filename':filename,
 				'onZipEnd': function(blobURL) {
 					// clean the status.
-					progressExport.style.opacity = 0.2;
-					progressExport.value = 0;
-					progressExport.max = 0;
-
+					model.reset();
 
 					// prepare the upload.
 					window.resolveLocalFileSystemURL = window.resolveLocalFileSystemURL ||
-					                                   window.webkitResolveLocalFileSystemURL;
+					window.webkitResolveLocalFileSystemURL;
 					window.resolveLocalFileSystemURL(blobURL, function(fileEntry) {
 						fileEntry.file(function(content) {
 							$('#packageupload').fileupload({
@@ -217,23 +274,41 @@
 										console.log(e);
 
 									if ( !! window.socket)
-									    window.socket.emit("runCTest", data.result);
+										window.socket.emit("runCTest", data.result);
 
+									// add a row to the table and set the test status to pending.
+									var testid = filename.substr(0, filename.lastIndexOf('.'));
+									var htmlText = '<tr id="' + testid + '"><td><span class="label label-info">phil.xia@autodesk.com</span></td><td>' + testid + 
+									'</td><td>' + 'pending' + '</td><td></td><td><div class="progressbar"></div></td></tr>';
+									// if($("#jobsTable tr:first").length > 0)
+									// 	$("#jobsTable tr:first").before(htmlText);
+									// else
+										$("#jobsTable tr:first").after(htmlText);
+
+									var trObj = document.getElementById(testid);
+									$(trObj).find('td:eq(4) > .progressbar').progressbar({value:false});
+
+									// destroy the upload widget.
+									$('#packageupload').fileupload('destroy');
 								}
 							});
 							$('#packageupload').fileupload('add', {files: [content]});
+
+							// reset the file input.
+							var e = $('#packageupload');
+							e.wrap('<form>').closest('form').get(0).reset();
+							e.unwrap();
 						});
 					});
 				}
 			});
 		});
 
-		progressExport.style.opacity = 0.2;
-	})();
+})();
 
 
-	$(window).on('unload', function() {
-	    if ( !! window.socket) {
+$(window).on('unload', function() {
+	if ( !! window.socket) {
 	        window.socket.disconnect(); // disconnect.
 	        delete window.socket;
 	    }

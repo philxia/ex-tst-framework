@@ -2,6 +2,8 @@ doctype html
 html
 	head
 		script(src='/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')
+		script(src='/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js')
+		link(rel='stylesheet' href='/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css')
 		link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap.min.css')
 		link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css')
 		script(src='/bootstrap-3.1.1-dist/js/bootstrap.min.js')
@@ -22,12 +24,14 @@ html
 
 		h1 Upload package for Testing
 		input(type="file" id="packageupload" webkitdirectory directory data-url="http://localhost:8888/server/node/")
-		progress(id="progress-export-zip" class="progress-export-zip")
+		div(id="progress-export-zip")
+			div.progress-label
 
 		h1 Testing Jobs
-		table(class="table table-hover")
+		table(id="jobsTable", class="table table-hover")
 			thead
 				tr
+					th Owner
 					th Job name
 					th Tests
 					th All | Pass | Abort | Failed

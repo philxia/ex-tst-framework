@@ -47,7 +47,9 @@ checker.ResultNotification.prototype.checks = function(callback) {
     if (successCount === checkPntCount) {
         this.testcase.status = checkPoint_ns.SUCCESS;
         callback('SUCCESS', this.testcase.prefix + 'All check points are passed!');
+        this.context.successCount ++;
     } else {
+        this.context.failureCount ++;
         this.testcase.status = checkPoint_ns.FAILURE;
         callback('ERROR', this.testcase.prefix +
             successCount + ' check points passed and ' +
@@ -78,6 +80,16 @@ checker.ResultNotification.prototype.checks = function(callback) {
             });
         }
     }
+
+    var updateObj = {
+        jobresult: {
+            failures: this.context.failureCount,
+            success: this.context.successCount,
+            count: this.context.testcaseCount,
+            id: this.context.packNameWithoutExtension
+        }
+    };
+    callback('UPDATE', JSON.stringify(updateObj));
 
     if (this.testcase.index === this.context.testcaseCount) {
         var ttSuccess = 0;

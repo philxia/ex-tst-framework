@@ -46,7 +46,9 @@ runTest.Testing = function(pack, envName, serverPath) {
     this.packNameWithoutExtension = packName.substr(0, packName.length - '.zip'.length);
     this.serverPath = serverPath;
 
-
+    this.successCount = 0;
+    this.failureCount = 0;
+    this.abortCount = 0;
 
     // add a command to process the package.
     this.checkPoints.push(new checkPoint_processPackgeCmd.processPackageCommand.ProcessPackageCommand(this));
