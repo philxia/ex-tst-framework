@@ -157,7 +157,7 @@ if (!module.parent) {
                 throw 'The pack is not we are looking for.';
 
             // try to load the result.
-            var packFileName = (envId == 4)? pack.name : pack.name.substr(0, pack.name.length - '.zip'.length);
+            var packFileName = pack.name.substr(0, pack.name.length - '.zip'.length);
             var resultFileName = pack.smokeStatus + '.txt';
             var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envName, packFileName, resultFileName);
             if (!fs.existsSync(resultFilePath))

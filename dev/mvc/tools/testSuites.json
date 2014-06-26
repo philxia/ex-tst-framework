@@ -8,33 +8,5 @@
         "name": "rac_advanced_sample_project.rvt",
         "path": ".\\2015\\",
         "args": [".\\2015\\rac_advanced_sample_project\\index.json", ".\\2015\\rac_advanced_sample_project.rvt"]
-    },{
-        "name": "RAC_OneOfEverything.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\RAC_OneOfEverything\\index.json", ".\\2015\\RAC_OneOfEverything.rvt"]
-    }, {
-        "name": "rme_advanced_sample_project.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\rme_advanced_sample_project\\index.json", ".\\2015\\rme_advanced_sample_project.rvt"]
-    }, {
-        "name": "RME_One_of_Each_Imperial.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\RME_One_of_Each_Imperial\\index.json", ".\\2015\\RME_One_of_Each_Imperial.rvt"]
-    },{
-        "name": "rst_advanced_sample_project.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\rst_advanced_sample_project\\index.json", ".\\2015\\rst_advanced_sample_project.rvt"]
-    },{
-        "name": "RST_One_of_Each_Imperial.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\RST_One_of_Each_Imperial\\index.json", ".\\2015\\RST_One_of_Each_Imperial.rvt"]
-    },{
-        "name": "Simple_model.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\Simple_model\\index.json", ".\\2015\\Simple_model.rvt"]
-    },{
-        "name": "SmallHouse_r2015.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\SmallHouse_r2015\\index.json", ".\\2015\\SmallHouse_r2015.rvt"]
     }]
 }

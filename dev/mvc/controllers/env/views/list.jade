@@ -14,20 +14,27 @@ html
 		script(src='jQueryFileUpload/js/vendor/jquery.ui.widget.js')
 		script(src='jQueryFileUpload/js/jquery.iframe-transport.js')
 		script(src='jQueryFileUpload/js/jquery.fileupload.js')
-	body
-		h1 RCE Application Revit Extractor Testing environment
-		p Click a environment below to view their details.
-		ul
-			each env in envs
-				li
-					a(href='/env/#{env.id}')= env.name
+	header
+		nav(class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="margin-bottom:0px")
+			div.container-fluid
+				ul(class="nav nav-pills" style="margin:5px")
+					li.active 
+						a Revit Extractor Testing
+					li.dropdown
+						a(id="drop4" role="button" data-toggle="dropdown" href="#") Branches
+							b.caret
+						ul(id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4")
+							each env in envs
+								li(role="presentation")
+									a(role="meanuitem" tabindex="-1" href='/env/#{env.id}')= env.name
 
-		h1 Upload package for Testing
+	body
+		h2 Upload package for Testing
 		input(type="file" id="packageupload" webkitdirectory directory data-url="http://localhost:8888/server/node/")
 		div(id="progress-export-zip")
 			div.progress-label
 
-		h1 Testing Jobs
+		h2 Testing Jobs
 		table(id="jobsTable", class="table table-hover")
 			thead
 				tr

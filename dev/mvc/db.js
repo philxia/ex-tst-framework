@@ -104,7 +104,7 @@ function loadCustomPackageInformation (err, files, envIndex) {
     var fileinfos = [];
     for (var i = 0; i < files.length; i++) {
         fileinfos.push({
-            'name': files[i],
+            'name': files[i] + '.zip',
             'smokeStatus': 'unknown',
             'isTested': false,
             'id': (files.length - i - 1)
@@ -113,7 +113,7 @@ function loadCustomPackageInformation (err, files, envIndex) {
 
     for (var j = 0; j < fileinfos.length; j++) {
         var name = fileinfos[j].name;
-        var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envs[envIndex].name, name);
+        var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envs[envIndex].name, name.substr(0, name.lastIndexOf('.')));
         var isSuccess = fs.existsSync(path.join(resultFilePath, checkPoint_ns.SUCCESS + '.txt'));
         var isFailure = fs.existsSync(path.join(resultFilePath, checkPoint_ns.FAILURE + '.txt'));
         if (isSuccess || isFailure)
