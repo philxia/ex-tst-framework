@@ -88,6 +88,44 @@ function loadPackagesInformation(err, files, envIndex) {
     envs[envIndex].packages = fileinfos;
 }
 
+function loadCustomPackageInformation (err, files, envIndex) {
+    if ( !! err)
+        console.log(err);
+
+    if (files.length < 1)
+    {
+        envs[envIndex].packages = new Array();
+        return;
+    }
+    
+    var env = envs[envIndex];
+    files.sort().reverse();
+
+    var fileinfos = [];
+    for (var i = 0; i < files.length; i++) {
+        fileinfos.push({
+            'name': files[i],
+            'smokeStatus': 'unknown',
+            'isTested': false,
+            'id': (files.length - i - 1)
+        });
+    }
+
+    for (var j = 0; j < fileinfos.length; j++) {
+        var name = fileinfos[j].name;
+        var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envs[envIndex].name, name);
+        var isSuccess = fs.existsSync(path.join(resultFilePath, checkPoint_ns.SUCCESS + '.txt'));
+        var isFailure = fs.existsSync(path.join(resultFilePath, checkPoint_ns.FAILURE + '.txt'));
+        if (isSuccess || isFailure)
+            fileinfos[j].isTested = true;
+        if (isSuccess)
+            fileinfos[j].smokeStatus = checkPoint_ns.SUCCESS;
+        else if (isFailure)
+            fileinfos[j].smokeStatus = checkPoint_ns.FAILURE;
+    }
+    envs[envIndex].packages = fileinfos;
+}
+
 // get all the files in these two folders.
 var fs = require('fs');
 fs.readdir(tstMgr_ns.server_devperchangelist, function(err, files) {
@@ -106,6 +144,6 @@ fs.readdir(tstMgr_ns.server_release, function(err, files) {
     loadPackagesInformation(err, files, 3);
 });
 
-fs.readdir(tstMgr_ns.CustomPacksFolder, function(err, files) {
-    loadPackagesInformation(err, files, 4);
+fs.readdir(path.join(tstMgr_ns.ResultsFolder, 'Custom'), function(err, files) {
+    loadCustomPackageInformation(err, files, 4);
 });

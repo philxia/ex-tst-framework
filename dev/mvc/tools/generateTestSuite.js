@@ -28,7 +28,12 @@ http.createServer(function(req, res) {
         });
         res.end('This is the RevitExtractor testing server.\n');
     }
-
+    if(url.match('sort') !== null){
+        var localPath = 'E:\\tf\\results\\Custom';
+        var files = fs.readdirSync(localPath);
+        files.sort();
+        res.end(files.toString());
+    }
     if(url.match("unzip") !== null){
         var localPath = 'E:\\tf\\packs\\Custom\\RevitExtractor_x64_2015.0.2014.0623.152750.zip';
         var exFolder = 'E:\\tf\\packs\\Custom\\RevitExtractor_x64_2015.0.2014.0623.152750';

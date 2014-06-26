@@ -62,10 +62,17 @@ exports.show = function(req, res, next) {
         } else {
             var lastString = strs[2];
             strs = lastString.split('.');
-            if (strs.length != 5)
+            if (strs.length == 5){
+                pack.version = strs[0];
+                pack.buildTime = strs[3][0] + strs[3][1] + "/" + strs[3][2] + strs[3][3] + "/" + strs[2];
+            } else if(strs.length == 6) {
+                pack.version = strs[0];
+                pack.buildTime = strs[3][0] + strs[3][1] + "/" + strs[3][2] + strs[3][3] + "/" + strs[2] + 
+                ' ' + strs[4][0] + strs[4][1] + ':' + 
+                strs[4][2] + strs[4][3] + ':' + strs[4][4] + strs[4][5];
+
+            } else
                 throw "The package name is changed to " + packFileName + ".";
-            pack.version = strs[0];
-            pack.buildTime = strs[3][0] + strs[3][1] + "/" + strs[3][2] + strs[3][3] + "/" + strs[2];
         }
         pack.status = 'normal';
         if (isInTesting) {
