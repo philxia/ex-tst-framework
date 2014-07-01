@@ -54,6 +54,19 @@ html
 				div(id="check_bubblejson" )
 					div#checkbubble_accordionbody
 				div(id="check_3d" )
+					div
+						table(style="width:100%; word-wrap: break-word;")
+							colgroup
+								col(width="200")
+								col
+								col
+								col
+							tbody(id="check_3d_tbody")
+								tr
+									td(align="center" width="200") Case Name
+									td(align="center") Generate Image
+									td(align="center") Baseline Image
+									td(align="center") Different Image
 				div(id="check_2d", style="overflow:auto")
 					div
 						table(style="width:100%; word-wrap: break-word;")
@@ -69,6 +82,7 @@ html
 									td(align="center") Baseline Image
 									td(align="center") Different Image
 				div(id="check_db" )
+					div#checkdb_accordionbody
 
 		if (env.packages.length)
 			div

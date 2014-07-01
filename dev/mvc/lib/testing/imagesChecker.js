@@ -6,7 +6,7 @@ var tstMgr_ns = require('../../testManager').testManager;
 var checker = exports.imageChecker = {}; // new namespace.
 
 
-checker.ImageChecker = function(context, testcase, genImageFilePath, tolerance) {
+checker.ImageChecker = function(context, testcase, genImageFilePath, tolerance, is3d) {
     this.testcase = testcase;
     this.context = context;
     this.isExecuted = false;
@@ -25,7 +25,8 @@ checker.ImageChecker = function(context, testcase, genImageFilePath, tolerance) 
     // sample: Dwf2Png.exe .\2d.dwfx .\2d.png
     this.imageCompareToolArgs = [this.genImageFilePath, this.benImagePath, tolerance.toString()];
 
-    this.checkPoint = new checkPoint_ns.CheckPoint(checkPoint_ns.View2DCheck_ImageCompareCheck);
+    this.checkPoint = (!!is3d)? new checkPoint_ns.CheckPoint(checkPoint_ns.View3DCheck_ImageCompareCheck)
+        : new checkPoint_ns.CheckPoint(checkPoint_ns.View2DCheck_ImageCompareCheck);
     this.checkPoint.setOutputPath(this.genImageFilePath);
     this.checkPoint.setBenchmarkPath(this.benImagePath);
     this.testcase.checkPoints.push(this.checkPoint);

@@ -6,6 +6,7 @@ var path = require('path');
 var jsonComparer = require('./jsonComparer').JsonComparer;
 var checkPoint_ns = require('./checkPoint').checkPoint;
 var tstMgr_ns = require('../../testManager').testManager;
+var txtdiff_ns = require('./textComparer').TextComparer;
 
 
 var checker = exports.databaseChecker = {}; // new namespace.
@@ -95,28 +96,46 @@ checker.DatabaseChecker.prototype.checks = function(callback) {
                 throw 'The benchmark file for the database file does not existed at - ' +
                     scope.genBmDbJsonFilePath + '.';
 
-            var bmDbJsonString = fs.readFileSync(scope.genBmDbJsonFilePath, 'utf8');
-            fs.unlinkSync(scope.genBmDbJsonFilePath);
-            var bmDbJsonObj = JSON.parse(bmDbJsonString);
+            // var bmDbJsonString = fs.readFileSync(scope.genBmDbJsonFilePath, 'utf8');
+            // fs.unlinkSync(scope.genBmDbJsonFilePath);
+            // var bmDbJsonObj = JSON.parse(bmDbJsonString);
 
-            var genDbJsonString = fs.readFileSync(scope.genDbJsonFilePath, 'utf8');
-            fs.unlinkSync(scope.genDbJsonFilePath);
-            var genDbJsonObj = JSON.parse(genDbJsonString);
+            // var genDbJsonString = fs.readFileSync(scope.genDbJsonFilePath, 'utf8');
+            // fs.unlinkSync(scope.genDbJsonFilePath);
+            // var genDbJsonObj = JSON.parse(genDbJsonString);
 
-            if (!jsonComparer.deepCompare(genDbJsonObj, bmDbJsonObj, function(p, gen, bm) {
-                scope.checkPoint.postCallback(callback, 'ERROR', scope.testcase.prefix + 'Database file -' +
-                    scope.fileName +
-                    '- validation failed, because the values of property -' +
-                    p +
-                    '- are different for generated database json (' +
-                    gen + ') and benchmark database json (' + bm + ').');
-            })) {
-                return;
-            } else {
-                scope.checkPoint.setStatus(checkPoint_ns.SUCCESS);
+            // if (!jsonComparer.deepCompare(genDbJsonObj, bmDbJsonObj, function(p, gen, bm) {
+            //     scope.checkPoint.postCallback(callback, 'ERROR', scope.testcase.prefix + 'Database file -' +
+            //         scope.fileName +
+            //         '- validation failed, because the values of property -' +
+            //         p +
+            //         '- are different for generated database json (' +
+            //         gen + ') and benchmark database json (' + bm + ').');
+            // })) {
+            //     return;
+            // } else {
+            //     scope.checkPoint.setStatus(checkPoint_ns.SUCCESS);
+            //     callback('SUCCESS', scope.testcase.prefix + 'The database file -' +
+            //         scope.fileName +
+            //         '- is identical with the benchmark.');
+            // }
+
+            var rst = txtdiff_ns.compareTexts(scope.genDbJsonFilePath, scope.genBmDbJsonFilePath);
+            if(rst === null)
+            {
                 callback('SUCCESS', scope.testcase.prefix + 'The database file -' +
                     scope.fileName +
                     '- is identical with the benchmark.');
+                result = true;
+            }
+            else{
+                scope.checkPoint.diffTextPath = scope.genDbJsonFilePath + '_diffText.html';
+                // var content = JSON.stringify({content: rst});
+                fs.writeFileSync(scope.checkPoint.diffTextPath, rst);
+                scope.checkPoint.postCallback(callback, 'ERROR', scope.testcase.prefix + 
+                    'The database file -' +
+                    scope.fileName +
+                    '- is different with the benchmark.');
             }
 
         } else

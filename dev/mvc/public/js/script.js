@@ -107,6 +107,17 @@ $(function() {
                     panel.css('height', '100%');
                 },
             });
+
+            $("#checkdb_accordionbody").html('');
+            $("#checkdb_accordionbody").accordion({
+                collapsible: true,
+                active: false,
+                activate: function(event, ui) {
+                    var panel = ui.newPanel;
+                    panel.css('height', '100%');
+                },
+            });
+            
         },
         resize: function (event, ui) {
             var consoleElem = $('#test_console')[0];
@@ -216,7 +227,8 @@ $(function() {
             var urlhead = (!!hintObj.hostIP)? hintObj : "localhost";
             urlhead = "http://" + urlhead + ":8081/";
 
-            if(hintObj.checkType === 1008) //View2DCheck_ImageCompareCheck
+            if(hintObj.checkType === 1008 || //View2DCheck_ImageCompareCheck
+                hintObj.checkType === 1009 ) //View3DCheck_ImageCompareCheck
             {
                 var fcwidth = width*0.1;
                 var otwidth = width*0.25;
@@ -236,7 +248,10 @@ $(function() {
                     '" style="width: '+ otwidth + 'px; height:'+ otwidth + 'px;"></td><td align="center"><a href="'+diffImageUrl+
                     '" title="different image" data-gallery><img src="' + diffImageUrl + 
                     '" style="width: '+ otwidth + 'px; height:'+ otwidth + 'px;"></td></tr>';
-                $("#check_2d_tbody tr:last").after(htmlText);
+                if(hintObj.checkType === 1008)
+                    $("#check_2d_tbody tr:last").after(htmlText);
+                else if(hintObj.checkType === 1009)
+                    $("#check_3d_tbody tr:last").after(htmlText);
                 if(!window.carouselLinks && Array.isArray(window.carouselLinks)){
                     window.carouselLinks.push({
                         href: genImageUrl,
@@ -273,6 +288,15 @@ $(function() {
                 $("#checkbubble_accordionbody").append(html);
                 $("#checkbubble_accordionbody").accordion( "refresh" );
 
+            }
+            else if(hintObj.checkType === 1005) // database.
+            {
+                var diffTextPath = hintObj.diffTextPath.replace(/\\/g, '/');
+                diffTextPath = urlhead + 'results/' + diffTextPath.substr('e:/tf/output/'.length);
+                var html = '<h3>'+ hintObj.message + 
+                    '</h3><div><iframe style="height:auto;width:100%;" src="' + diffTextPath + '"/></div>';
+                $("#checkdb_accordionbody").append(html);
+                $("#checkdb_accordionbody").accordion( "refresh" );                
             }
 
         }

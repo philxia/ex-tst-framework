@@ -11,6 +11,7 @@ checkPoint.DatabaseCheck = 1005;
 checkPoint.View3DCheck_Svf2Image = 1006;
 checkPoint.View2DCheck_dwfx2Image = 1007;
 checkPoint.View2DCheck_ImageCompareCheck = 1008;
+checkPoint.View3DCheck_ImageCompareCheck = 1009;
 
 
 // status
