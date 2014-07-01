@@ -20,15 +20,10 @@ exports.before = function(req, res, next) {
 
 exports.list = function(req, res, next) {
     res.render('list', {
-        envs: db.envs
+        envs: db.envs,
+        hostIP: tstMgr_ns.Manager.getHostIP()
     });
 };
-
-// exports.edit = function(req, res, next) {
-//     res.render('edit', {
-//         user: req.user
-//     });
-// };
 
 exports.show = function(req, res, next) {
     // reconstruct the packages RevitExtractor_x64_2015.0.2014.0320.zip
@@ -82,12 +77,7 @@ exports.show = function(req, res, next) {
         }
     }
     res.render('show', {
-        env: req.env
+        env: req.env,
+        envs: db.envs
     });
 };
-// exports.update = function(req, res, next) {
-//     var body = req.body;
-//     req.user.name = body.user.name;
-//     res.message('Information updated!');
-//     res.redirect('/user/' + req.user.id);
-// };

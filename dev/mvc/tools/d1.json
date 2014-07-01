@@ -1,0 +1,145 @@
+{
+  "guid": "dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=",
+  "type": "design",
+  "hasThumbnail": "true",
+  "progress": "complete",
+  "startedAt": "Thu May 22 08:35:14 UTC 2014",
+  "status": "success",
+  "success": "100%",
+  "urn": "dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=",
+  "children": [
+    {
+      "guid": "aa85aad6-c480-4a35-9cbf-4cf5994a25ba",
+      "type": "folder",
+      "channel": "autodesk-360-viewing-rvt-lmv",
+      "hasThumbnail": "true",
+      "name": "Simple model.rvt",
+      "progress": "complete",
+      "role": "viewable",
+      "status": "success",
+      "success": "100%",
+      "version": "2.0",
+      "properties": {
+        "Document Information": {
+          "Author": "",
+          "Building Name": "",
+          "Client Name": "Owner",
+          "Organization Description": "",
+          "Organization Name": "",
+          "Project Address": "Enter address here",
+          "Project Issue Date": "Issue Date",
+          "Project Name": "Project Name",
+          "Project Number": "Project Number",
+          "Project Status": "Project Status"
+        }
+      },
+      "children": [
+        {
+          "guid": "8862a3f6-5b77-41c9-a19c-0efbb4293b84",
+          "type": "folder",
+          "hasThumbnail": "true",
+          "name": "Views",
+          "progress": "complete",
+          "status": "success",
+          "success": "100%",
+          "children": [
+            {
+              "guid": "46b5806e-4584-4fd1-b1c4-3fe70246e38b",
+              "type": "folder",
+              "hasThumbnail": "true",
+              "name": "3D View",
+              "progress": "complete",
+              "status": "success",
+              "success": "100%",
+              "children": [
+                {
+                  "guid": "d2dd0c9b-304c-4d42-bb11-b668229995a9",
+                  "type": "geometry",
+                  "hasThumbnail": "true",
+                  "name": "{3D}",
+                  "role": "3d",
+                  "status": "success",
+                  "children": [
+                    {
+                      "guid": "f69dd653-3cf1-4225-bde5-c926cfed8ecd",
+                      "type": "view",
+                      "camera": [
+                        23.180307,
+                        -29.680576,
+                        56.448471,
+                        0,
+                        0,
+                        0,
+                        -0.408248,
+                        0.408248,
+                        0.816497,
+                        1.291592,
+                        0.174533,
+                        1,
+                        0
+                      ],
+                      "hasThumbnail": "false",
+                      "name": "{3D}",
+                      "role": "3d"
+                    },
+                    {
+                      "guid": "4cf4e9b3-f7b3-401f-b7d3-e18d7bde9fa7",
+                      "type": "resource",
+                      "hasThumbnail": "false",
+                      "mime": "application/autodesk-svf",
+                      "role": "graphics",
+                      "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_.svf"
+                    },
+                    {
+                      "guid": "5e222e64-b905-4b11-aa4e-05114a8ac969",
+                      "type": "resource",
+                      "mime": "image/png",
+                      "resolution": [
+                        100,
+                        100
+                      ],
+                      "role": "thumbnail",
+                      "size": 8245,
+                      "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_1.png"
+                    },
+                    {
+                      "guid": "a5d385d4-6f78-476d-8c84-ecc4c7df5544",
+                      "type": "resource",
+                      "mime": "image/png",
+                      "resolution": [
+                        200,
+                        200
+                      ],
+                      "role": "thumbnail",
+                      "size": 26415,
+                      "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_2.png"
+                    },
+                    {
+                      "guid": "1706d474-bb3f-448e-b9b3-75279c7080cd",
+                      "type": "resource",
+                      "mime": "image/png",
+                      "resolution": [
+                        400,
+                        400
+                      ],
+                      "role": "thumbnail",
+                      "size": 89068,
+                      "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_4.png"
+                    }
+                  ]
+                },
+                {
+                  "guid": "22b2cbee-9bfe-4d5d-84bc-000f584b03a7",
+                  "type": "resource",
+                  "mime": "application/autodesk-db",
+                  "role": "Autodesk.CloudPlatform.PropertyDatabase",
+                  "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_.sdb"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

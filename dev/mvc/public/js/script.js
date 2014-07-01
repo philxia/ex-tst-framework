@@ -49,12 +49,7 @@ $(function() {
             var divId = ahref.substr(ahref.lastIndexOf('#'));
             if($(divId).length < 1)
                 return;
-
-
-
-            var consoleHeight = $('#testing_information')[0].clientHeight - 220;
-            if(consoleHeight > 0)
-                $(divId)[0].style.height = getResultPanelHeight();
+            $(divId)[0].style.height = getResultPanelHeight();
         }
     });
 
@@ -101,6 +96,17 @@ $(function() {
 
             if(!window.carouselLinks)
                 window.carouselLinks = new Array();
+            
+            // clean up the bubble result and make it as accordion.
+            $("#checkbubble_accordionbody").html('');
+            $("#checkbubble_accordionbody").accordion({
+                collapsible: true,
+                active: false,
+                activate: function(event, ui) {
+                    var panel = ui.newPanel;
+                    panel.css('height', '100%');
+                },
+            });
         },
         resize: function (event, ui) {
             var consoleElem = $('#test_console')[0];
@@ -206,12 +212,14 @@ $(function() {
         if(window.isTestingInformationPanelVisible){
             console.log(msg);
             var hintObj = JSON.parse(msg);
+            var width = getCssValue('#test_console', 'width');
+            var urlhead = (!!hintObj.hostIP)? hintObj : "localhost";
+            urlhead = "http://" + urlhead + ":8081/";
+
             if(hintObj.checkType === 1008) //View2DCheck_ImageCompareCheck
             {
-                var width = getCssValue('#test_console', 'width');
                 var fcwidth = width*0.1;
                 var otwidth = width*0.25;
-                var urlhead = "http://localhost:8081/";
                 var genImageUrl = hintObj.outputPath.replace(/\\/g, '/');
                 genImageUrl = urlhead + 'results/' + genImageUrl.substr('e:/tf/output/'.length);
                 // "e:\tf\benchmarks\ReleasePerCL\2015\rac_advanced_sample_project.rvt\A2___Sections.dwfx.png"
@@ -245,6 +253,28 @@ $(function() {
                 }
                 //blueimp.Gallery($('#check_2d_tbody a'), $('#blueimp-gallery').data());
             }
+            else if(hintObj.checkType === 1001) // BubbleFileCheck
+            {
+                var diffTextPath = hintObj.diffTextPath.replace(/\\/g, '/');
+                diffTextPath = urlhead + 'results/' + diffTextPath.substr('e:/tf/output/'.length);
+
+                // $.ajax({
+                //     url:diffTextPath,
+                //     success:function(result){
+                //         var html = '<h3>'+ hintObj.message +'</h3><div><iframe src="' + diffTextPath + '"/></div>';
+                //         $("#div1").html(result);
+                //         $("#checkbubble_accordionbody").append(html);
+                //         $("#checkbubble_accordionbody").accordion( "refresh" );
+                //     }
+                // });
+
+                var html = '<h3>'+ hintObj.message + 
+                    '</h3><div><iframe style="height:auto;width:100%;" src="' + diffTextPath + '"/></div>';
+                $("#checkbubble_accordionbody").append(html);
+                $("#checkbubble_accordionbody").accordion( "refresh" );
+
+            }
+
         }
     });
 
@@ -322,7 +352,7 @@ $(function() {
 
         }
 
-    })
+    });
 
 
     $(window).on('unload', function() {

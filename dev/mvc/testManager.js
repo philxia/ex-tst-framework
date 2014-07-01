@@ -118,8 +118,33 @@ testManager.TestManager = function() {
 
     this.application = null;
     this.currentTesting = null;
+    function getHostIP () {
+        var os=require('os');
+        var ifaces=os.networkInterfaces();
+        for (var dev in ifaces) {
+            ifaces[dev].forEach(function(details){
+                if(details.family=='IPv4' && dev === 'Local Area Connection')
+                    return details.address;
+            });
+        }
+    }
+    this.hostIP = getHostIP();
 }
 
+testManager.TestManager.prototype.getHostIP = function() {
+    if(!this.hostIP){
+        var scope = this;
+        var os=require('os');
+        var ifaces=os.networkInterfaces();
+        for (var dev in ifaces) {
+            ifaces[dev].forEach(function(details){
+                if(details.family=='IPv4' && dev === 'Local Area Connection')
+                    scope.hostIP = details.address;
+            });
+        }
+    }
+    return this.hostIP;
+}
 
 testManager.TestManager.prototype.setApplication = function(app) {
     this.application = app;

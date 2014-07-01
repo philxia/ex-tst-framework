@@ -35,8 +35,9 @@ checkPoint.CheckPoint.prototype.postCallback = function(callback, err, stdout, s
     if ( !! callback)
     {
         callback(err, stdout, stderr);  
-        if(err === 'ERROR')
+        if(err === 'ERROR'){
             callback('HINT', JSON.stringify(this));
+        }
     }
 }
 
