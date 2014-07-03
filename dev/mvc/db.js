@@ -111,11 +111,14 @@ function loadCustomPackageInformation (err, files, envIndex) {
         });
     }
 
-    for (var j = 0; j < fileinfos.length; j++) {
+    for (var j = fileinfos.length-1; j >=0; j--) {
         var name = fileinfos[j].name;
         var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envs[envIndex].name, name.substr(0, name.lastIndexOf('.')));
         var isSuccess = fs.existsSync(path.join(resultFilePath, checkPoint_ns.SUCCESS + '.txt'));
         var isFailure = fs.existsSync(path.join(resultFilePath, checkPoint_ns.FAILURE + '.txt'));
+        // skip the folder if there is no result file.
+        if(!isSuccess && !isFailure)
+            fileinfos.splice(j,1);
         if (isSuccess || isFailure)
             fileinfos[j].isTested = true;
         if (isSuccess)
