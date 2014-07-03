@@ -126,6 +126,7 @@ checker.DatabaseChecker.prototype.checks = function(callback) {
                 callback('SUCCESS', scope.testcase.prefix + 'The database file -' +
                     scope.fileName +
                     '- is identical with the benchmark.');
+                scope.checkPoint.setStatus(checkPoint_ns.SUCCESS);
                 result = true;
             }
             else{
