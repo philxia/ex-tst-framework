@@ -1,0 +1,76 @@
+body {
+  padding: 50px;
+  font: 16px "Helvetica Neue", Helvetica, Arial;
+}
+a {
+  color: #107aff;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+h1 a {
+  font-size: 16px;
+}
+table{
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  font: 16px "Helvetica Neue", Helvetica, Arial;
+
+}
+
+table th{
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table td{
+  margin: 5px;
+  padding: 5px;
+}
+
+
+div#test_console{
+	background: black;
+	font: 15px "Helvetica Neue", Helvetica, Arial;
+	width: 100%;
+  height: auto;
+  word-wrap: break-word;
+  overflow: auto;
+  overflow-x: hide;
+}
+
+div.tdhead{ 
+  word-wrap: break-word;
+  width: 200px;
+}
+
+span.success{
+  color: #00ff00;
+}
+
+span.failure{
+  color: #ff0000;
+}
+
+span.unknown{
+  color: #555555;
+}
+
+.ui-progressbar {
+  position: relative;
+}
+.progress-label {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+#jobsTable .col-md-3
+{
+   padding-left: 5px;
+}

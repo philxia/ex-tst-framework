@@ -1,0 +1,146 @@
+doctype html
+html
+	head
+		link(rel='stylesheet', href='/style.css')
+		script(src='/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')
+		script(src='/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js')
+		link(rel='stylesheet' href='/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css')
+		script(src="/socket.io/socket.io.js")
+		script(src="/js/script.js")
+
+		link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap.min.css')
+		link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css')
+		script(src='/bootstrap-3.1.1-dist/js/bootstrap.min.js')
+
+		//- link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css')
+		link(rel='stylesheet', href='/gallery/css/blueimp-gallery.css')
+		link(rel='stylesheet', href='/bootstrapImageGallery/css/bootstrap-image-gallery.css')
+	header
+		include ../../../includes/head
+	body
+		if(!!local_hip)
+			script(type='text/javascript').
+				var localhip = "#{local_hip}";
+
+		h1= env.name
+
+		if (hasMessages)
+			ul#messages
+				each msg in messages
+					li= msg
+
+
+		div(id="blueimp-gallery", class="blueimp-gallery")
+			div.slides
+			h3.title
+			a.prev ‹
+			a.next ›
+			a.close x
+			a.play-pause
+			ol.indicator
+
+		div#testing_information
+			h1#pack_name
+			h2#testStatus Status: In process...
+			div(id="testcontrolpanel", class="container", style="width:100%;")
+				ul
+					li 
+						a(href='#test_console') Console
+					li(class="check_result hide")
+						a(href='#check_bubblejson') Bubble.json Check
+					li(class="check_result hide")
+						a(href='#check_3d') 3D Check
+					li(class="check_result hide")
+						a(href='#check_2d') 2D Check
+					li(class="check_result hide")
+						a(href='#check_db') Database Check
+				div(id="test_console")
+				div(id="check_bubblejson" )
+					div#checkbubble_accordionbody
+				div(id="check_3d" )
+					div
+						table(style="width:100%; word-wrap: break-word;")
+							colgroup
+								col(width="200")
+								col
+								col
+								col
+							tbody(id="check_3d_tbody")
+								tr
+									td(align="center" width="200") Case Name
+									td(align="center") Generate Image
+									td(align="center") Baseline Image
+									td(align="center") Different Image
+				div(id="check_2d", style="overflow:auto")
+					div
+						table(style="width:100%; word-wrap: break-word;")
+							colgroup
+								col(width="200")
+								col
+								col
+								col
+							tbody(id="check_2d_tbody")
+								tr
+									td(align="center" width="200") Case Name
+									td(align="center") Generate Image
+									td(align="center") Baseline Image
+									td(align="center") Different Image
+				div(id="check_db" )
+					div#checkdb_accordionbody
+
+		if (env.packages.length)
+			div
+				table(class="table table-hover")
+					thead
+						tr
+							th Product
+							if (!!env.packages[0].version)
+								th Version
+							else
+								th Changelist
+							th Build Time
+							th Smoke Status
+							th Action
+							th Package
+							th(class='hide') Benchmark
+							//- th Benchmark
+						tbody
+							each pack in env.packages
+								tr
+									td
+										p #{pack.product}
+									td
+										if (!!pack.version)
+											p #{pack.version}
+										else
+											p #{pack.changelist}
+									td
+										p #{pack.buildTime}
+									td
+										p 
+											span(id='ts_'+env.id+'_'+pack.id class=pack.smokeStatus) #{pack.smokeStatus}
+									td
+										if ( !pack.isTested )
+											if (pack.status == 'disabled')
+												button(id= 'runTest_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="runtest_button testinfo_btn btn btn-primary btn-block" disabled="disabled") Run Test
+											else if (pack.status == 'onprocess')
+												button(id= 'monitorTest_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="monitortest_button testinfo_btn btn btn-info btn-block") Monitor Process
+											else if( pack.status == 'normal')
+												button(id= 'runTest_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="runtest_button testinfo_btn btn btn-primary btn-block") Run Test
+										else
+											button(id= 'browseResult_' + env.id + '_'+pack.id + ' ' + pack.name, type="button" class="browseResult_button testinfo_btn btn btn-default btn-block") Browse Result
+									td
+										p #{pack.name}
+									td
+										button(id='generateBenchmarks_' + env.id + '_'+pack.id + ' ' + pack.name, class='hide generateBenchmarks_button btn btn-primary') Generate
+		else
+			p No packages!
+
+	script(src='/gallery/js/blueimp-helper.js')
+	script(src='/gallery/js/blueimp-gallery.js')
+	script(src='/gallery/js/blueimp-gallery-fullscreen.js')
+	script(src='/gallery/js/blueimp-gallery-indicator.js')
+	script(src='/gallery/js/blueimp-gallery-video.js')
+	script(src='/gallery/js/blueimp-gallery-vimeo.js')
+	script(src='/gallery/js/jquery.blueimp-gallery.js')
+	//- script(src='/bootstrapImageGallery/js/bootstrap-image-gallery.js')

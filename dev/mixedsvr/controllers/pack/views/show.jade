@@ -1,0 +1,14 @@
+doctype html
+html
+	head
+		link(rel='stylesheet', href='/style.css')
+		script(src='/js/jquery_1_11_1.min.js')
+		script(src="/socket.io/socket.io.js")
+		script(src="/js/script.js")
+	body
+		h1= pack.name
+		h2#testStatus Status: In process...
+		div.container
+			header
+				h3 Test Running Information.
+			div#testInformation

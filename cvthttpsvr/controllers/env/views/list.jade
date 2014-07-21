@@ -1,0 +1,103 @@
+doctype html
+html
+	head
+		script(src='/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')
+		script(src='/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js')
+		link(rel='stylesheet' href='/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css')
+		link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap.min.css')
+		link(rel='stylesheet', href='/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css')
+		script(src='/bootstrap-3.1.1-dist/js/bootstrap.min.js')
+		
+		link(rel = 'stylesheet', href = '/style.css')
+		script(src="/socket.io/socket.io.js")
+
+		script(src='fileupload/js/vendor/jquery.ui.widget.js')
+		script(src='fileupload/js/jquery.iframe-transport.js')
+		script(src='fileupload/js/jquery.fileupload.js')
+	header
+		include ../../../includes/head
+	body
+		h2 Upload package for Testing
+		input(type="file" id="packageupload" webkitdirectory directory data-url="http://"+ hostIP + ":8888/server/node/")
+		div(id="progress-export-zip")
+			div.progress-label
+
+		h2 Testing Jobs
+		ul(class="nav nav-tabs" role="tablist")
+			li.active
+				a(href="#inactive" role="tab" data-toggle="tab") Queued 
+					span(id="queued_count" class="label label-default") 0
+			li
+				a(href="#active" role="tab" data-toggle="tab") Active 
+					span(id="active_count" class="label label-primary") 0
+			li
+				a(href="#failed" role="tab" data-toggle="tab") Failed 
+					span(id="failed_count" class="label label-danger") 0
+			li
+				a(href="#complete" role="tab" data-toggle="tab") Complete 
+					span(id="complete_count" class="label label-success") 0
+			li
+				a(href="#delayed" role="tab" data-toggle="tab") Delayed 
+					span(id="delayed_count" class="label label-warning") 0
+		div.tab-content
+		div(class="tab-pane active" id="jobsTable")
+			table(class="table table-hover")
+				thead
+					tr
+						th Type
+						th Priority
+						th Owner
+						th Job name
+						th Tests
+						th All | Pass | Abort | Failed
+						th Progress
+			//- div(class="tab-pane" id="active")
+			//- 	table(class="table table-hover")
+			//- 		thead
+			//- 			tr
+			//- 				th Type
+			//- 				th Priority
+			//- 				th Owner
+			//- 				th Job name
+			//- 				th Tests
+			//- 				th All | Pass | Abort | Failed
+			//- 				th Progress
+			//- div(class="tab-pane" id="failed")
+			//- 	table(class="table table-hover")
+			//- 		thead
+			//- 			tr
+			//- 				th Type
+			//- 				th Priority
+			//- 				th Owner
+			//- 				th Job name
+			//- 				th Tests
+			//- 				th All | Pass | Abort | Failed
+			//- 				th Progress
+			//- div(class="tab-pane" id="complete")
+			//- 	table(class="table table-hover")
+			//- 		thead
+			//- 			tr
+			//- 				th Type
+			//- 				th Priority
+			//- 				th Owner
+			//- 				th Job name
+			//- 				th Tests
+			//- 				th All | Pass | Abort | Failed
+			//- 				th Progress
+			//- div(class="tab-pane" id="delayed")
+			//- 	table(class="table table-hover")
+			//- 		thead
+			//- 			tr
+			//- 				th Type
+			//- 				th Priority
+			//- 				th Owner
+			//- 				th Job name
+			//- 				th Tests
+			//- 				th All | Pass | Abort | Failed
+			//- 				th Progress
+
+
+	script(src='zip/zip.js')
+	script(src='zip/zip-fs.js')
+	script(src='zip/mime-types.js')
+	script(src='js/main.js')
