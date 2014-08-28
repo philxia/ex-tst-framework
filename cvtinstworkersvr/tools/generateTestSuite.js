@@ -9,16 +9,16 @@ var rimraf = require('rimraf');
 var diff = require('../lib/diffmatchpatch/diffmatchpatch');
 
 function traverBubbleChildren(bubble, func) {
-    // body...
-    if ( !! func)
-        func(bubble);
+	// body...
+	if ( !! func)
+		func(bubble);
 
-    if (!bubble['children'])
-        return;
+	if (!bubble['children'])
+		return;
 
-    for (var ii = 0; ii < bubble.children.length; ii++) {
-        traverBubbleChildren(bubble.children[ii], func);
-    }
+	for (var ii = 0; ii < bubble.children.length; ii++) {
+		traverBubbleChildren(bubble.children[ii], func);
+	}
 }
 
 function diff_lineMode(text1, text2) {
@@ -34,122 +34,166 @@ function diff_lineMode(text1, text2) {
   return diffs;
 }
 
+function dummyVarSections (argument) {
+	var lines = argument.split('\n');
+	var newContent;
+	for(var ii=0; ii<lines.length; ii++)
+	{
+		var line = lines[ii];
+		var strtmp = line.trim();
+		var strarr = strtmp.split(':');
+		if(strarr.length === 2){
+			var tag = strarr[0];
+			if(tag === "\"guid\""){
+				line = "\"guid\":\"dummy_value\",";
+			} else if(tag === "\"size\""){
+				line = "\"size\": dummy_value,";
+			} else if(tag === "\"viewableID\""){
+				// this is really evil and should be removed soon.
+				var trickyLine = lines[ii - 2].trim(); // "name":   "3D",
+				var tlstrarr = trickyLine.split(':');
+				if(tlstrarr.length === 2 && 
+					tlstrarr[0] === "\"name\"" &&
+					tlstrarr[1] === "\"3D\",")
+					line = "\"viewableID\":\"dummy_value\",";
+			}
+
+		}
+		newContent += line + '\n';
+	}
+	return newContent;
+}
+
 http.createServer(function(req, res) {
 
-    var url = req.url;
-    if (!url) {
-        res.writeHead(200, {
-            'Content-Type': 'text/plain'
-        });
-        res.end('This is the RevitExtractor testing server.\n');
-    }
-    if(url.match('ip') !== null){
-        var os=require('os');
-        var ifaces=os.networkInterfaces();
-        var ips = new Array();
-        for (var dev in ifaces) {
-          var alias=0;
-          ifaces[dev].forEach(function(details){
-            if (details.family=='IPv4') {
-                ips.push(dev+(alias?':'+alias:''),details.address);
-              console.log(dev+(alias?':'+alias:''),details.address);
-              
-              ++alias;
-            }
-          });
-        }
-        res.end(ips.toString());
-    }
-    if(url.match('diff') !== null){
-        var dmp = new diff.diff_match_patch();
-        var d1 = fs.readFileSync('E:\\gitrepos\\express\\dev\\mvc\\tools\\d1.json');
-        var d2 = fs.readFileSync('E:\\gitrepos\\express\\dev\\mvc\\tools\\d1.json');
-        // var result = dmp.diff_main(d1.toString(),d2.toString());
-        // dmp.diff_cleanupSemantic(result);
-        // dmp.diff_cleanupEfficiency(result);
-        var a = dmp.diff_linesToChars_(d1.toString(), d2.toString());
-          var lineText1 = a.chars1;
-          var lineText2 = a.chars2;
-          var lineArray = a.lineArray;
+	var url = req.url;
+	if (!url) {
+		res.writeHead(200, {
+			'Content-Type': 'text/plain'
+		});
+		res.end('This is the RevitExtractor testing server.\n');
+	}
+	if(url.match('mail') !== null)
+	{
+		var nodemailer = require('nodemailer');
 
-        var result = dmp.diff_main(lineText1, lineText2, false);
+		// create reusable transporter object using SMTP transport
+		var transporter = nodemailer.createTransport({
+			service: 'Gmail',
+			auth: {
+				user: 'phil.xia@gmail.com',
+				pass: '1qaz@wsxevol'
+			}
+		});
 
-        dmp.diff_charsToLines_(result, lineArray);
+		// NB! No need to recreate the transporter object. You can use
+		// the same transporter object for all e-mails
 
-        for(var dd=result.length-1; dd>=0; dd--){
-            var df = result[dd]; // array2
-            var indicator = df[0];
-            var content = df[1];
-            if(indicator === 1)
-            {
-                // "          "guid": "8862a3f6-5b77-41c9-a19c-0efbb4293b84",
-//"
-                var strtmp = content.trim();
-                var strarr = strtmp.split(':');
-                if(strarr.length !== 2)
-                    continue;
-                var tag = strarr[0];
-                if(tag === "\"guid\""){
-                    result.splice(dd, 1); // remove this line;
-                    result[dd-1][0] = 0; // ignore the change.
-                    dd --;
-                }
-            }
-        }
+		// setup e-mail data with unicode symbols
+		var mailOptions = {
+			from: 'Fred Foo :heavy_check_mark: <foo@blurdybloop.com>', // sender address
+			to: 'phil.xia@autodesk.com', // list of receivers
+			subject: 'Hello :heavy_check_mark:', // Subject line
+			text: 'Hello world :heavy_check_mark:', // plaintext body
+			html: '<b>Hello world :heavy_check_mark:</b>' // html body
+		};
 
-        var html = dmp.diff_prettyHtml(result);
-        html = html.replace(/&para;/g, '');
-        // html = html.replace(/ /g, '&nbsp;');
-        res.end('<p>' + html + '</p>');
-    }
-    if(url.match('sort') !== null){
-        var localPath = 'E:\\tf\\results\\Custom';
-        var files = fs.readdirSync(localPath);
-        files.sort();
-        res.end(files.toString());
-    }
-    if(url.match("unzip") !== null){
-        var localPath = 'E:\\tf\\packs\\Custom\\RevitExtractor_x64_2015.0.2014.0623.152750.zip';
-        var exFolder = 'E:\\tf\\packs\\Custom\\RevitExtractor_x64_2015.0.2014.0623.152750';
-        var unzipExtractor = unzip.Extract({
-            path: exFolder
-        });
-        unzipExtractor.on('error', function(err) {
-            console.log(err);
-        });
-        unzipExtractor.on('close', function() {
-            console.log('success');            
-        });
-        fs.createReadStream(localPath).pipe(unzipExtractor);
-    }
+		// send mail with defined transport object
+		transporter.sendMail(mailOptions, function(error, info){
+			if(error){
+				console.log(error);
+			}else{
+				console.log('Message sent: ' + info.response);
+			}
+		});
+	}
+	if(url.match('ip') !== null){
+		var os=require('os');
+		var ifaces=os.networkInterfaces();
+		var ips = new Array();
+		for (var dev in ifaces) {
+		  var alias=0;
+		  ifaces[dev].forEach(function(details){
+			if (details.family=='IPv4') {
+				ips.push(dev+(alias?':'+alias:''),details.address);
+			  console.log(dev+(alias?':'+alias:''),details.address);
+			  
+			  ++alias;
+			}
+		  });
+		}
+		res.end(ips.toString());
+	}
+	if(url.match('diff') !== null){
+		var dmp = new diff.diff_match_patch();
+		var d1 = fs.readFileSync('E:\\gitrepos\\express\\cvtinstworkersvr\\tools\\d1.json');
+		var d2 = fs.readFileSync('E:\\gitrepos\\express\\cvtinstworkersvr\\tools\\d1.json');
+		// var result = dmp.diff_main(d1.toString(),d2.toString());
+		// dmp.diff_cleanupSemantic(result);
+		// dmp.diff_cleanupEfficiency(result);
+		var a = dmp.diff_linesToChars_(dummyVarSections(d1.toString()), 
+			dummyVarSections(d2.toString()));
+		  var lineText1 = a.chars1;
+		  var lineText2 = a.chars2;
+		  var lineArray = a.lineArray;
 
-    if (url.match("loadsuites") !== null) {
-        var suitesString = fs.readFileSync(".\\testSuites.json", "utf8");
-        var suites = JSON.parse(suitesString);
-    }
+		var result = dmp.diff_main(lineText1, lineText2, false);
 
-    if (url.match("checkbubble") !== null) {
-        var genBubbleJsonString = fs.readFileSync(".\\..\\dev\\benchmarks\\2015\\Simple_model.rvt\\bubble.json", "utf8");
-        var genBubbleJsonObj = JSON.parse(genBubbleJsonString);
+		dmp.diff_charsToLines_(result, lineArray);
 
-        var filesInfo = [];
-        traverBubbleChildren(genBubbleJsonObj, function(b) {
-            if ( !! b['type'] && b['type'] === 'resource' && !! b['urn'])
-                filesInfo.push(b['urn']);
-        });
-    }
-    if (url.match("del") !== null) {
-        var folderPath = "D:\\tf\\output\\Development\\RevitExtractor_x64_2015.0.2014.0519";
-        rimraf(folderPath, function(err) {
-            console.log(err);
-        })
-    }
-    if (url.match('rename') !== null) {
-        var folderPath = "D:\\tf\\output\\Development\\RevitExtractor_x64_2015.0.2014.0519\\";
-        fse.copyRecursive(folderPath, 'D:\\tf\\result\\Development\\RevitExtractor_x64_2015.0.2014.0519\\', function(argument) {
-            console.log(argument);
-        });
-    }
+		var html = dmp.diff_prettyHtml(result);
+		html = html.replace(/&para;/g, '');
+		// html = html.replace(/ /g, '&nbsp;');
+		res.end('<p>' + html + '</p>');
+	}
+	if(url.match('sort') !== null){
+		var localPath = 'E:\\tf\\results\\Custom';
+		var files = fs.readdirSync(localPath);
+		files.sort();
+		res.end(files.toString());
+	}
+	if(url.match("unzip") !== null){
+		var localPath = 'E:\\tf\\packs\\Custom\\RevitExtractor_x64_2015.0.2014.0623.152750.zip';
+		var exFolder = 'E:\\tf\\packs\\Custom\\RevitExtractor_x64_2015.0.2014.0623.152750';
+		var unzipExtractor = unzip.Extract({
+			path: exFolder
+		});
+		unzipExtractor.on('error', function(err) {
+			console.log(err);
+		});
+		unzipExtractor.on('close', function() {
+			console.log('success');            
+		});
+		fs.createReadStream(localPath).pipe(unzipExtractor);
+	}
+
+	if (url.match("loadsuites") !== null) {
+		var suitesString = fs.readFileSync(".\\testSuites.json", "utf8");
+		var suites = JSON.parse(suitesString);
+	}
+
+	if (url.match("checkbubble") !== null) {
+		var genBubbleJsonString = fs.readFileSync(".\\..\\dev\\benchmarks\\2015\\Simple_model.rvt\\bubble.json", "utf8");
+		var genBubbleJsonObj = JSON.parse(genBubbleJsonString);
+
+		var filesInfo = [];
+		traverBubbleChildren(genBubbleJsonObj, function(b) {
+			if ( !! b['type'] && b['type'] === 'resource' && !! b['urn'])
+				filesInfo.push(b['urn']);
+		});
+	}
+	if (url.match("del") !== null) {
+		var folderPath = "D:\\tf\\output\\Development\\RevitExtractor_x64_2015.0.2014.0519";
+		rimraf(folderPath, function(err) {
+			console.log(err);
+		})
+	}
+	if (url.match('rename') !== null) {
+		var folderPath = "D:\\tf\\output\\Development\\RevitExtractor_x64_2015.0.2014.0519\\";
+		fse.copyRecursive(folderPath, 'D:\\tf\\result\\Development\\RevitExtractor_x64_2015.0.2014.0519\\', function(argument) {
+			console.log(argument);
+		});
+	}
 
 
 }).listen(1337, '127.0.0.1');

@@ -14,10 +14,19 @@ function dummyVarSections (argument) {
         if(strarr.length === 2){
             var tag = strarr[0];
             if(tag === "\"guid\""){
-                line = "\"guid\":\"dummy_value\"";
+                line = "\"guid\":\"dummy_value\",";
             } else if(tag === "\"size\""){
-                line = "\"size\": dummy_value";
+                line = "\"size\": dummy_value,";
+            } else if(tag === "\"viewableID\""){
+            	// this is really evil and should be removed soon.
+            	var trickyLine = lines[ii - 2].trim(); // "name":	"3D",
+            	var tlstrarr = trickyLine.split(':');
+            	if(tlstrarr.length === 2 && 
+            		tlstrarr[0] === "\"name\"" &&
+            		tlstrarr[1].trim() === "\"3D\",")
+            		line = "\"viewableID\":\"dummy_value\",";
             }
+
         }
         newContent += line + '\n';
     }
@@ -39,26 +48,6 @@ checker.compareTexts = function(txtFile1, txtFile2) {
 		return null;
 
 	dmp.diff_charsToLines_(result, lineArray);
-	// for(var dd=result.length-1; dd>=0; dd--){
-	// 	var df = result[dd]; // array2
-	// 	var indicator = df[0];
-	// 	var content = df[1];
-	// 	if(indicator === 1)
-	// 	{
-	// 		// "guid": "8862a3f6-5b77-41c9-a19c-0efbb4293b84",
-	// 		//"
-	// 		var strtmp = content.trim();
-	// 		var strarr = strtmp.split(':');
-	// 		if(strarr.length !== 2)
-	// 			continue;
-	// 		var tag = strarr[0];
-	// 		if(tag === "\"guid\""){
-	// 			result.splice(dd, 1); // remove this line;
-	// 			result[dd-1][0] = 0; // ignore the change.
-	// 			dd --;
-	// 		}
-	// 	}
-	// }
 
 	// check the result after handled some special cases.
 	var isdiff = false;
@@ -75,6 +64,7 @@ checker.compareTexts = function(txtFile1, txtFile2) {
 
 	var html = dmp.diff_prettyHtml(result);
 	html = html.replace(/&para;/g, '');
+	html = '<html><head><meta charset="utf-8"></head>'+html+'</html>';
 	// html = html.replace(/ /g, '&nbsp;');
 	return html;
 }

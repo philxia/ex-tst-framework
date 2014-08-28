@@ -74,238 +74,14 @@ app.use(function(req, res, next) {
 	req.session.messages = [];
 });
 
-// load controllers
-// require('./lib/boot')(app, {
-//     verbose: !module.parent
-// });
-
-// assume "not found" in the error msgs
-// is a 404. this is somewhat silly, but
-// valid, you can do whatever you like, set
-// properties, use instanceof etc.
-// app.use(function(err, req, res, next) {
-//     // treat as 404
-//     if (~err.message.indexOf('not found')) return next();
-
-//     // log it
-//     console.error(err.stack);
-
-//     // error page
-//     res.status(500).render('5xx');
-// });
-
-// assume 404 since no middleware responded
-// app.use(function(req, res, next) {
-//     res.status(404).render('404', {
-//         url: req.originalUrl
-//     });
-// });
 
 tstMgr_ns.Manager.setApplication(app);
 
 if (!module.parent) {
-	// var server = require('http').createServer(app),
-	// 	io = require('socket.io').listen(server);
-
-	// server.listen(3000);
-
-	// app.get('/', function(req, res) {
-	// 	res.sendfile(__dirname + '/index.html');
-	// });
-
-	// var socket_server = require('./socket');
-
-	// io.sockets.on('connection', function(socket) {
-	//     socket.on('disconnect', function() {
-	//         if ( !! socket_server.socket_connections[socket.id])
-	//             delete socket_server.socket_connections[socket.id]
-
-	//     });
-	//     socket.on(tstMgr_ns.Action_MonitorTest, function(argument) {
-	//         console.log(argument);
-	//         try {
-	//             var tstObj = tstMgr_ns.Manager.getCurrentTesting();
-	//             for (var hh = 0; hh < tstObj.consoleLog.length; hh++) {
-	//                 var msg = tstObj.consoleLog[hh];
-	//                 sendMessagesToSingleConnection(socket, msg['err'], msg['stdout']);
-	//             }
-	//         } catch (err) {
-	//             console.log(err);
-	//         }
-	//     });
-	//     socket.on(tstMgr_ns.Action_BrowseResult, function(argument) {
-	//         console.log(argument);
-	//         var argStrings = argument.split(' ');
-	//         if (argStrings.length != 2)
-	//             throw 'The argument from client is invalid - ' + argument + '.';
-	//         var fargStrings = argStrings[0].split('_');
-	//         if (fargStrings.length != 3)
-	//             throw 'The argument from client is invalid - ' + argument + '.';
-	//         var action = fargStrings[0]
-	//         var envId = fargStrings[1];;
-	//         var packId = parseInt(fargStrings[2]);
-
-
-	//         var env = db.envs[envId];
-	//         var envName = env.name;
-	//         var pack = env.packages[env.packages.length - packId - 1];
-	//         if (pack.id !== packId)
-	//             throw 'The pack is not we are looking for.';
-
-	//         // try to load the result.
-	//         var packFileName = pack.name.substr(0, pack.name.length - '.zip'.length);
-	//         var resultFileName = pack.smokeStatus + '.txt';
-	//         var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envName, packFileName, resultFileName);
-	//         if (!fs.existsSync(resultFilePath))
-	//             return;
-
-	//         try {
-	//             var resultString = fs.readFileSync(resultFilePath, "utf8");
-	//             var resultObject = JSON.parse(resultString);
-	//             if (!Array.isArray(resultObject))
-	//                 throw 'The result is invalid.';
-
-	//             // var conns = socket_server.socket_connections;
-	//             // var countOfConns = Object.keys(conns).length;
-	//             for (var ii = 0; ii < resultObject.length; ii++) {
-	//                 var msg = resultObject[ii];
-	//                 sendMessagesToSingleConnection(socket, msg['err'], msg['stdout']);
-	//             }
-	//             socket.needUpdate_information = false;
-
-	//         } catch (err) {
-	//             console.log(err);
-	//         }
-	//     });
-	//     socket.on(tstMgr_ns.Action_RunTest, function(argument) {
-	//         console.log(argument);
-
-	//         // send message to job queue and add a new job.
-	//         var data = {
-	//             'type': 'rvt2lmv',
-	//             'data': {
-	//                 'title': argument,
-	//                 'owner': 'phil.xia@autodesk.com',
-	//                 'success':0,
-	//                 'fail':0,
-	//                 'count':0,
-	//             },
-	//             'options': {
-	//                 'priority': 'high'
-	//             }
-	//         };
-	//         data = JSON.stringify(data);  
-	//         var opts = {
-	//             hostname: tstMgr_ns.Manager.getHostIP(),
-	//             auth: 'foo:bar',
-	//             port: 3001,
-	//             path: '/job',
-	//             method: 'POST',
-	//             headers:{
-	//                 'Content-Type': 'application/json',
-	//                 'Content-Length': data.length
-	//             }
-	//         };
-	//         var req = http.request(opts, function(res) {
-	//             if(res.statusCode == 200){
-	//                 var body='';
-	//                 res.setEncoding('utf8');
-	//                 res.on('data', function(d) {
-	//                     console.log(d);
-	//                     var job = JSON.parse(d);
-	//                     runTest(argument, job.id);
-	//                 })
-	//             }
-
-	//         });
-	//         req.write(data + '\n');
-	//         req.end();
-
-	//         // runTest(argument);
-	//     });
-
-	//     socket.on(tstMgr_ns.Action_GenerateBenchmarks, function(argument) {
-	//         console.log(argument);
-	//         // send message to job queue and add a new job.
-	//         var data = {
-	//             'type': 'rvt2lmv',
-	//             'data': {
-	//                 'title': argument,
-	//                 'owner': 'phil.xia@autodesk.com',
-	//                 'success':0,
-	//                 'fail':0,
-	//                 'count':0,
-	//             },
-	//             'options': {
-	//                 'priority': 'high'
-	//             }
-	//         };
-	//         data = JSON.stringify(data);  
-	//         var opts = {
-	//             hostname: tstMgr_ns.Manager.getHostIP(),
-	//             auth: 'foo:bar',
-	//             port: 3001,
-	//             path: '/job',
-	//             method: 'POST',
-	//             headers:{
-	//                 'Content-Type': 'application/json',
-	//                 'Content-Length': data.length
-	//             }
-	//         };
-	//         var req = http.request(opts, function(res) {
-	//             if(res.statusCode == 200){
-	//                 var body='';
-	//                 res.setEncoding('utf8');
-	//                 res.on('data', function(d) {
-	//                     console.log(d);
-	//                     var job = JSON.parse(d);
-	//                     runTest(argument, job.id, true);
-	//                 })
-	//             }
-
-	//         });
-	//         req.write(data + '\n');
-	//         req.end();
-	//         // runTest(argument, true);
-	//     });
-
-	//     socket.on(tstMgr_ns.Action_RunTestForCustomPackage, function(argument) {
-	//         console.log(argument);
-	//         var uploadResult = JSON.parse(argument);
-	//         var url = uploadResult.files[0].url;
-	//         var filename = uploadResult.files[0].name;
-
-	//         var filePath = path.join(tstMgr_ns.PackageFolder, 'Custom', filename)
-	//         var file = fs.createWriteStream(filePath);
-	//         http.get(url, function(res) {
-	//           console.log("Got response: " + res.statusCode);
-	//           res.pipe(file);
-	//         }).on('error', function(e) {
-	//           console.log("Got error: " + e.message);
-	//         });
-
-	//         file.on("close", function(ex) {
-	//             // finished the download.
-	//             // env id for custom is 4.
-	//             var count = fs.readdirSync( path.join(tstMgr_ns.ResultsFolder, 'Custom')).length;
-	//             // update the new pack.
-	//             var packId = count;
-	//             db.envs[4].packages.splice(0,0, {
-	//                 'name': filename,
-	//                 'smokeStatus': 'unknown',
-	//                 'isTested': false,
-	//                 'id': packId
-	//             });
-	//             var argument = 'runTest_4_'+packId+' ' + filename;
-	//             runTest(argument);
-	//         });
-	//     })
-	//     socket_server.socket_connections[socket.id] = socket;
-	// });
 	setTimeout(function () {
 		// body...
 		doLoopCheckQueuedJobsAndRunTest();
-	}, 10000);
+	}, 20000);
 	
 }
 
@@ -350,7 +126,7 @@ function runTest(argument, jobId, genBenchmarks) {
 	// send the sign to queue to active the job.
 	var opts = {
 		hostname: tstMgr_ns.Manager.getHostIP(),
-		auth: 'foo:bar',
+		// auth: 'foo:bar',
 		port: 3001,
 		path: '/job/' + jobId + '/state/active',
 		method: 'PUT',
@@ -360,42 +136,42 @@ function runTest(argument, jobId, genBenchmarks) {
 			console.log('update the job -' + jobId + '- state to active.');
 		}
 
+		tstMgr_ns.Manager.setCurrentTesting(testingObject);
+		testingObject.doCheck(function(err, stdout, stderr) {
+			console.log(stdout);
+
+			// write the data to job's log.
+			// send message to job queue and add a new job.
+			var data = {'err': err,
+						'stdout': stdout};
+			
+			data = JSON.stringify(data);  
+			var opts = {
+				hostname: tstMgr_ns.Manager.getHostIP(),
+				// auth: 'foo:bar',
+				port: 3001,
+				path: '/job/'+jobId + '/log',
+				method: 'POST',
+				headers:{
+					'Content-Type': 'application/json',
+					'Content-Length': data.length
+				}
+			};
+			var req = http.request(opts, function(res) {
+				if(res.statusCode == 200){
+					var body='';
+					res.setEncoding('utf8');
+					res.on('data', function(d) {
+						console.log(d);
+					});
+				}
+			});
+			req.write(data + '\n');
+			req.end();
+		});
+
 	});
 	req.end();
-
-	tstMgr_ns.Manager.setCurrentTesting(testingObject);
-	testingObject.doCheck(function(err, stdout, stderr) {
-		console.log(stdout);
-
-		if ( !! socket_server && !! socket_server.socket_connections) {
-			var conns = socket_server.socket_connections;
-			var countOfConns = Object.keys(conns).length;
-			// caches the messages if the connections were not setup.
-			if (countOfConns < 1) {
-				tstMgr_ns.messages.push({
-					'err': err,
-					'stdout': stdout
-				});
-			} else {
-				// send out the cached messages if the connection are setup.
-				if (tstMgr_ns.messages.length > 0) {
-					for (var jj = 0; jj < tstMgr_ns.messages.length; jj++) {
-						var msg = tstMgr_ns.messages[jj];
-						sendMessagesToConnections(conns, msg['err'], msg['stdout']);
-					}
-					tstMgr_ns.messages.length = 0; //clean the messages.
-				}
-
-				// caches the messages in the server side.
-				testingObject.consoleLog.push({
-					'err': err,
-					'stdout': stdout
-				});
-				sendMessagesToConnections(conns, err, stdout);
-			}
-
-		}
-	});
 }
 
 function doLoopCheckQueuedJobsAndRunTest() {

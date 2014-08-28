@@ -1,145 +1,170 @@
 {
-  "guid": "dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=",
-  "type": "design",
-  "hasThumbnail": "true",
-  "progress": "complete",
-  "startedAt": "Thu May 22 08:35:14 UTC 2014",
-  "status": "success",
-  "success": "100%",
-  "urn": "dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=",
-  "children": [
-    {
-      "guid": "aa85aad6-c480-4a35-9cbf-4cf5994a25ba",
-      "type": "folder",
-      "channel": "autodesk-360-viewing-rvt-lmv",
-      "hasThumbnail": "true",
-      "name": "Simple model.rvt",
-      "progress": "complete",
-      "role": "viewable",
-      "status": "success",
-      "success": "100%",
-      "version": "2.0",
-      "properties": {
-        "Document Information": {
-          "Author": "",
-          "Building Name": "",
-          "Client Name": "Owner",
-          "Organization Description": "",
-          "Organization Name": "",
-          "Project Address": "Enter address here",
-          "Project Issue Date": "Issue Date",
-          "Project Name": "Project Name",
-          "Project Number": "Project Number",
-          "Project Status": "Project Status"
-        }
-      },
-      "children": [
-        {
-          "guid": "8862a3f6-5b77-41c9-a19c-0efbb4293b84",
-          "type": "folder",
-          "hasThumbnail": "true",
-          "name": "Views",
-          "progress": "complete",
-          "status": "success",
-          "success": "100%",
-          "children": [
-            {
-              "guid": "46b5806e-4584-4fd1-b1c4-3fe70246e38b",
-              "type": "folder",
-              "hasThumbnail": "true",
-              "name": "3D View",
-              "progress": "complete",
-              "status": "success",
-              "success": "100%",
-              "children": [
-                {
-                  "guid": "d2dd0c9b-304c-4d42-bb11-b668229995a9",
-                  "type": "geometry",
-                  "hasThumbnail": "true",
-                  "name": "{3D}",
-                  "role": "3d",
-                  "status": "success",
-                  "children": [
-                    {
-                      "guid": "f69dd653-3cf1-4225-bde5-c926cfed8ecd",
-                      "type": "view",
-                      "camera": [
-                        23.180307,
-                        -29.680576,
-                        56.448471,
-                        0,
-                        0,
-                        0,
-                        -0.408248,
-                        0.408248,
-                        0.816497,
-                        1.291592,
-                        0.174533,
-                        1,
-                        0
-                      ],
-                      "hasThumbnail": "false",
-                      "name": "{3D}",
-                      "role": "3d"
-                    },
-                    {
-                      "guid": "4cf4e9b3-f7b3-401f-b7d3-e18d7bde9fa7",
-                      "type": "resource",
-                      "hasThumbnail": "false",
-                      "mime": "application/autodesk-svf",
-                      "role": "graphics",
-                      "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_.svf"
-                    },
-                    {
-                      "guid": "5e222e64-b905-4b11-aa4e-05114a8ac969",
-                      "type": "resource",
-                      "mime": "image/png",
-                      "resolution": [
-                        100,
-                        100
-                      ],
-                      "role": "thumbnail",
-                      "size": 8245,
-                      "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_1.png"
-                    },
-                    {
-                      "guid": "a5d385d4-6f78-476d-8c84-ecc4c7df5544",
-                      "type": "resource",
-                      "mime": "image/png",
-                      "resolution": [
-                        200,
-                        200
-                      ],
-                      "role": "thumbnail",
-                      "size": 26415,
-                      "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_2.png"
-                    },
-                    {
-                      "guid": "1706d474-bb3f-448e-b9b3-75279c7080cd",
-                      "type": "resource",
-                      "mime": "image/png",
-                      "resolution": [
-                        400,
-                        400
-                      ],
-                      "role": "thumbnail",
-                      "size": 89068,
-                      "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_4.png"
-                    }
-                  ]
-                },
-                {
-                  "guid": "22b2cbee-9bfe-4d5d-84bc-000f584b03a7",
-                  "type": "resource",
-                  "mime": "application/autodesk-db",
-                  "role": "Autodesk.CloudPlatform.PropertyDatabase",
-                  "urn": "urn:adsk.viewing:fs.file:dXJuOmFkc2suczM6ZGVyaXZlZC5maWxlOnRyYW5zbGF0aW9uXzI1X3Rlc3RpbmcvUlZUL1NpbXBsZSttb2RlbC5ydnQ=/output/Resource/3D_View/_3D_/_3D_.sdb"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+	"version":	"2.0",
+	"type":	"design",
+	"name":	"rac_advanced_sample_project.rvt",
+	"guid":	"1fdb81cf-3ae5-459e-9e8f-576dbbce31df",
+	"urn":	"$file$",
+	"messages":	[{
+			"type":	"warning",
+			"code":	"EXTERNAL_LINK_MISSING",
+			"message":	"Error detected when resolving not found resolveLinks Newspaper.jpg for document: resolveLinks file is NOT found at d:\\tf\\models\\2015"
+		}],
+	"properties":	{
+		"Document Information":	{
+			"Project Name":	"Project Name",
+			"Project Number":	"Project Number",
+			"Author":	"",
+			"Project Address":	"Enter address here",
+			"Project Issue Date":	"Issue Date",
+			"Project Status":	"Project Status",
+			"Building Name":	"",
+			"Client Name":	"Owner",
+			"Organization Name":	"",
+			"Organization Description":	""
+		}
+	},
+	"children":	[{
+			"type":	"folder",
+			"name":	"Views",
+			"guid":	"b02f38d6-26ee-4e30-be60-36a3c68c2295",
+			"children":	[{
+					"type":	"folder",
+					"name":	"3D View",
+					"guid":	"c1b789f1-ca13-460b-a2a2-ced10a30ca79",
+					"children":	[{
+							"type":	"geometry",
+							"role":	"3d",
+							"name":	"3D",
+							"guid":	"6182aeb5-edfa-49be-a102-f53b0fcf48ee",
+							"viewableID":	"236f57f8-ca04-4e9d-862e-8cca2cc655e6-0004d73c",
+							"status":	"success",
+							"children":	[{
+									"type":	"view",
+									"role":	"3d",
+									"name":	"3D",
+									"guid":	"4b890ab1-9cad-49a7-89fb-3c02ad7f7a87",
+									"camera":	[542.792236, -402.687988, 419.668640, 0, 0, 0, -0.408248, 0.408248, 0.816497, 1.632771, 0.174533, 1, 0]
+								}, {
+									"type":	"resource",
+									"guid":	"1b24e445-cdec-4e60-ab24-fd71c09bc65f",
+									"urn":	"$file$/output/Resource/3D_View/3D/3D.svf",
+									"role":	"graphics",
+									"mime":	"application/autodesk-svf"
+								}, {
+									"type":	"resource",
+									"guid":	"d487e004-1de4-45db-81f2-31bb11e17953",
+									"role":	"thumbnail",
+									"urn":	"$file$/output/Resource/3D_View/3D/3D1.png",
+									"resolution":	[100, 100],
+									"size":	6562,
+									"mime":	"image/png"
+								}, {
+									"type":	"resource",
+									"guid":	"4d1871ca-dfe2-4780-b2e2-ab21b7a9cae0",
+									"role":	"thumbnail",
+									"urn":	"$file$/output/Resource/3D_View/3D/3D2.png",
+									"resolution":	[200, 200],
+									"size":	17399,
+									"mime":	"image/png"
+								}, {
+									"type":	"resource",
+									"guid":	"ae982fdb-d5c2-4054-ae18-e6afd9970926",
+									"role":	"thumbnail",
+									"urn":	"$file$/output/Resource/3D_View/3D/3D4.png",
+									"resolution":	[400, 400],
+									"size":	53406,
+									"mime":	"image/png"
+								}]
+						}, {
+							"type":	"resource",
+							"guid":	"a75b4511-1e86-484f-8461-5e8ef1cf3d20",
+							"urn":	"$file$/output/Resource/3D_View/3D/3D.sdb",
+							"role":	"Autodesk.CloudPlatform.PropertyDatabase",
+							"mime":	"application/autodesk-db"
+						}]
+				}]
+		}, {
+			"type":	"folder",
+			"name":	"Sheets",
+			"guid":	"38e51816-0e7a-40af-8398-0707bd7a34bf",
+			"children":	[{
+					"type":	"geometry",
+					"role":	"2d",
+					"name":	"A1 - Floor Plan",
+					"guid":	"211bb0ae-0531-4dca-967e-f0bb9dcb24e9",
+					"viewableID":	"951810cc-7a73-4765-9179-f5744ba5d821-0003406e",
+					"status":	"inprogress",
+					"intermediateFile":	"output/Resource/Sheet/A1___Floor_Plan/A1___Floor_Plan.dwfx",
+					"properties":	{
+						"Print Setting":	{
+							"Layout":	"Landscape",
+							"Paper size":	"ISO A4, 210 x 297 mm"
+						}
+					},
+					"children":	[{
+							"type":	"resource",
+							"guid":	"84f2a469-fbed-4624-8eca-6fb0cb6c019b",
+							"role":	"thumbnail",
+							"urn":	"$file$/output/Resource/Sheet/A1___Floor_Plan/A1___Floor_Plan1.png",
+							"resolution":	[100, 100],
+							"size":	4333,
+							"mime":	"image/png"
+						}, {
+							"type":	"resource",
+							"guid":	"016a4959-2ac2-4dfe-85a3-4bec8984e680",
+							"role":	"thumbnail",
+							"urn":	"$file$/output/Resource/Sheet/A1___Floor_Plan/A1___Floor_Plan2.png",
+							"resolution":	[200, 200],
+							"size":	24468,
+							"mime":	"image/png"
+						}, {
+							"type":	"resource",
+							"guid":	"2b18c75c-18a6-46f2-ad18-de1d101076cc",
+							"role":	"thumbnail",
+							"urn":	"$file$/output/Resource/Sheet/A1___Floor_Plan/A1___Floor_Plan4.png",
+							"resolution":	[400, 400],
+							"size":	66015,
+							"mime":	"image/png"
+						}]
+				}, {
+					"type":	"geometry",
+					"role":	"2d",
+					"name":	"A2 - Sections",
+					"guid":	"ff2ad39f-3fb1-4bc7-92b4-ec9ce944b46a",
+					"viewableID":	"951810cc-7a73-4765-9179-f5744ba5d821-0003407c",
+					"status":	"inprogress",
+					"intermediateFile":	"output/Resource/Sheet/A2___Sections/A2___Sections.dwfx",
+					"properties":	{
+						"Print Setting":	{
+							"Layout":	"Landscape",
+							"Paper size":	"ISO A4, 210 x 297 mm"
+						}
+					},
+					"children":	[{
+							"type":	"resource",
+							"guid":	"224a91b9-8fa3-4e49-87f5-c1fa4ece4f51",
+							"role":	"thumbnail",
+							"urn":	"$file$/output/Resource/Sheet/A2___Sections/A2___Sections1.png",
+							"resolution":	[100, 100],
+							"size":	8336,
+							"mime":	"image/png"
+						}, {
+							"type":	"resource",
+							"guid":	"4de9af8a-b8ac-4a9a-87cf-a000df84688b",
+							"role":	"thumbnail",
+							"urn":	"$file$/output/Resource/Sheet/A2___Sections/A2___Sections2.png",
+							"resolution":	[200, 200],
+							"size":	22742,
+							"mime":	"image/png"
+						}, {
+							"type":	"resource",
+							"guid":	"f7996307-303b-4d35-b92c-d6e2a3175310",
+							"role":	"thumbnail",
+							"urn":	"$file$/output/Resource/Sheet/A2___Sections/A2___Sections4.png",
+							"resolution":	[400, 400],
+							"size":	57586,
+							"mime":	"image/png"
+						}]
+				}]
+		}]
 }

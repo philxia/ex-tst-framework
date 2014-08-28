@@ -275,10 +275,19 @@
 
 									// if ( !! window.socket)
 									// 	window.socket.emit("runCTest", data.result);
+									var resObj = JSON.parse(data.result);
+									var jobfiles = resObj.files;
+									var url = jobfiles[0].url;
+									var filename = jobfiles[0].name;
+
 									$.ajax({
 										type:'POST',
 										url: 'http://localhost:3000/create',
-										data: JSON.parse(data.result),
+										data: {
+											packId: -1,
+											envId: 4,
+											filename: filename
+										},
 										dataType: 'jsonp'
 									});
 

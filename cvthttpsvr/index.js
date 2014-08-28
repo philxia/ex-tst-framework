@@ -87,30 +87,29 @@ require('./lib/boot')(app, {
 });
 
 
-// create new job api.
+// create new job api with the json input {packId, envId, filename}
 app.post('/create', function (req, res) {
 	var job = req.body;
-	var jobfiles = job.files;
-	
-	var url = jobfiles[0].url;
-	var filename = jobfiles[0].name;
+	var packId = job.packId;
+	var filename = job.filename;
+	var envId = parseInt(job.envId);
 
 	// finished the download.
 	// env id for custom is 4.
-	var count = fs.readdirSync( path.join(tstMgr_ns.ResultsFolder, 'Custom')).length;
-	// update the new pack.
-	var packId = count;
-	db.envs[4].packages.splice(0,0, {
+	if(envId === 4)
+		packId = fs.readdirSync( path.join(tstMgr_ns.ResultsFolder, 'Custom')).length;
+	
+
+	db.envs[envId].packages.splice(0,0, {
 		'name': filename,
 		'smokeStatus': 'unknown',
 		'isTested': false,
 		'id': packId
 	});
-	var argument = 'runTest_4_'+packId+' ' + filename;
+	var argument = 'runTest_'+envId + '_'+packId+' ' + filename;
 	createNewJob(argument);
 
 	res.send({ message: 'job created'});
-
 });
 
 app.post('/login', 
