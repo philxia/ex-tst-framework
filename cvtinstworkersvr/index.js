@@ -140,34 +140,39 @@ function runTest(argument, jobId, genBenchmarks) {
 		testingObject.doCheck(function(err, stdout, stderr) {
 			console.log(stdout);
 
+			// caches the messages in the server side.
+            testingObject.consoleLog.push({
+                'err': err,
+                'stdout': stdout
+            });
 			// write the data to job's log.
 			// send message to job queue and add a new job.
-			var data = {'err': err,
-						'stdout': stdout};
+			// var data = {'err': err,
+			// 			'stdout': stdout};
 			
-			data = JSON.stringify(data);  
-			var opts = {
-				hostname: tstMgr_ns.Manager.getHostIP(),
-				// auth: 'foo:bar',
-				port: 3001,
-				path: '/job/'+jobId + '/log',
-				method: 'POST',
-				headers:{
-					'Content-Type': 'application/json',
-					'Content-Length': data.length
-				}
-			};
-			var req = http.request(opts, function(res) {
-				if(res.statusCode == 200){
-					var body='';
-					res.setEncoding('utf8');
-					res.on('data', function(d) {
-						console.log(d);
-					});
-				}
-			});
-			req.write(data + '\n');
-			req.end();
+			// data = JSON.stringify(data);  
+			// var opts = {
+			// 	hostname: tstMgr_ns.Manager.getHostIP(),
+			// 	// auth: 'foo:bar',
+			// 	port: 3001,
+			// 	path: '/job/'+jobId + '/log',
+			// 	method: 'POST',
+			// 	headers:{
+			// 		'Content-Type': 'application/json',
+			// 		'Content-Length': data.length
+			// 	}
+			// };
+			// var req = http.request(opts, function(res) {
+			// 	if(res.statusCode == 200){
+			// 		var body='';
+			// 		res.setEncoding('utf8');
+			// 		res.on('data', function(d) {
+			// 			console.log(d);
+			// 		});
+			// 	}
+			// });
+			// req.write(data + '\n');
+			// req.end();
 		});
 
 	});

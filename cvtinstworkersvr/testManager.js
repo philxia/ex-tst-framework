@@ -6,19 +6,21 @@ var testManager = exports.testManager = {};
 
 testManager.messages = new Array();
 
-testManager.PackageFolder = 'e:\\tf\\packs\\';
+testManager.PackageFolder = 'd:\\tf\\packs\\';
 
-testManager.OutputFolder = 'e:\\tf\\output\\';
+testManager.OutputFolder = 'd:\\tf\\output\\';
 
-testManager.ModelsFolder = 'e:\\tf\\models\\';
+testManager.ModelsFolder = 'd:\\tf\\models\\';
 
-testManager.ResultsFolder = 'e:\\tf\\results\\';
+testManager.ResultsFolder = 'd:\\tf\\results\\';
 
-testManager.BenchmarksFolder = 'e:\\tf\\benchmarks\\';
+testManager.BenchmarksFolder = 'd:\\tf\\benchmarks\\';
 
-testManager.CustomPacksFolder = 'e:\\tf\\packs\\Custom\\'
+testManager.CustomPacksFolder = 'd:\\tf\\packs\\Custom\\'
 
-testManager.ToolsFolder = 'e:\\tf\\tools\\';
+testManager.ToolsFolder = 'd:\\tf\\tools\\';
+
+testManager.LogFolder = 'C:\\Log\\rvt\\';
 
 testManager.server_dev = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Dev'; //'\\\\Shasrvbsd02\\Dataxfer\\Phil Xia\\pack';
 testManager.server_devperchangelist = '\\\\usmanpdglstr01\\revit\\Cloud\\RevitExtractor\\Dev';

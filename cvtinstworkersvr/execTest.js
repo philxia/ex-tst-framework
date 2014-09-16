@@ -19,7 +19,7 @@ runTest.success = 0;
 // Testing object constructor.
 runTest.Testing = function(pack, envName, serverPath) {
     // load the test suites.
-    var suitesString = fs.readFileSync("./cvtinstworkersvr/tools/testSuites.json", "utf8");
+    var suitesString = fs.readFileSync("./cvtinstworkersvr/lib/testSuites.json", "utf8");
     var suites = JSON.parse(suitesString);
     var suitesName = suites.name;
     var testcases = suites.suites;

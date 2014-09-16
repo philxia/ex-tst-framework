@@ -45,7 +45,9 @@
         "rimraf": "1.0.5",
         "socket.io": "1.0.4",
         "socket.io-client": "1.0.4",
-        "express.io" : "1.1.13"
+        "express.io" : "1.1.13",
+        "cors" : "2.4.1",
+        "passport" : "0.2.0"
     },
     "devDependencies": {
         "mocha": "~1.18.2",
@@ -70,7 +72,9 @@
         "socket.io-client": "1.0.4",
         "express.io" : "1.1.13",
         "type-is": "1.1.0",
-        "accepts" : "1.0.1"
+        "accepts" : "1.0.1",
+        "cors" : "2.4.1",
+        "passport" : "0.2.0"
     },
     "keywords": [
         "express",

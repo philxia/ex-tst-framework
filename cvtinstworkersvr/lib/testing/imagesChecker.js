@@ -18,7 +18,7 @@ checker.ImageChecker = function(context, testcase, genImageFilePath, tolerance, 
     if (!fs.existsSync(this.genImageFilePath))
         throw 'The file does not existed at the give path - ' + this.genImageFilePath;
     var imageFileName = genImageFilePath.substr(genImageFilePath.lastIndexOf('\\'));
-    this.benImagePath = path.join(tstMgr_ns.BenchmarksFolder, this.context.envName,
+    this.benImagePath = path.join(tstMgr_ns.BenchmarksFolder, 
         this.testcase.args[1], imageFileName);
     if (!fs.existsSync(this.benImagePath))
         throw 'The file does not existed at the give path - ' + this.benImagePath;

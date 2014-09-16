@@ -280,16 +280,34 @@
 									var url = jobfiles[0].url;
 									var filename = jobfiles[0].name;
 
-									$.ajax({
-										type:'POST',
-										url: 'http://localhost:3000/create',
-										data: {
+									// it is really strange that $.post works but $.ajax doesn't.
+									$.post('http://10.148.196.183:3000/create', 
+										{
 											packId: -1,
 											envId: 4,
 											filename: filename
 										},
-										dataType: 'jsonp'
-									});
+										function(data) {
+											if(data)
+												console.log(data);
+										},
+										"json"
+									);
+
+									// $.ajax({
+									// 	type:"POST",
+									// 	url: 'http://10.148.196.183:3000/create',
+									// 	data: {
+									// 		packId: -1,
+									// 		envId: 4,
+									// 		filename: filename
+									// 	},
+									// 	success: function (e, data) {
+									// 		if(e)
+									// 			console.log(e);
+									// 	},
+									// 	dataType: 'jsonp'
+									// });
 
 									// add a row to the table and set the test status to pending.
 									// var testid = filename.substr(0, filename.lastIndexOf('.'));
@@ -409,7 +427,7 @@
 		//     , height = window.innerHeight
 		//     , visibleFrom = Math.max(0, Math.floor(top / jobHeight))
 		//     , visibleTo = Math.floor((top + height) / jobHeight)
-		var url = 'http://localhost:3001/jobs/'
+		var url = 'http://10.148.196.183:3001/jobs/'
 				+ (filter ? filter + '/' : '')
 				+ state + '/0..' + to
 				+ '/' + sort;
@@ -534,7 +552,7 @@
 
 	// timer update the queue status.
 	function pollStats(ms) {
-		request('http://localhost:3001/stats', function (data) {
+		request('http://10.148.196.183:3001/stats', function (data) {
 			$('#queued_count').text(data.inactiveCount);
 			$('#active_count').text(data.activeCount);
 			$('#failed_count').text(data.failedCount);

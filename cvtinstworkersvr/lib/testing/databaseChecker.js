@@ -77,7 +77,7 @@ checker.DatabaseChecker.prototype.checks = function(callback) {
         var unzipExtractor2 = zlib.createGunzip();
         scope.genBmDbJsonFilePath = scope.genDbJsonFilePath + '.bm.json';
         scope.fileName = scope.dbFilePath.substr(scope.dbFilePath.lastIndexOf('\\') + 1);
-        var bmDbJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, scope.context.envName,
+        var bmDbJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, 
             scope.testcase.args[1], scope.fileName);
         var outstreambm = fs.createWriteStream(scope.genBmDbJsonFilePath);
         fs.createReadStream(bmDbJsonFilePath).pipe(unzipExtractor2).pipe(outstreambm);

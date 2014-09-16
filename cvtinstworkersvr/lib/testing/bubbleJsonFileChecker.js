@@ -71,7 +71,7 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
 			});
 
 		} else {
-			var bmBubbleJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, this.context.envName, this.testcase.args[1], '\\bubble.json');
+			var bmBubbleJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, this.testcase.args[1], '\\bubble.json');
 			if (!fs.existsSync(bmBubbleJsonFilePath))
 				throw 'The benchmark bubble.json for this case does not existed.';
 			checkPoint.setBenchmarkPath(bmBubbleJsonFilePath);
