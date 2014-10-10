@@ -77,13 +77,12 @@ app.use(function(req, res, next) {
 
 tstMgr_ns.Manager.setApplication(app);
 
-if (!module.parent) {
-	setTimeout(function () {
+// if (!module.parent) {
+// 	setTimeout(function () {
 		// body...
 		doLoopCheckQueuedJobsAndRunTest();
-	}, 20000);
-	
-}
+// 	}, 20000);
+// }
 
 function runTest(argument, jobId, genBenchmarks) {
 	console.log(argument);
@@ -96,13 +95,20 @@ function runTest(argument, jobId, genBenchmarks) {
 	var action = fargStrings[0]
 	var envId = fargStrings[1];;
 	var packId = parseInt(fargStrings[2]);
-
+	var filename = argStrings[1];
 
 	var env = db.envs[envId];
 	var envName = env.name;
-	var pack = env.packages[env.packages.length - packId - 1];
-	if (pack.id !== packId)
-		throw 'The pack is not we are looking for.';
+	// var pack = env.packages[env.packages.length - packId - 1];
+	// if (pack.id !== packId)
+	// 	throw 'The pack is not we are looking for.';
+	var pack = {
+		'name': filename,
+		'smokeStatus': false,
+		'isTested': false,
+		'id': -1
+	};
+
 
 	var socket_server = require('./socket');
 	tstMgr_ns.messages.length = 0; //clean the msgs.
@@ -145,34 +151,6 @@ function runTest(argument, jobId, genBenchmarks) {
                 'err': err,
                 'stdout': stdout
             });
-			// write the data to job's log.
-			// send message to job queue and add a new job.
-			// var data = {'err': err,
-			// 			'stdout': stdout};
-			
-			// data = JSON.stringify(data);  
-			// var opts = {
-			// 	hostname: tstMgr_ns.Manager.getHostIP(),
-			// 	// auth: 'foo:bar',
-			// 	port: 3001,
-			// 	path: '/job/'+jobId + '/log',
-			// 	method: 'POST',
-			// 	headers:{
-			// 		'Content-Type': 'application/json',
-			// 		'Content-Length': data.length
-			// 	}
-			// };
-			// var req = http.request(opts, function(res) {
-			// 	if(res.statusCode == 200){
-			// 		var body='';
-			// 		res.setEncoding('utf8');
-			// 		res.on('data', function(d) {
-			// 			console.log(d);
-			// 		});
-			// 	}
-			// });
-			// req.write(data + '\n');
-			// req.end();
 		});
 
 	});
@@ -233,17 +211,17 @@ function doLoopCheckQueuedJobsAndRunTest() {
 							});
 
 							file.on("close", function(ex) {
-								var env = db.envs[envId];
-								var packIndex = env.packages.length - packId - 1;
-								if(packIndex < 0)
-								{
-									env.packages.splice(0,0, {
-										'name': filename,
-										'smokeStatus': 'unknown',
-										'isTested': false,
-										'id': packId
-									});
-								}
+								// var env = db.envs[envId];
+								// var packIndex = env.packages.length - packId - 1;
+								// if(packIndex < 0)
+								// {
+								// 	env.packages.splice(0,0, {
+								// 		'name': filename,
+								// 		'smokeStatus': 'unknown',
+								// 		'isTested': false,
+								// 		'id': packId
+								// 	});
+								// }
 								runTest(argument, currentJob.id);
 							});
 						})
@@ -256,27 +234,5 @@ function doLoopCheckQueuedJobsAndRunTest() {
 			 //  callee.call(self);
 		  // }, tstMgr_ns.Timeout_PackagesMonitor);
 		});
-	}
-}
-
-function sendMessagesToSingleConnection(socket, err, stdout) {
-	if (err === "INFO")
-		socket.emit('test_information_info', stdout);
-	else if (err === "SUCCESS")
-		socket.emit('test_information_success', stdout);
-	else if (err === "ERROR")
-		socket.emit('test_information_error', stdout);
-	else if (err === "UPDATE")
-		socket.emit('test_information_update', stdout);
-	else if(err === "HINT")
-		socket.emit('test_information_hint', stdout);
-}
-
-function sendMessagesToConnections(conns, err, stdout) {
-	// body...
-	for (var id in conns) {
-		var socket = conns[id];
-		if (socket.needUpdate_information === undefined || socket.needUpdate_information)
-			sendMessagesToSingleConnection(socket, err, stdout);
 	}
 }

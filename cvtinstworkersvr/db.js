@@ -131,22 +131,48 @@ function loadCustomPackageInformation (err, files, envIndex) {
 
 // get all the files in these two folders.
 var fs = require('fs');
+
 fs.readdir(tstMgr_ns.server_devperchangelist, function(err, files) {
+    if(err)
+    {
+        console.log(err);
+        return;
+    }
     loadPackagesInformation(err, files, 0);
 });
 
 fs.readdir(tstMgr_ns.server_dev, function(err, files) {
+    if(err)
+    {
+        console.log(err);
+        return;
+    }
     loadPackagesInformation(err, files, 1);
 });
 
 fs.readdir(tstMgr_ns.server_relperchangelist, function(err, files) {
+    if(err)
+    {
+        console.log(err);
+        return;
+    }
     loadPackagesInformation(err, files, 2);
 });
 
 fs.readdir(tstMgr_ns.server_release, function(err, files) {
+    if(err)
+    {
+        console.log(err);
+        return;
+    }
     loadPackagesInformation(err, files, 3);
 });
 
 fs.readdir(path.join(tstMgr_ns.ResultsFolder, 'Custom'), function(err, files) {
+    if(err)
+    {
+        console.log(err);
+        return;
+    }
     loadCustomPackageInformation(err, files, 4);
 });

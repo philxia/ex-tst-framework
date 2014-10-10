@@ -42,6 +42,24 @@ testManager.Timeout_PackagesMonitor = 6000; // 10 min
 /////////////////////////////////////////////////////////////////////////////
 // global methods
 
+testManager.getEnvName = function(id) {
+    switch(id)
+    {
+        case 0:
+            return 'DevelopmentPerCL';
+        case 1:
+            return 'Development';
+        case 2:
+            return 'ReleasePerCL';
+        case 3:
+            return 'Release';
+        case 5:
+            return 'Custom';
+        default:
+            throw 'Not supported id for env.';
+    }
+}
+
 testManager.addMessage = function(msg) {
     this.messages.push(msg);
 }

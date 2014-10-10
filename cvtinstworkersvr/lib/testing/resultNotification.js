@@ -262,6 +262,8 @@ checker.ResultNotification.prototype.checks = function(callback) {
 			perfObjs.push(perfObject);
 		}// end of read log content.
 
+		this.testcase.pref = perfObjs;
+
 		var csvContent = new Array();
 		perfObjs.forEach(function(v, i, arr) {
 			if(v.name === "totaltime")
@@ -301,13 +303,7 @@ checker.ResultNotification.prototype.checks = function(callback) {
 			}
 		};
 		callback('UPDATE', JSON.stringify(updateObj));
-		// clean up the status.
-		this.context.currentRunningTestCaseIndex = -1;
-		this.context.status = "completed";
-		this.context.testcaseCount = 0;
-		this.context.failures = 0;
-		this.context.success = 0;
-		delete this.context.cases;
+
 
 		// serializes the result to results folder.
 		var packName = this.context.pack.name;
@@ -331,6 +327,25 @@ checker.ResultNotification.prototype.checks = function(callback) {
 
 		// loop delay 1 min the delete in case we are still in copying action.
 		this.safeDelete(outputFolderPath);
+
+		// generate the package.json.
+		var packagejson = {};
+		packagejson.title = this.context.packNameWithoutExtension;
+		packagejson.result = updateObj.result;
+		packagejson.cases = this.context.cases;
+		// write the perf result to csv file.
+		fs.writeFileSync(
+			path.join(resultFolder,'package.json'), JSON.stringify(packagejson));
+
+
+		// clean up the status.
+		this.context.currentRunningTestCaseIndex = -1;
+		this.context.status = "completed";
+		this.context.testcaseCount = 0;
+		this.context.failures = 0;
+		this.context.success = 0;
+		delete this.context.cases;
+
 
 		// update the paga.
 		if ( !! tstMgr_ns.Manager)

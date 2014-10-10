@@ -14,9 +14,10 @@ html
 		script(src='fileupload/js/vendor/jquery.ui.widget.js')
 		script(src='fileupload/js/jquery.iframe-transport.js')
 		script(src='fileupload/js/jquery.fileupload.js')
+		link(rel = 'stylesheet', href = 'd3/sequences.css')
 	header
 		include ../../../includes/head
-	body
+	body(style="width:100%")
 		h2 Upload package for Testing
 		input(type="file" id="packageupload" webkitdirectory directory data-url="http://"+ hostIP + ":8888/server/node/")
 		div(id="progress-export-zip")
@@ -40,7 +41,7 @@ html
 				a(href="#delayed" role="tab" data-toggle="tab") Delayed 
 					span(id="delayed_count" class="label label-warning") 0
 		div.tab-content
-		div(class="tab-pane active" id="jobsTable")
+		div(class="tab-pane active" id="jobsTable" style="min-width:1100px")
 			table(class="table table-hover")
 				thead
 					tr
@@ -51,53 +52,44 @@ html
 						th Tests
 						th All | Pass | Abort | Failed
 						th Progress
-			//- div(class="tab-pane" id="active")
-			//- 	table(class="table table-hover")
-			//- 		thead
-			//- 			tr
-			//- 				th Type
-			//- 				th Priority
-			//- 				th Owner
-			//- 				th Job name
-			//- 				th Tests
-			//- 				th All | Pass | Abort | Failed
-			//- 				th Progress
-			//- div(class="tab-pane" id="failed")
-			//- 	table(class="table table-hover")
-			//- 		thead
-			//- 			tr
-			//- 				th Type
-			//- 				th Priority
-			//- 				th Owner
-			//- 				th Job name
-			//- 				th Tests
-			//- 				th All | Pass | Abort | Failed
-			//- 				th Progress
-			//- div(class="tab-pane" id="complete")
-			//- 	table(class="table table-hover")
-			//- 		thead
-			//- 			tr
-			//- 				th Type
-			//- 				th Priority
-			//- 				th Owner
-			//- 				th Job name
-			//- 				th Tests
-			//- 				th All | Pass | Abort | Failed
-			//- 				th Progress
-			//- div(class="tab-pane" id="delayed")
-			//- 	table(class="table table-hover")
-			//- 		thead
-			//- 			tr
-			//- 				th Type
-			//- 				th Priority
-			//- 				th Owner
-			//- 				th Job name
-			//- 				th Tests
-			//- 				th All | Pass | Abort | Failed
-			//- 				th Progress
-
+		div(class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+			div.modal-dialog
+				div(class="modal-content" style="min-width:700px;")
+					div.modal-header
+						button(type="button" class="close" data-dismiss="modal" aria-hidden="true")&times;
+						h4(class="modal-title" id="myModalLabel") Result
+							span(id="result_title" class="label label-primary" style="margin-left:50px;padding:10px;")
+					div.modal-body
+						ul(class="nav nav-tabs" role="tablist")
+							li.active
+								a(href="#tab_console" role="tab" data-toggle="tab") console
+							li
+								a(href="#tab_perf" role="tab" data-toggle="tab") Performance
+						div(class="tab-content" style="min-height:600px")
+							div(class="tab-pane active" id="tab_console")
+							div(class="tab-pane" id="tab_perf")
+								div#main
+									div#sequence
+									div#chart
+										div(id="explanation" style="visibility: hidden;")
+											span#percentage
+											br
+											span#time
+								div#sidebar
+									input(type="checkbox" id="togglelegend") Legend
+									br
+									div(id="legend" style="visibility: hidden;")
+							div(class="btn-group dropup" style="position:absolute;left:50px;top:600px")
+								button(type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown") Select
+									span.caret
+								ul(class="dropdown-menu" role="menu")
+								div.casetitle
+					div.modal-footer
+						button(type="button" class="btn btn-default" data-dismiss="modal") close
 
 	script(src='zip/zip.js')
 	script(src='zip/zip-fs.js')
 	script(src='zip/mime-types.js')
 	script(src='js/main.js')
+	script(src="d3/d3.js")	
+	script(src="d3/sequences.js")

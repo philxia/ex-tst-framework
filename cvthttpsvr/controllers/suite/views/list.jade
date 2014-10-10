@@ -52,6 +52,55 @@ html
 					div.modal-footer
 						button(type="button" class="btn btn-default" data-dismiss="modal") close
 						button(type="submit" class="btn btn-primary" data-dismiss="modal") Submit
+		div(class="modal fade" id="perfModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+			div.modal-dialog
+				div(class="modal-content" style="min-width:1000px;")
+					div.modal-header
+						button(type="button" class="close" data-dismiss="modal" aria-hidden="true")&times;
+						h4(class="modal-title" id="myModalLabel") Performance
+							span(id="result_title" class="label label-primary" style="margin-left:50px;padding:10px;")
+					div.modal-body
+						ul(class="nav nav-tabs" role="tablist")
+							li.active
+								a(href="#tab_historyPerf" role="tab" data-toggle="tab") History
+							li
+								a(href="#tab_perf" role="tab" data-toggle="tab") Single
+						div(class="tab-content" style="min-height:600px;min-width:960px")
+							div(class="tab-pane active" id="tab_historyPerf")
+								form#groupmethod
+									label Grouped
+										input(type="radio" name="mode" value="grouped")
+									label Stacked
+										input(type="radio" name="mode" value="stacked" checked)
+								div#main_historyPerf
+							div(class="tab-pane" id="tab_perf")
+								div#main
+									div#sequence
+									div#chart
+										div(id="explanation" style="visibility: hidden;")
+											span#percentage
+											br
+											span#time
+								div#sidebar
+									input(type="checkbox" id="togglelegend") Legend
+									br
+									div(id="legend" style="visibility: hidden;")
+							div(class="btn-group dropup" style="position:absolute;left:50px;top:600px")
+								button(type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown") Select
+									span.caret
+								ul(class="dropdown-menu" role="menu")
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="#2") Release per changelist
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="#3") Release daily
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="#0") Development per changelist
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="#1") Development daily
+								div.casetitle
+									h3 Release per changelist
+					div.modal-footer
+						button(type="button" class="btn btn-default" data-dismiss="modal") close
 		div
 			table(id="suitesTable", class="table table-hover")
 				thead
@@ -76,5 +125,19 @@ html
 								td
 									p #{ts.description}
 								td
-									p Not Support
+									div.dropdown
+										button(class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown") Actions
+											span.caret
+										ul(class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1")
+											li(role="presentation")
+												a(role="menuitem" tabindex="-1" href="#") Generate Baseline
+											li(role="presentation")
+												a(role="menuitem" tabindex="-1" href="#"+ts.id data-toggle="modal" data-target="#perfModal") Performance
+											li(role="presentation" class="divider")
+											li(role="presentation")
+												a(role="menuitem" tabindex="-1" href="#") Delete
+	script(src="d3/d3.js")
+	script(src="d3/sequences.js")
+	script(src="js/suite.js")
+	link(rel='stylesheet', href='css/suite.css')
 

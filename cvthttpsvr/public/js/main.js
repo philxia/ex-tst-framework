@@ -101,55 +101,6 @@
 		var progressExport = document.getElementById("progress-export-zip");
 		var packageinput = document.getElementById('packageupload');
 
-		// //Socket.io 'http://10.148.205.1:3000'
-		// window.socket = io.connect(null, {
-		// 	'port': 3000,
-		// 	'force new connection': true
-		// });
-
-		// window.socket.on('connect', function(msg) {
-		// 	// socket.emit('start_testjob', idstr);
-		// });
-
-		// window.socket.on('test_information_update', function(msg) {
-		// 	console.log(msg);
-		// 	var updateObj = JSON.parse(msg);
-		// 	var jobresult = updateObj.jobresult;
-		// 	if(jobresult === undefined)
-		// 		return;
-
-		// 	var testid = jobresult.id; 
-		// 	var trObj = document.getElementById(testid);
-		// 	if(!trObj)
-		// 		return;
-
-		// 	// {"testcase":{"current":1,"count":9,"testid":"RevitExtractor_x64_2015.0.2014.0624.141616"}}
-		// 	var count = jobresult.count;
-		// 	var success = jobresult.success;
-		// 	var fails = jobresult.failures;
-		// 	var totalHTML = '<div class="col-md-3"><span class="label label-info">'+ count +'</span></div>';
-		// 	var successHTML = '<div class="col-md-3">'+'</div>';
-		// 	if(success>0)
-		// 		successHTML = '<div class="col-md-3"><span class="label label-success">'
-		// 			+ success +'</span></div>';
-		// 	var abortHTML = '<div class="col-md-3">'+'</div>';
-		// 	var failHTML = '<div class="col-md-3">'+'</div>';
-		// 	if(fails>0)
-		// 		failHTML = '<div class="col-md-3"><span class="label label-danger">'
-		// 			+ fails +'</span></div>';
-			
-		// 	$(trObj).find('td:eq(0)')[0].innerHTML = '<span class="label label-info">phil.xia@autodesk.com</span>';
-		// 	$(trObj).find('td:eq(2)')[0].innerHTML = ((fails+success) == count)? "complete":"in process";
-		// 	$(trObj).find('td:eq(3)')[0].innerHTML = totalHTML + successHTML +
-		// 		abortHTML + failHTML;
-		// 	var progress = Math.ceil(100*(success+fails)/count);
-		// 	if(progress>1)
-		// 		$(trObj).find('td:eq(4) > .progressbar').progressbar('value', progress);
-		// });
-
-		// window.socket.on('test_information_hint', function(msg) {
-		// 	console.log(msg);
-		// });
 
 		function onerror(message) {
 			alert(message);
@@ -294,33 +245,6 @@
 										"json"
 									);
 
-									// $.ajax({
-									// 	type:"POST",
-									// 	url: 'http://10.148.196.183:3000/create',
-									// 	data: {
-									// 		packId: -1,
-									// 		envId: 4,
-									// 		filename: filename
-									// 	},
-									// 	success: function (e, data) {
-									// 		if(e)
-									// 			console.log(e);
-									// 	},
-									// 	dataType: 'jsonp'
-									// });
-
-									// add a row to the table and set the test status to pending.
-									// var testid = filename.substr(0, filename.lastIndexOf('.'));
-									// var htmlText = '<tr id="' + testid + '"><td><span class="label label-info">phil.xia@autodesk.com</span></td><td>' + testid + 
-									// '</td><td>' + 'pending' + '</td><td></td><td><div class="progressbar"></div></td></tr>';
-									// // if($("#jobsTable tr:first").length > 0)
-									// // 	$("#jobsTable tr:first").before(htmlText);
-									// // else
-									// 	$("#jobsTable tr:first").after(htmlText);
-
-									// var trObj = document.getElementById(testid);
-									// $(trObj).find('td:eq(4) > .progressbar').progressbar({value:false});
-
 									// destroy the upload widget.
 									$('#packageupload').fileupload('destroy');
 								}
@@ -463,7 +387,7 @@
 					var success = job.data.success;
 					var fails = job.data.fail;
 
-					el = $('#job-' + jobs[i].id);
+					el = $('#job-' + jobs[i].id)[0];
 					if(el.jobData != null)
 					{
 						if(el.jobData.success === success && 
@@ -482,7 +406,7 @@
 						failHTML = '<div class="col-md-3"><span class="label label-danger">'
 							+ fails +'</span></div>';
 					
-					$(el).find('td:eq(2)')[0].innerHTML = '<span class="label label-info">phil.xia@autodesk.com</span>';
+					// $(el).find('td:eq(2)')[0].innerHTML = '<span class="label label-info">phil.xia@autodesk.com</span>';
 					$(el).find('td:eq(4)')[0].innerHTML = ((fails+success) == count)? "complete":"in process";
 					$(el).find('td:eq(5)')[0].innerHTML = totalHTML + successHTML +
 						abortHTML + failHTML;
@@ -507,8 +431,8 @@
 					// add a row to the table and set the test status to pending.
 					var htmlText = '<tr id="' + jobid + '"><td><span class="label label-info">'+ job.type
 					+'</span></td><td>'+ job.priority+'</td><td><span class="label label-info">'+ job.data.owner
-					+'</span></td><td>' + testTitle + 
-					'</td><td>' + 'pending' + '</td><td></td><td><div class="progressbar"></div></td></tr>';
+					+'</span></td><td class="item"><a>' + testTitle + 
+					'</a></td><td>' + 'pending' + '</td><td></td><td><div class="progressbar"></div></td></tr>';
 					// if($("#jobsTable tr:first").length > 0)
 					// 	$("#jobsTable tr:first").before(htmlText);
 					// else
@@ -536,16 +460,21 @@
 
 					trObj.jobData = job;
 
-					// el = job.showProgress('active' == active)
-					// 	.showErrorMessage('failed' == active)
-					// 	.render(true);
 
-					// el.get(0).job = job;
-					// el.appendTo('#jobs');
+					// bound the event for a in tables.
+					$('#'+jobid).on('click', function(e) {
+						if(this.jobData === undefined)
+							return;
+
+						window.jobData = this.jobData;
+						$('#myModal').resizable()
+						$('#myModal').modal('show');					
+					});
 				}
 			};
 
 			fn();
+
 		});
 	}
 
@@ -600,20 +529,138 @@
 	pollStats(1000);
 	show('inactive')();
 
+	// global tab switch event handler.
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 		// alert(e.target.toString(), // activated tab
 		// 	e.relatedTarget.toString()); // previous tab
 		var tabid = e.target.hash.substr(1);
-		show(tabid)();
-	});
-})();
-
-
-$(window).on('unload', function() {
-	if ( !! window.socket) {
-			window.socket.disconnect(); // disconnect.
-			delete window.socket;
+		switch(tabid)
+		{
+			case 'inactive': // queue
+			case 'active':
+			case 'complete':
+			case 'failed':
+			case 'delayed':
+				show(tabid)();
+				break;
+			default:
+				showResult(tabid);
 		}
 	});
 
+	function showResult (tabid) {
+		if(!window.jobresult)
+			return;
+
+		if(!window.perfcache)
+		{
+			var resultInfo = window.jobresult;
+			var perfs = new Array();
+			resultInfo.cases.forEach(function(v, i, arr) {
+				//
+				var casename = v.name;
+				var perfdata = v.pref; //array;
+				var perfcvs = new Array();
+				perfdata.forEach(function(v, i, arr) {
+					if(v.name === 'totaltime')
+						return;
+					perfcvs.push([
+						v.name + '-end',
+						v.time.toString()
+						]);
+				})
+				perfs.push({name:casename,
+					perf: perfcvs});
+			});
+			window.perfcache = perfs;
+		}
+		if(tabid === 'tab_perf') // show the perf diagram.
+		{
+			// clean the previous charts
+			// $('#main').find('svg').remove();
+
+			// Use d3.text and d3.csv.parseRows so that we do not need to have a header
+			// row, and can receive the csv as an array of arrays.
+			var csv = window.perfcache[0].perf;
+			var json = buildHierarchy(csv);
+			createVisualization(json);
+			$('div .casetitle').html('<h3>'+window.perfcache[0].name + '</h3>');
+		}
+		else if(tabid === 'tab_console')
+		{
+
+		}
+	}
+
+	$('#myModal').on('hide.bs.modal', function(e) {
+		if(window.jobData)
+			delete window.jobData;
+		if(window.perfcache)
+			delete window.perfcache;
+		if(window.jobresult)
+			delete window.jobresult;
+	})
+
+
+	$('#myModal').on('shown.bs.modal', function (e) {
+	  // do something...
+	  var jobData = window.jobData;
+	  if(jobData === undefined)
+	  	return;
+
+	  $('a[href="#tab_console"]').tab('show');
+
+	  var target = e.target;
+	  // title": "runTest_3_24 RevitExtractor_x64_2015.0.2014.0915.zip"
+	  var title = jobData.data.title;
+	  var ts = title.split(' ');
+	  var env = ts[0].split('_');
+	  env = env[1];
+	  var tf = ts[1];
+	  tf = tf.substr(0, tf.length-4); // remove the extension.
+	  $('#result_title')[0].innerText = tf;
+
+	  var requrl = 'http://10.148.196.183:3000/result/' + env + '/' + tf;
+	  $.get(requrl, 
+	  	function(result){
+	      // $(target).find('.modal-body').html(result.result);
+	      var jobres = result.result;
+	      window.jobresult = jobres;
+
+	      var casenameshtml = '';
+	      jobres.cases.forEach(function(v, i, arr) {
+	      	casenameshtml += '<li><a href="#">'+v.name+'</a></li>';
+	      });
+	      $('.btn-group .dropdown-menu').html(casenameshtml);
+
+	      // register the select changed event for dropup menus.
+	      setTimeout(function(argument) {
+	      	$('.btn-group .dropdown-menu a').click(function(e) {
+	      		var casetitle = this.innerText;
+	      		$('div .casetitle').html('<h3>' + casetitle + '</h3>');
+	      		if(window.perfcache)
+	      		{
+	      			var done = false;
+	      			window.perfcache.forEach(function(v, i, arr) {
+	      				if(done)
+	      					return;
+
+	      				if(v.name == casetitle)
+	      				{
+	      					var csv = v.perf;
+	      					var json = buildHierarchy(csv);
+	      					createVisualization(json);
+	      				}
+	      			});
+	      		}
+
+	      		e.preventDefault();
+	      	})
+	      }, 500);
+	    },
+	    "json");
+	})
+
+
+})();
 })(this);

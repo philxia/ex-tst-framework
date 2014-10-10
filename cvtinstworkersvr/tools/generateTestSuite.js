@@ -50,20 +50,28 @@ function dummyVarSections (argument) {
 				line = "\"size\": dummy_value,";
 			} else if(tag === "\"viewableID\""){
 				// this is really evil and should be removed soon.
-				var trickyLine = lines[ii - 2].trim(); // "name":   "3D",
+				var trickyLine = lines[ii - 3].trim(); // "role": "3d",
 				var tlstrarr = trickyLine.split(':');
 				if(tlstrarr.length === 2 && 
-					tlstrarr[0] === "\"name\"" &&
-					tlstrarr[1] === "\"3D\",")
+					tlstrarr[0] === "\"role\"" &&
+					tlstrarr[1].trim() === "\"3d\",")
 					line = "\"viewableID\":\"dummy_value\",";
 			}
-
+		}
+		else{
+			// solve the unique/viewable id because the view is generated on the fly.
+			// "6da34a42-6730-4812-a9e0-26020e33f074-0004d73c"
+			strtmp = strtmp.replace(/\"/g,'');// remove the ".
+			strarr = strtmp.split('-');
+			if(strarr.length === 6 && strtmp.length === 45)
+			{
+				line = "\"dummy_value-"+strarr[5]+"\"";
+			}
 		}
 		newContent += line + '\n';
 	}
 	return newContent;
 }
-
 http.createServer(function(req, res) {
 
 	var url = req.url;
@@ -126,8 +134,8 @@ http.createServer(function(req, res) {
 	}
 	if(url.match('diff') !== null){
 		var dmp = new diff.diff_match_patch();
-		var d1 = fs.readFileSync('E:\\gitrepos\\express\\cvtinstworkersvr\\tools\\d1.json');
-		var d2 = fs.readFileSync('E:\\gitrepos\\express\\cvtinstworkersvr\\tools\\d1.json');
+		var d1 = fs.readFileSync('D:\\gitrepos\\rvt2lmv_extractor_testing_srv\\cvtinstworkersvr\\tools\\objects_vals.json');
+		var d2 = fs.readFileSync('D:\\gitrepos\\rvt2lmv_extractor_testing_srv\\cvtinstworkersvr\\tools\\objects_vals.json.bm.json');
 		// var result = dmp.diff_main(d1.toString(),d2.toString());
 		// dmp.diff_cleanupSemantic(result);
 		// dmp.diff_cleanupEfficiency(result);

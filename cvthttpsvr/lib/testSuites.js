@@ -8,6 +8,11 @@ var suites = exports.suites = {};
 
 var suitesString = fs.readFileSync("./cvthttpsvr/lib/testSuites.json", "utf8");
 var sm = JSON.parse(suitesString);
+var id = 0;
+sm.suites.forEach(function(v, i, arr) {
+	v.id = id;
+	id++;
+})
 suites.smoke = sm;
 
 

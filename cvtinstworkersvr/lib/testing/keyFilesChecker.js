@@ -27,19 +27,15 @@ checker.KeyFilesChecker.prototype.checks = function(callback) {
     for (var jj = 0; jj < filesPath.length; jj++) {
         // 4.1 conver to image if the file is svf.
         var filePath = filesPath[jj];
+        var currentFolder = filePath.substr(0, filePath.lastIndexOf('\\') + 1);
         var fileExtension = filePath.substr(filePath.lastIndexOf('.'));
         if (fileExtension === '.svf') {
             // locates the index to insert these check points.
-            var currentFolder = filePath.substr(0, filePath.lastIndexOf('\\') + 1);
             this.context.checkPoints.splice(
                 this.context.currentCheckPointIndex + 1, // inserts the new check points to the next position.
                 0, // no removing.
-                new cmd_svf2Image.svf2ImageCommand.Svf2ImageCommand(this.context, this.testcase, filePath),
-                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_attrs.json.gz'),
-                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_avs.json.gz'),
-                // new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_ids.json.gz'),
-                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_offs.json.gz'),
-                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_vals.json.gz')            );
+                new cmd_svf2Image.svf2ImageCommand.Svf2ImageCommand(this.context, this.testcase, filePath)
+                );
 
         } else if (fileExtension == '.dwfx') {
 
@@ -48,7 +44,18 @@ checker.KeyFilesChecker.prototype.checks = function(callback) {
                 0, // no removing.
                 new cmd_dwfx2Image.dwfx2ImageCommand.Dwfx2ImageCommand(this.context, this.testcase, filePath)
             );
+        } else if(fileExtension == '.sdb'){
+            this.context.checkPoints.splice(
+                this.context.currentCheckPointIndex + 1, // inserts the new check points to the next position.
+                0, // no removing.
+                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_attrs.json.gz'),
+                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_avs.json.gz'),
+                // new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_ids.json.gz'),
+                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_offs.json.gz'),
+                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_vals.json.gz')            
+                );
         }
+
     }
 
 }

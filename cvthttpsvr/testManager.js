@@ -40,6 +40,25 @@ testManager.Timeout_PackagesMonitor = 600000; // 10 min
 /////////////////////////////////////////////////////////////////////////////
 // global methods
 
+
+testManager.getEnvName = function(id) {
+    switch(id)
+    {
+        case 0:
+            return 'DevelopmentPerCL';
+        case 1:
+            return 'Development';
+        case 2:
+            return 'ReleasePerCL';
+        case 3:
+            return 'Release';
+        case 4:
+            return 'Custom';
+        default:
+            throw 'Not supported id for env.';
+    }
+}
+
 testManager.addMessage = function(msg) {
     this.messages.push(msg);
 }
@@ -88,24 +107,31 @@ testManager.sortPackagesWithDate = function(files, perChangelist) {
 
 testManager.getLatestPackage = function(env) {
     // 1. checks the server dev.
-    var packsInServer = fs.readdirSync(env.path);
-    var sortedPacksInServer = this.sortPackagesWithDate(packsInServer, env.perChangelist);
+    try{
+        var packsInServer = fs.readdirSync(env.path);
+        var sortedPacksInServer = this.sortPackagesWithDate(packsInServer, env.perChangelist);
 
-    var dbpacks = env.packages;
-    if (!dbpacks)
+        var dbpacks = env.packages;
+        if (!dbpacks)
+            return null;
+
+        var diffcount = sortedPacksInServer.length - dbpacks.length;
+        if (diffcount < 1)
+            return null;
+
+        for (var ii = dbpacks.length; ii < sortedPacksInServer.length; ii++) {
+            env.packages.splice(0, 0, {
+                'name': sortedPacksInServer[ii - dbpacks.length],
+                'smokeStatus': 'unknown',
+                'isTested': false,
+                'id': ii
+            });
+        }
+    }
+    catch(err)
+    {
+        console.log(err);
         return null;
-
-    var diffcount = sortedPacksInServer.length - dbpacks.length;
-    if (diffcount < 1)
-        return null;
-
-    for (var ii = dbpacks.length; ii < sortedPacksInServer.length; ii++) {
-        env.packages.splice(0, 0, {
-            'name': sortedPacksInServer[ii - dbpacks.length],
-            'smokeStatus': 'unknown',
-            'isTested': false,
-            'id': ii
-        });
     }
 
     // 2. get the latest one.

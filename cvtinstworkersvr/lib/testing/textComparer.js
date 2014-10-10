@@ -4,33 +4,42 @@ var diff = require('../diffmatchpatch/diffmatchpatch');
 var checker = exports.TextComparer = {};
 
 function dummyVarSections (argument) {
-    var lines = argument.split('\n');
-    var newContent;
-    for(var ii=0; ii<lines.length; ii++)
-    {
-        var line = lines[ii];
-        var strtmp = line.trim();
-        var strarr = strtmp.split(':');
-        if(strarr.length === 2){
-            var tag = strarr[0];
-            if(tag === "\"guid\""){
-                line = "\"guid\":\"dummy_value\",";
-            } else if(tag === "\"size\""){
-                line = "\"size\": dummy_value,";
-            } else if(tag === "\"viewableID\""){
-            	// this is really evil and should be removed soon.
-            	var trickyLine = lines[ii - 2].trim(); // "name":	"3D",
-            	var tlstrarr = trickyLine.split(':');
-            	if(tlstrarr.length === 2 && 
-            		tlstrarr[0] === "\"name\"" &&
-            		tlstrarr[1].trim() === "\"3D\",")
-            		line = "\"viewableID\":\"dummy_value\",";
-            }
-
-        }
-        newContent += line + '\n';
-    }
-    return newContent;
+	var lines = argument.split('\n');
+	var newContent;
+	for(var ii=0; ii<lines.length; ii++)
+	{
+		var line = lines[ii];
+		var strtmp = line.trim();
+		var strarr = strtmp.split(':');
+		if(strarr.length === 2){
+			var tag = strarr[0];
+			if(tag === "\"guid\""){
+				line = "\"guid\":\"dummy_value\",";
+			} else if(tag === "\"size\""){
+				line = "\"size\": dummy_value,";
+			} else if(tag === "\"viewableID\""){
+				// this is really evil and should be removed soon.
+				var trickyLine = lines[ii - 3].trim(); // "role": "3d",
+				var tlstrarr = trickyLine.split(':');
+				if(tlstrarr.length === 2 && 
+					tlstrarr[0] === "\"role\"" &&
+					tlstrarr[1].trim() === "\"3d\",")
+					line = "\"viewableID\":\"dummy_value\",";
+			}
+		}
+		else{
+			// solve the unique/viewable id because the view is generated on the fly.
+			// "6da34a42-6730-4812-a9e0-26020e33f074-0004d73c"
+			strtmp = strtmp.replace(/\"/g,'');// remove the ".
+			strarr = strtmp.split('-');
+			if(strarr.length === 6 && strtmp.length === 45)
+			{
+				line = "\"dummy_value-"+strarr[5]+"\"";
+			}
+		}
+		newContent += line + '\n';
+	}
+	return newContent;
 }
 
 checker.compareTexts = function(txtFile1, txtFile2) {

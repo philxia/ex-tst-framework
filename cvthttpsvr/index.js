@@ -19,6 +19,7 @@ var http = require('http');
 
 var tstMgr_ns = require('./testManager').testManager;
 var db = require('./db');
+var suites = require('./lib/testSuites').suites;
 
 var app = module.exports = express();
 
@@ -86,6 +87,71 @@ require('./lib/boot')(app, {
 	verbose: !module.parent
 });
 
+app.use(cors());
+
+
+app.get('/result/:env/:title', provides('json'), function(req, res) {
+	var envid = req.params.env;
+	var title = req.params.title;
+	var envName = tstMgr_ns.getEnvName(parseInt(envid));
+
+	var url = path.join(tstMgr_ns.ResultsFolder, envName, title, 'package.json');
+	if(!fs.existsSync(url))
+	{
+		res.status(404);
+		return;
+	}
+
+	fs.readFile(path.join(tstMgr_ns.ResultsFolder, envName, title, 'package.json'), function(err, data) {
+		if(err)
+		{
+			console.log(err);
+			res.status(500);
+		}
+		var resultObj = JSON.parse(data.toString('utf8'));
+		res.send({result: resultObj});	
+	});
+});
+
+
+app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
+	var suiteId = parseInt(req.params.suiteId);
+	var envId = parseInt(req.params.evnId);
+	var envName = tstMgr_ns.getEnvName(envId);
+
+	if(suiteId < 0 || suiteId > suites.smoke.suites.length)
+	{
+		res.status(404);
+		return;
+	}
+
+	try{
+		var suite = suites.smoke.suites[suiteId];
+		var sname = suite.name;
+		sname = sname.substr(0, sname.length-'.rvt'.length);
+		var spath = suite.path;
+		var resfolder = path.join(tstMgr_ns.ResultsFolder, envName);
+		var folders = fs.readdirSync(resfolder);
+		var result = {};
+		result.count = folders.length;
+		folders.forEach(function(v, i, arr) {
+			var perfcont = fs.readFileSync(path.join(resfolder, v, spath, sname, 'cvnperf.csv'), 'utf8');
+			var lines = perfcont.split('\n');
+			var obj = {};
+			lines.forEach(function(v1, i1, arr1) {
+				var ws = v1.split(',');
+				obj[ws[0].trim()] = parseFloat(ws[1].trim());
+			});
+			result[v] = obj;
+		});
+
+		res.status(200).send(result);
+	}
+	catch(err)
+	{
+		res.status(500).send({message: err.toString('utf8')});
+	}
+});
 
 // create new job api with the json input {packId, envId, filename}
 app.post('/create', function (req, res) {
@@ -107,7 +173,7 @@ app.post('/create', function (req, res) {
 		'id': packId
 	});
 	var argument = 'runTest_'+envId + '_'+packId+' ' + filename;
-	createNewJob(argument);
+	createNewJob(argument, 'phil.xia');
 
 	res.send({ message: 'job created'});
 });
@@ -117,7 +183,7 @@ app.post('/login',
 		successRedirect: '/',
 		failureRedirect: '/login' }));
 
-app.use(cors());
+
 
 // assume "not found" in the error msgs
 // is a 404. this is somewhat silly, but
@@ -340,7 +406,7 @@ if (!module.parent) {
 					'id': packId
 				});
 				var argument = 'runTest_4_'+packId+' ' + filename;
-				createNewJob(argument);
+				createNewJob(argument, 'phil.xia');
 				// runTest(argument);
 			});
 		})
@@ -350,13 +416,13 @@ if (!module.parent) {
 	doLoopCheckPackagesAndRunTest();
 }
 
-function createNewJob (argument) {
+function createNewJob (argument, owner) {
 	// send message to job queue and add a new job.
 	var data = {
 		'type': 'rvt2lmv',
 		'data': {
 			'title': argument,
-			'owner': 'phil.xia@autodesk.com',
+			'owner': owner,
 			'success':0,
 			'fail':0,
 			'count':0,
@@ -503,7 +569,8 @@ function doLoopCheckPackagesAndRunTest() {
 					db.envs[ii].id + '_' + lastestpack.id + ' ' + lastestpack.name;
 				// runTest(packId);
 
-				createNewJob(packId);
+				var owner = tstMgr_ns.getEnvName(ii);
+				createNewJob(packId, owner);
 			}
 		}
 	}
