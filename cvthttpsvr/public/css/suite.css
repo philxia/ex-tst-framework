@@ -1,38 +1,62 @@
+
+body
+{
+overflow-y:hidden;
+}
+
+
 #tab_historyPerf {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin: auto;
-  position: relative;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin: auto;
+	position: relative;
+}
+
+#tab_information{
+	padding: 20px;
 }
 
 #main_historyPerf {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin: auto;
-  position: relative;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin: auto;
+	position: relative;
 }
 
 text {
-  font: 10px sans-serif;
+	font: 10px sans-serif;
 }
 
 .axis path,
 .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
 }
 
 #groupmethod {
-  position: absolute;
-  right: 20px;
-  top: 10px;
-  z-index: 10;
+	position: absolute;
+	right: 20px;
+	top: 10px;
+	z-index: 10;
 }
 
 .casetitle {
-  float: left;
+	float: left;
 }
 
 .casetitle h3{
-  margin-top: 5px;
-  margin-left: 20px;
+	margin-top: 5px;
+	margin-left: 20px;
+}
+
+
+#perfModal
+{
+	width: 1000px;
+	position: absolute;
+	left: 50%;
+	top:5%;
+	margin-left: -500px;
+
+	overflow-y:hidden;
+	overflow-x:hidden;
 }

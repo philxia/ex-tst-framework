@@ -15,6 +15,7 @@ html
 		script(src='fileupload/js/vendor/jquery.ui.widget.js')
 		script(src='fileupload/js/jquery.iframe-transport.js')
 		script(src='fileupload/js/jquery.fileupload.js')
+		link(rel = 'stylesheet', href = 'd3/sequences.css')
 	header
 		include ../../../includes/head
 
@@ -53,20 +54,23 @@ html
 						button(type="button" class="btn btn-default" data-dismiss="modal") close
 						button(type="submit" class="btn btn-primary" data-dismiss="modal") Submit
 		div(class="modal fade" id="perfModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
-			div.modal-dialog
+			div(class="modal-dialog" style="margin:0px;")
 				div(class="modal-content" style="min-width:1000px;")
 					div.modal-header
 						button(type="button" class="close" data-dismiss="modal" aria-hidden="true")&times;
-						h4(class="modal-title" id="myModalLabel") Performance
+						h4(class="modal-title" id="myModalLabel") Performance 
 							span(id="result_title" class="label label-primary" style="margin-left:50px;padding:10px;")
 					div.modal-body
 						ul(class="nav nav-tabs" role="tablist")
 							li.active
+								a(href="#tab_information" role="tab" data-toggle="tab") Information
+							li
 								a(href="#tab_historyPerf" role="tab" data-toggle="tab") History
 							li
 								a(href="#tab_perf" role="tab" data-toggle="tab") Single
 						div(class="tab-content" style="min-height:600px;min-width:960px")
-							div(class="tab-pane active" id="tab_historyPerf")
+							div(class="tab-pane active" id="tab_information")
+							div(class="tab-pane" id="tab_historyPerf")
 								form#groupmethod
 									label Grouped
 										input(type="radio" name="mode" value="grouped")
@@ -140,4 +144,3 @@ html
 	script(src="d3/sequences.js")
 	script(src="js/suite.js")
 	link(rel='stylesheet', href='css/suite.css')
-

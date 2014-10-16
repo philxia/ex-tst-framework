@@ -22,7 +22,7 @@ checker.DatabaseChecker = function(context, testcase, dbFilePath) {
     this.extractCount = 0;
     this.fileName = '';
     if (!fs.existsSync(this.dbFilePath))
-        throw 'The tool does not existed at the give path - ' + this.dbFilePath;
+        throw 'The database does not existed at the give path - ' + this.dbFilePath;
 
     this.checkPoint = new checkPoint_ns.CheckPoint(checkPoint_ns.DatabaseCheck);
     this.testcase.checkPoints.push(this.checkPoint);

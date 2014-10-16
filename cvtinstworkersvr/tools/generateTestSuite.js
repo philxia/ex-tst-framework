@@ -81,6 +81,48 @@ http.createServer(function(req, res) {
 		});
 		res.end('This is the RevitExtractor testing server.\n');
 	}
+	if(url.match('suite') !== null)
+	{
+		var suites = fs.readFileSync("D:\\gitrepos\\rvt2lmv_extractor_testing_srv\\cvthttpsvr\\lib\\testSuites.json");
+		var suitesjson = JSON.parse(suites);
+		suites = suitesjson.suites;
+		var content = fs.readFileSync("D:\\tf\\results\\Release\\RevitExtractor_x64_2015.0.2014.1010\\success.txt", 'utf8');
+		var contentjson = JSON.parse(content);
+		contentjson.forEach(function(v, i, arr) {
+			if(v.err != "INFO")
+				return;
+
+			var info = v.stdout;
+			if(info.indexOf('DSM_GenericInformation') > 0)
+			{
+				info = info.substr(info.indexOf('{'));
+				info = info.trim();
+				var infojson = JSON.parse(info);
+				var filePath = infojson.StatusReportMsg.FilePath;
+				var fileName = filePath.substr(filePath.lastIndexOf('\\')+1);
+				suites.forEach(function(v, i, arr) {
+					if(v.name == fileName)
+					{
+						var fp = infojson.StatusReportMsg.FileProps;
+						var prr =[];
+						for(p in fp)
+						{
+							if(p.indexOf('RCE') == 0)
+								prr.push(p);
+						}
+						for(var j=0;j<prr.length; j++)
+							delete fp[prr[j]];
+						arr[i].props = fp;
+					}
+				});
+			}
+		});
+
+
+		fs.writeFileSync("D:\\gitrepos\\rvt2lmv_extractor_testing_srv\\cvthttpsvr\\lib\\testSuites_new.json", JSON.stringify(suites), 'utf8');
+		res.end('cool.');
+
+	}
 	if(url.match('mail') !== null)
 	{
 		var nodemailer = require('nodemailer');

@@ -53,7 +53,7 @@ testManager.getEnvName = function(id) {
             return 'ReleasePerCL';
         case 3:
             return 'Release';
-        case 5:
+        case 4:
             return 'Custom';
         default:
             throw 'Not supported id for env.';

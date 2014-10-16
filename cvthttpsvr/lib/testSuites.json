@@ -1,52 +1,210 @@
 {
-    "name": "smoke",
-    "suites": [{
-        "name": "LinkRVT_4Cases.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\LinkRVT_4Cases\\index.json", ".\\2015\\LinkRVT_4Cases.rvt"]
-    },{
-        "name": "rac_advanced_sample_project.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\rac_advanced_sample_project\\index.json", ".\\2015\\rac_advanced_sample_project.rvt"]
-    },{
-        "name": "RAC_OneOfEverything.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\RAC_OneOfEverything\\index.json", ".\\2015\\RAC_OneOfEverything.rvt"]
-    }, {
-        "name": "rme_advanced_sample_project.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\rme_advanced_sample_project\\index.json", ".\\2015\\rme_advanced_sample_project.rvt"]
-    }, {
-        "name": "RME_One_of_Each_Imperial.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\RME_One_of_Each_Imperial\\index.json", ".\\2015\\RME_One_of_Each_Imperial.rvt"]
-    },{
-        "name": "rst_advanced_sample_project.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\rst_advanced_sample_project\\index.json", ".\\2015\\rst_advanced_sample_project.rvt"]
-    },{
-        "name": "RST_One_of_Each_Imperial.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\RST_One_of_Each_Imperial\\index.json", ".\\2015\\RST_One_of_Each_Imperial.rvt"]
-    },{
-        "name": "Simple_model.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\Simple_model\\index.json", ".\\2015\\Simple_model.rvt"]
-    },{
-        "name": "SmallHouse_r2015.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\SmallHouse_r2015\\index.json", ".\\2015\\SmallHouse_r2015.rvt"]
-    },{
-        "name": "Chinese+project02-R2015.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\Chinese+project02-R2015\\index.json", ".\\2015\\Chinese+project02-R2015.rvt"]
-    },{
-        "name": "Project_OVE_Architecture_2015.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\Project_OVE_Architecture_2015\\index.json", ".\\2015\\Project_OVE_Architecture_2015.rvt", "/no2d"]
-    },{
-        "name": "SeaResort.rvt",
-        "path": ".\\2015\\",
-        "args": [".\\2015\\SeaResort\\index.json", ".\\2015\\SeaResort.rvt"]
-    }]
+  "name": "smoke",
+  "suites": [
+    {
+      "name": "LinkRVT_4Cases.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\LinkRVT_4Cases\\index.json",
+        ".\\2015\\LinkRVT_4Cases.rvt"
+      ],
+      "props": {
+        "FileSize": "3.859375MB",
+        "AllViews": "6",
+        "Existing3DViews": "1",
+        "AllSheets": "0",
+        "Exported3DView": "1",
+        "Exported2DViews": "0",
+        "ExportedSheets": "0"
+      }
+    },
+    {
+      "name": "rac_advanced_sample_project.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\rac_advanced_sample_project\\index.json",
+        ".\\2015\\rac_advanced_sample_project.rvt"
+      ],
+      "props": {
+        "FileSize": "13.57421875MB",
+        "AllViews": "32",
+        "Existing3DViews": "6",
+        "AllSheets": "2",
+        "Exported3DView": "1",
+        "Exported2DViews": "2",
+        "ExportedSheets": "2"
+      }
+    },
+    {
+      "name": "RAC_OneOfEverything.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\RAC_OneOfEverything\\index.json",
+        ".\\2015\\RAC_OneOfEverything.rvt"
+      ],
+      "props": {
+        "FileSize": "7.97265625MB",
+        "AllViews": "19",
+        "Existing3DViews": "2",
+        "AllSheets": "1",
+        "Exported3DView": "1",
+        "Exported2DViews": "1",
+        "ExportedSheets": "1"
+      }
+    },
+    {
+      "name": "rme_advanced_sample_project.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\rme_advanced_sample_project\\index.json",
+        ".\\2015\\rme_advanced_sample_project.rvt"
+      ],
+      "props": {
+        "FileSize": "30.26171875MB",
+        "AllViews": "102",
+        "Existing3DViews": "12",
+        "AllSheets": "7",
+        "Exported3DView": "1",
+        "Exported2DViews": "7",
+        "ExportedSheets": "7"
+      }
+    },
+    {
+      "name": "RME_One_of_Each_Imperial.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\RME_One_of_Each_Imperial\\index.json",
+        ".\\2015\\RME_One_of_Each_Imperial.rvt"
+      ],
+      "props": {
+        "FileSize": "10.92578125MB",
+        "AllViews": "16",
+        "Existing3DViews": "2",
+        "AllSheets": "0",
+        "Exported3DView": "1",
+        "Exported2DViews": "0",
+        "ExportedSheets": "0"
+      }
+    },
+    {
+      "name": "rst_advanced_sample_project.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\rst_advanced_sample_project\\index.json",
+        ".\\2015\\rst_advanced_sample_project.rvt"
+      ],
+      "props": {
+        "FileSize": "11.015625MB",
+        "AllViews": "41",
+        "Existing3DViews": "2",
+        "AllSheets": "9",
+        "Exported3DView": "1",
+        "Exported2DViews": "9",
+        "ExportedSheets": "9"
+      }
+    },
+    {
+      "name": "RST_One_of_Each_Imperial.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\RST_One_of_Each_Imperial\\index.json",
+        ".\\2015\\RST_One_of_Each_Imperial.rvt"
+      ],
+      "props": {
+        "FileSize": "13.5859375MB",
+        "AllViews": "15",
+        "Existing3DViews": "2",
+        "AllSheets": "0",
+        "Exported3DView": "1",
+        "Exported2DViews": "0",
+        "ExportedSheets": "0"
+      }
+    },
+    {
+      "name": "Simple_model.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\Simple_model\\index.json",
+        ".\\2015\\Simple_model.rvt"
+      ],
+      "props": {
+        "FileSize": "4.1015625MB",
+        "AllViews": "10",
+        "Existing3DViews": "1",
+        "AllSheets": "0",
+        "Exported3DView": "1",
+        "Exported2DViews": "0",
+        "ExportedSheets": "0"
+      }
+    },
+    {
+      "name": "SmallHouse_r2015.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\SmallHouse_r2015\\index.json",
+        ".\\2015\\SmallHouse_r2015.rvt"
+      ],
+      "props": {
+        "FileSize": "2.56640625MB",
+        "AllViews": "18",
+        "Existing3DViews": "1",
+        "AllSheets": "2",
+        "Exported3DView": "1",
+        "Exported2DViews": "2",
+        "ExportedSheets": "2"
+      }
+    },
+    {
+      "name": "Chinese+project02-R2015.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\Chinese+project02-R2015\\index.json",
+        ".\\2015\\Chinese+project02-R2015.rvt"
+      ],
+      "props": {
+        "FileSize": "19.53515625MB",
+        "AllViews": "39",
+        "Existing3DViews": "8",
+        "AllSheets": "0",
+        "Exported3DView": "1",
+        "Exported2DViews": "0",
+        "ExportedSheets": "0"
+      }
+    },
+    {
+      "name": "Project_OVE_Architecture_2015.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\Project_OVE_Architecture_2015\\index.json",
+        ".\\2015\\Project_OVE_Architecture_2015.rvt",
+        "/no2d"
+      ],
+      "props": {
+        "FileSize": "566.44140625MB",
+        "AllViews": "145",
+        "Existing3DViews": "79",
+        "AllSheets": "10",
+        "Exported3DView": "1",
+        "Exported2DViews": "10",
+        "ExportedSheets": "10"
+      }
+    },
+    {
+      "name": "SeaResort.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\SeaResort\\index.json",
+        ".\\2015\\SeaResort.rvt"
+      ],
+      "props": {
+        "FileSize": "150.89453125MB",
+        "AllViews": "942",
+        "Existing3DViews": "40",
+        "AllSheets": "243",
+        "Exported3DView": "1",
+        "Exported2DViews": "243",
+        "ExportedSheets": "243"
+      }
+    }
+  ]
 }

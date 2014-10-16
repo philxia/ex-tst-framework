@@ -407,7 +407,7 @@
 							+ fails +'</span></div>';
 					
 					// $(el).find('td:eq(2)')[0].innerHTML = '<span class="label label-info">phil.xia@autodesk.com</span>';
-					$(el).find('td:eq(4)')[0].innerHTML = ((fails+success) == count)? "complete":"in process";
+					$(el).find('td:eq(4)')[0].innerHTML = (((fails+success) == count) && count !=0)? "complete":"in process";
 					$(el).find('td:eq(5)')[0].innerHTML = totalHTML + successHTML +
 						abortHTML + failHTML;
 					var progress = Math.ceil(100*(success+fails)/count);
@@ -428,9 +428,12 @@
 					var testTitle = job.data.title.split(' ')[1];
 					var jobid = 'job-' + job.id;
 					testTitle = testTitle.substr(0, testTitle.lastIndexOf('.'));
+					var priorityText = 'normal';
+					if(job.priority === -10)
+						priorityText = 'normal';
 					// add a row to the table and set the test status to pending.
 					var htmlText = '<tr id="' + jobid + '"><td><span class="label label-info">'+ job.type
-					+'</span></td><td>'+ job.priority+'</td><td><span class="label label-info">'+ job.data.owner
+					+'</span></td><td>'+ priorityText+'</td><td><span class="label label-info">'+ job.data.owner
 					+'</span></td><td class="item"><a>' + testTitle + 
 					'</a></td><td>' + 'pending' + '</td><td></td><td><div class="progressbar"></div></td></tr>';
 					// if($("#jobsTable tr:first").length > 0)
@@ -449,7 +452,7 @@
 						failHTML = '<div class="col-md-3"><span class="label label-danger">'
 							+ fails +'</span></div>';
 					var trObj = document.getElementById(jobid);
-					$(trObj).find('td:eq(4)')[0].innerHTML = ((fails+success) == count)? "complete":"in process";
+					$(trObj).find('td:eq(4)')[0].innerHTML = (((fails+success) == count) && count !=0)? "complete":"in process";
 					$(trObj).find('td:eq(5)')[0].innerHTML = totalHTML + successHTML +
 						abortHTML + failHTML;
 					$(trObj).find('td:eq(6) > .progressbar').progressbar({value:false});

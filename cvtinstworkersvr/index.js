@@ -77,12 +77,12 @@ app.use(function(req, res, next) {
 
 tstMgr_ns.Manager.setApplication(app);
 
-// if (!module.parent) {
-// 	setTimeout(function () {
+if (!module.parent) {
+	setTimeout(function () {
 		// body...
 		doLoopCheckQueuedJobsAndRunTest();
-// 	}, 20000);
-// }
+	}, 20000);
+}
 
 function runTest(argument, jobId, genBenchmarks) {
 	console.log(argument);
@@ -200,30 +200,25 @@ function doLoopCheckQueuedJobsAndRunTest() {
 							var packId = parseInt(fargStrings[2]);
 							var filename = argStrings[1];
 							var url = "http://localhost:8888/files/" + filename;
+							var envName = tstMgr_ns.getEnvName(parseInt(envId));
+							var filePath = path.join(tstMgr_ns.PackageFolder, envName, filename);
+							// if(envId == '4')
+							// {
+							// 	var file = fs.createWriteStream(filePath);
+							// 	http.get(url, function(res) {
+							// 		console.log("Got response: " + res.statusCode);
+							// 		res.pipe(file);
+							// 	}).on('error', function(e) {
+							// 		console.log("Got error: " + e.message);
+							// 	});
 
-							var filePath = path.join(tstMgr_ns.PackageFolder, 'Custom', filename)
-							var file = fs.createWriteStream(filePath);
-							http.get(url, function(res) {
-								console.log("Got response: " + res.statusCode);
-								res.pipe(file);
-							}).on('error', function(e) {
-								console.log("Got error: " + e.message);
-							});
-
-							file.on("close", function(ex) {
-								// var env = db.envs[envId];
-								// var packIndex = env.packages.length - packId - 1;
-								// if(packIndex < 0)
-								// {
-								// 	env.packages.splice(0,0, {
-								// 		'name': filename,
-								// 		'smokeStatus': 'unknown',
-								// 		'isTested': false,
-								// 		'id': packId
-								// 	});
-								// }
+								
+							// 	file.on("close", function(ex) {
+							// 		runTest(argument, currentJob.id);
+							// 	});
+							// }
+							// else
 								runTest(argument, currentJob.id);
-							});
 						})
 					})
 				}

@@ -133,8 +133,11 @@ app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
 		var resfolder = path.join(tstMgr_ns.ResultsFolder, envName);
 		var folders = fs.readdirSync(resfolder);
 		var result = {};
-		result.count = folders.length;
+		var count = 0;
 		folders.forEach(function(v, i, arr) {
+			var perfFile = path.join(resfolder, v, spath, sname, 'cvnperf.csv');
+			if(!fs.existsSync(perfFile))
+				return;
 			var perfcont = fs.readFileSync(path.join(resfolder, v, spath, sname, 'cvnperf.csv'), 'utf8');
 			var lines = perfcont.split('\n');
 			var obj = {};
@@ -143,7 +146,10 @@ app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
 				obj[ws[0].trim()] = parseFloat(ws[1].trim());
 			});
 			result[v] = obj;
+			count ++;
 		});
+		result.count = count;
+		result.information = suite;
 
 		res.status(200).send(result);
 	}
@@ -173,9 +179,25 @@ app.post('/create', function (req, res) {
 		'id': packId
 	});
 	var argument = 'runTest_'+envId + '_'+packId+' ' + filename;
-	createNewJob(argument, 'phil.xia');
 
-	res.send({ message: 'job created'});
+	// copy the file to 
+	var url = "http://localhost:8888/files/" + filename;
+	var envName = tstMgr_ns.getEnvName(parseInt(envId));
+	var filePath = path.join(tstMgr_ns.PackageFolder, envName, filename);
+	var file = fs.createWriteStream(filePath);
+	http.get(url, function(res) {
+		console.log("Got response: " + res.statusCode);
+		res.pipe(file);
+	}).on('error', function(e) {
+		console.log("Got error: " + e.message);
+	});
+
+	
+	file.on("close", function(ex) {
+		createNewJob(argument, 'phil.xia');
+		res.send({ message: 'job created'});
+	});
+
 });
 
 app.post('/login', 
@@ -220,197 +242,6 @@ if (!module.parent) {
 
 	app.get('/', function(req, res) {
 		res.sendfile(__dirname + '/index.html');
-	});
-
-	var socket_server = require('./socket');
-
-	io.sockets.on('connection', function(socket) {
-		socket.on('disconnect', function() {
-			if ( !! socket_server.socket_connections[socket.id])
-				delete socket_server.socket_connections[socket.id]
-
-		});
-		socket.on(tstMgr_ns.Action_MonitorTest, function(argument) {
-			console.log(argument);
-			try {
-				var tstObj = tstMgr_ns.Manager.getCurrentTesting();
-				for (var hh = 0; hh < tstObj.consoleLog.length; hh++) {
-					var msg = tstObj.consoleLog[hh];
-					sendMessagesToSingleConnection(socket, msg['err'], msg['stdout']);
-				}
-			} catch (err) {
-				console.log(err);
-			}
-		});
-		socket.on(tstMgr_ns.Action_BrowseResult, function(argument) {
-			console.log(argument);
-			var argStrings = argument.split(' ');
-			if (argStrings.length != 2)
-				throw 'The argument from client is invalid - ' + argument + '.';
-			var fargStrings = argStrings[0].split('_');
-			if (fargStrings.length != 3)
-				throw 'The argument from client is invalid - ' + argument + '.';
-			var action = fargStrings[0]
-			var envId = fargStrings[1];;
-			var packId = parseInt(fargStrings[2]);
-
-
-			var env = db.envs[envId];
-			var envName = env.name;
-			var pack = env.packages[env.packages.length - packId - 1];
-			if (pack.id !== packId)
-				throw 'The pack is not we are looking for.';
-
-			// try to load the result.
-			var packFileName = pack.name.substr(0, pack.name.length - '.zip'.length);
-			var resultFileName = pack.smokeStatus + '.txt';
-			var resultFilePath = path.join(tstMgr_ns.ResultsFolder, envName, packFileName, resultFileName);
-			if (!fs.existsSync(resultFilePath))
-				return;
-
-			try {
-				var resultString = fs.readFileSync(resultFilePath, "utf8");
-				var resultObject = JSON.parse(resultString);
-				if (!Array.isArray(resultObject))
-					throw 'The result is invalid.';
-
-				// var conns = socket_server.socket_connections;
-				// var countOfConns = Object.keys(conns).length;
-				for (var ii = 0; ii < resultObject.length; ii++) {
-					var msg = resultObject[ii];
-					sendMessagesToSingleConnection(socket, msg['err'], msg['stdout']);
-				}
-				socket.needUpdate_information = false;
-
-			} catch (err) {
-				console.log(err);
-			}
-		});
-		socket.on(tstMgr_ns.Action_RunTest, function(argument) {
-			console.log(argument);
-
-			// send message to job queue and add a new job.
-			var data = {
-				'type': 'rvt2lmv',
-				'data': {
-					'title': argument,
-					'owner': 'phil.xia@autodesk.com',
-					'success':0,
-					'fail':0,
-					'count':0,
-				},
-				'options': {
-					'priority': 'high'
-				}
-			};
-			data = JSON.stringify(data);  
-			var opts = {
-				hostname: tstMgr_ns.Manager.getHostIP(),
-				auth: 'foo:bar',
-				port: 3001,
-				path: '/job',
-				method: 'POST',
-				headers:{
-					'Content-Type': 'application/json',
-					'Content-Length': data.length
-				}
-			};
-			var req = http.request(opts, function(res) {
-				if(res.statusCode == 200){
-					var body='';
-					res.setEncoding('utf8');
-					res.on('data', function(d) {
-						console.log(d);
-						var job = JSON.parse(d);
-						runTest(argument, job.id);
-					})
-				}
-
-			});
-			req.write(data + '\n');
-			req.end();
-
-			// runTest(argument);
-		});
-
-		socket.on(tstMgr_ns.Action_GenerateBenchmarks, function(argument) {
-			console.log(argument);
-			// send message to job queue and add a new job.
-			var data = {
-				'type': 'rvt2lmv',
-				'data': {
-					'title': argument,
-					'owner': 'phil.xia@autodesk.com',
-					'success':0,
-					'fail':0,
-					'count':0,
-				},
-				'options': {
-					'priority': 'high'
-				}
-			};
-			data = JSON.stringify(data);  
-			var opts = {
-				hostname: tstMgr_ns.Manager.getHostIP(),
-				auth: 'foo:bar',
-				port: 3001,
-				path: '/job',
-				method: 'POST',
-				headers:{
-					'Content-Type': 'application/json',
-					'Content-Length': data.length
-				}
-			};
-			var req = http.request(opts, function(res) {
-				if(res.statusCode == 200){
-					var body='';
-					res.setEncoding('utf8');
-					res.on('data', function(d) {
-						console.log(d);
-						var job = JSON.parse(d);
-						runTest(argument, job.id, true);
-					})
-				}
-
-			});
-			req.write(data + '\n');
-			req.end();
-			// runTest(argument, true);
-		});
-
-		socket.on(tstMgr_ns.Action_RunTestForCustomPackage, function(argument) {
-			console.log(argument);
-			var uploadResult = JSON.parse(argument);
-			var url = uploadResult.files[0].url;
-			var filename = uploadResult.files[0].name;
-
-			var filePath = path.join(tstMgr_ns.PackageFolder, 'Custom', filename)
-			var file = fs.createWriteStream(filePath);
-			http.get(url, function(res) {
-			  console.log("Got response: " + res.statusCode);
-			  res.pipe(file);
-			}).on('error', function(e) {
-			  console.log("Got error: " + e.message);
-			});
-
-			file.on("close", function(ex) {
-				// finished the download.
-				// env id for custom is 4.
-				var count = fs.readdirSync( path.join(tstMgr_ns.ResultsFolder, 'Custom')).length;
-				// update the new pack.
-				var packId = count;
-				db.envs[4].packages.splice(0,0, {
-					'name': filename,
-					'smokeStatus': 'unknown',
-					'isTested': false,
-					'id': packId
-				});
-				var argument = 'runTest_4_'+packId+' ' + filename;
-				createNewJob(argument, 'phil.xia');
-				// runTest(argument);
-			});
-		})
-		socket_server.socket_connections[socket.id] = socket;
 	});
 
 	doLoopCheckPackagesAndRunTest();
@@ -543,9 +374,33 @@ function runTest(argument, jobId, genBenchmarks) {
 				});
 				sendMessagesToConnections(conns, err, stdout);
 			}
-
 		}
 	});
+}
+
+
+function copyFile(source, target, cb) {
+    var cbCalled = false;
+
+    var rd = fs.createReadStream(source);
+    rd.on("error", function(err) {
+        done(err);
+    });
+    var wr = fs.createWriteStream(target);
+    wr.on("error", function(err) {
+        done(err);
+    });
+    wr.on("close", function(ex) {
+        done();
+    });
+    rd.pipe(wr);
+
+    function done(err) {
+        if (!cbCalled) {
+            cb(err);
+            cbCalled = true;
+        }
+    }
 }
 
 function doLoopCheckPackagesAndRunTest() {
@@ -570,7 +425,19 @@ function doLoopCheckPackagesAndRunTest() {
 				// runTest(packId);
 
 				var owner = tstMgr_ns.getEnvName(ii);
-				createNewJob(packId, owner);
+				// copy the package to local.
+				var serverFilePath = path.join(db.envs[ii].path, lastestpack.name);
+				var filePath = path.join(tstMgr_ns.PackageFolder, owner, lastestpack.name);
+				copyFile(serverFilePath, filePath, function(err) {
+					if(err)
+					{
+						console.log(err.toString('utf8'));
+					}	
+					else
+					{
+						createNewJob(packId, owner);
+					}
+				});
 			}
 		}
 	}

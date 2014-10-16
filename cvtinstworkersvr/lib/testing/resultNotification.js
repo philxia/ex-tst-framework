@@ -223,7 +223,7 @@ checker.ResultNotification.prototype.checks = function(callback) {
 							if(pv === "'Export SVF For 3D Views'")
 								nameString = "3dsvf";
 							else if(pv === "'Resolve the link files'")
-								nameString = "opendoc-relinks";
+								nameString = "relinks";
 							else if(pv === "'Open RVT file'")
 								nameString = "opendoc";
 							else if(pv === "'Export property database'")

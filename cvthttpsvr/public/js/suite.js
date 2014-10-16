@@ -3,6 +3,7 @@ $(document).ready(function () {
 	$('#perfModal').on('hidden.bs.modal', function (e) {
 		d3.select("#main_historyPerf").selectAll('*').remove();
 		delete window.suiteIdString;
+		delete window.cachedHistoryPerfResult;
 	});
 
 
@@ -17,7 +18,41 @@ $(document).ready(function () {
 		}
 	});
 
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		var target = $(e.target).attr("href") // activated tab
+	  // alert(target);
+		if(target === '#tab_information')
+		{
+			$('div.btn-group').hide();
+		}
+		else if(target === '#tab_historyPerf')
+		{
+			$('div.btn-group').show();	
+		}
+		else if(target === '#tab_perf')
+		{
+			var result = window.cachedHistoryPerfResult;
+			if(result === undefined)
+				return;
+			// fill the p into the listbox.
+			var curP = null;
+			for(var p in result)
+			{
+				if(!curP)
+					curP = p;
 
+			}
+		}
+	});
+
+	$('#perfModal').on('show.bs.modal', function (e) {
+		// status preparation.
+		$('div.btn-group').hide();
+		$('div.modal-body .nav-tabs').children().removeClass('active');
+		$('div.modal-body .nav-tabs').children()[0].className = 'active';
+		$('.tab-content').children().removeClass('active');
+		$('#tab_information').addClass('active');
+	});
 	$('#perfModal').on('shown.bs.modal', function (e) {
 		try{
 			// query the history perf data from the host.
@@ -27,6 +62,8 @@ $(document).ready(function () {
 			window.suiteIdString = suiteIdString;
 
 			getPerfData(2, suiteIdString);
+			$('div .casetitle').html('<h3>Release per changelist</h3>');
+
 		}
 		catch(err)
 		{
@@ -35,35 +72,60 @@ $(document).ready(function () {
 	});
 
 	function getPerfData (envId, suiteIdString) {
+
+
+
 		// rest api - get the release per cl data at first.
 		var requrl = 'http://10.148.196.183:3000/historyPerf/'+ envId.toString() + '/' + suiteIdString;
 		$.get(requrl, 
 			function(result){
 				// caches this result at first.
-				// if(window.cachedHistoryPerfResult === undefined)
-				// 	window.cachedHistoryPerfResult = {};
-				// if(window.cachedHistoryPerfResult[suiteIdString] === undefined)
-				// 	window.cachedHistoryPerfResult[suiteIdString] = result;
+				if(window.cachedHistoryPerfResult === undefined)
+					window.cachedHistoryPerfResult = {};
+				if(window.cachedHistoryPerfResult[envId.toString()] === undefined)
+					window.cachedHistoryPerfResult[envId.toString()] = result;
+
+				var fileprops = result.information;
+				$('#tab_information').html('<p> File Name : '+ fileprops.name +'</p>' + 
+					'<p> Path : '+ fileprops.path +'</p>' + 
+					'<p> AllSheets : '+ fileprops.props.AllSheets +'</p>' + 
+					'<p> AllViews : '+ fileprops.props.AllViews +'</p>' + 
+					'<p> Existing 3D Views : '+ fileprops.props.Existing3DViews +'</p>' + 
+					// '<p> Exported 2D Views : '+ fileprops.props.Exported2DViews +'</p>' +
+					'<p> Exported 3D Views : '+ fileprops.props.Exported3DView +'</p>' + 
+					'<p> Exported 2D Sheets : '+ fileprops.props.ExportedSheets +'</p>' +
+					'<p> File Size : '+ fileprops.props.FileSize +'</p>');
 
 				var layernames = [];
 				var samplenames = [];
 				var tickText = []; //RevitExtractor_x64_CL428691_20141008_0245
 				for(p in result)
 				{
-					if(p === 'count')
+					if(p === 'count' || p === 'information')
 						continue;
 					samplenames.push(p);
-					tickText.push(p.split('_')[2]);
+					var tx = p.split('_')[2];
+					if(envId == 0 || envId == 2)
+						tickText.push(tx);
+					else if(envId == 1 || envId == 3)
+					{
+						var txs = tx.split('.');
+						tickText.push(txs[2]+'.' + txs[3]);
+					}
 				}
 				var onesample = result[samplenames[0]];
 				for(p in onesample)
 				{
-					if(p.split('-').length != 2)
+					// forward compatible hack.
+					if(p != 'opendoc-relinks-end' && p.split('-') === 3)
 						continue;
-					layernames.push(p);
+					if(p === 'opendoc-relinks-end')
+						layernames.push('relinks-end');
+					else
+						layernames.push(p);
 				}
 
-				var n = 6, // number of layers
+				var n = layernames.length, // number of layers
 					m = result.count, // number of samples per layer
 					stack = d3.layout.stack(),
 					index = 0;
@@ -75,7 +137,15 @@ $(document).ready(function () {
 						{
 							var spname = samplenames[ii];
 							var sp = result[spname];
-							a.push(sp[thisLayerName]);
+							var value = sp[thisLayerName];
+							if(value === undefined)
+							{
+								if(thisLayerName === 'relinks-end')
+									value = sp['opendoc-relinks-end'];
+								else if(thisLayerName === 'opendoc-relinks-end')
+									value = sp['relinks-end'];
+							}
+							a.push(value);
 						}
 						index++;
 						var res = a.map(function(d, i) { return {x: i, y: d}; });
@@ -106,13 +176,14 @@ $(document).ready(function () {
 					.tickPadding(6)
 					.orient("bottom");
 
-				var yAxis = d3.svg.axis()
-					.scale(y)
-					.tickFormat(function(d) {
-						return d.toString();
-					})
-					.tickPadding(6)
-					.orient("left");
+				// var yAxis = d3.svg.axis()
+				// 	.scale(y)
+				// 	.tickFormat(function(d) {
+				// 		return "hello";
+				// 	})
+				// 	.ticks(d3.time.minutes, 15)
+				// 	.tickPadding(6)
+				// 	.orient("left");
 
 
 				var svg = d3.select("#main_historyPerf").append("svg")
@@ -133,7 +204,8 @@ $(document).ready(function () {
 					.attr("x", function(d) { return x(d.x); })
 					.attr("y", height)
 					.attr("width", x.rangeBand())
-					.attr("height", 0);
+					.attr("height", 0)
+					.on("mouseover", mouseover);
 
 				rect.transition()
 					.delay(function(d, i) { return i * 10; })
@@ -145,16 +217,22 @@ $(document).ready(function () {
 					.attr("transform", "translate(0," + height + ")")
 					.call(xAxis);
 
-				svg.append("g")
-					.attr("class", "y axis")
-					.attr("transform", "translate(0,0)")
-					.call(yAxis);
+				// svg.append("g")
+				// 	.attr("class", "y axis")
+				// 	.attr("transform", "translate(30,0)")
+				// 	.call(yAxis);
 
 				d3.selectAll("input").on("change", change);
+
+				d3.selectAll("rect").on("mouseover", mouseover);
 
 				var timeout = setTimeout(function() {
 				  d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
 				}, 2000);
+
+				function mouseover(d) {
+
+				}
 
 				function change() {
 				  clearTimeout(timeout);
