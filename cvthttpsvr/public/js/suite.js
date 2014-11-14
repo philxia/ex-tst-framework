@@ -10,6 +10,10 @@ $(document).ready(function () {
 	$('.btn-group .dropdown-menu a').click(function(e) {
 		var casetitle = this.innerText;
 		$('div .casetitle').html('<h3>' + casetitle + '</h3>');
+		$('#selectedInformation .packageNameAndTime').html('');
+		$('#selectedInformation .taskNameAndTime').html('');
+
+
 		d3.select("#main_historyPerf").selectAll('*').remove();
 		var href = e.target.href.split('#')[1];
 		if(window.suiteIdString)
@@ -234,18 +238,50 @@ $(document).ready(function () {
 				}, 2000);
 
 				var preColor;
+				function convert2TimeString(seconds)
+				{
+				  var hs = Math.floor(seconds/3600);
+				  var restSeconds = seconds - hs*3600;
+				  var ms = Math.floor(restSeconds/60);
+				  var restSeconds = restSeconds - ms*60;
+				  var ss = Math.ceil(restSeconds);
+				  return hs + ':' + ms + ':' + ss;
+				}
 				function mouseover(d, i) {
 					//d3.select(rect[0][i]).style("fill", "red");
-					if(i != undefined)
-						console.log(i);
+					if(i === undefined)
+						return;
+
+					var nSample = i%samplenames.length;
+					var nTask = (i-nSample)/samplenames.length;
+					var sn = samplenames[nSample];
+					var sr = result[sn];
+					var tn = layernames[nTask];
+					var tr = sr[tn];
+					if(tr === undefined && tn==='relinks-end')
+						tr = sr['opendoc-relinks-end'];
+
+					sn = tickText[nSample];
+					var totalTime = 0;
+					for(var p in sr)
+						totalTime += sr[p];
+
+					console.log(sn + ":" + tn + ":"+ tr);
 					var rect =d3.select(d3.selectAll('rect')[0][i]);
 					preColor = rect.style("fill");
-					rect.style("fill", "red");
+					rect.style("fill", "green");
+
+					$('#selectedInformation .packageNameAndTime').html(
+						'<p><span class="label label-primary">'+sn + '</span> TotalTime = ' 
+						+ convert2TimeString(totalTime)  + '</p>');
+					$('#selectedInformation .taskNameAndTime').html(
+						'<p><span class="label label-info">' + tn + '</span> time = ' 
+						+ convert2TimeString(tr) + '</p>');
 				}
 
 				function mouseleave(d, i) {
-					if(i != undefined)
-						console.log(i);
+					if(i === undefined)
+						return;
 					var rect =d3.select(d3.selectAll('rect')[0][i]);
 					if(preColor)
 						rect.style("fill", preColor);

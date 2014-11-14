@@ -60,3 +60,8 @@ text {
 	overflow-y:hidden;
 	overflow-x:hidden;
 }
+
+#selectedInformation
+{
+	margin-left: 500px;
+}
