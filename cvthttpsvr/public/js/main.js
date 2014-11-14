@@ -232,7 +232,7 @@
 									var filename = jobfiles[0].name;
 
 									// it is really strange that $.post works but $.ajax doesn't.
-									$.post('http://10.148.196.183:3000/create', 
+									$.post('http://10.148.204.189:3000/create', 
 										{
 											packId: -1,
 											envId: 4,
@@ -280,7 +280,7 @@
 	 * Number of jobs fetched when "more" is clicked.
 	 */
 
-	var more = 10;
+	var more = 100;
 
 	/**
 	 * Number of jobs shown.
@@ -345,13 +345,9 @@
 	 */
 
 	function refreshJobs(state, fn) {
-		// TODO: clean this crap up
-		// var jobHeight = o('#jobs .job .block').outerHeight(true)
-		//     , top = $(window).scrollTop()
-		//     , height = window.innerHeight
-		//     , visibleFrom = Math.max(0, Math.floor(top / jobHeight))
-		//     , visibleTo = Math.floor((top + height) / jobHeight)
-		var url = 'http://10.148.196.183:3001/jobs/'
+		
+
+		var url = 'http://10.148.204.189:3001/jobs/'
 				+ (filter ? filter + '/' : '')
 				+ state + '/0..' + to
 				+ '/' + sort;
@@ -484,7 +480,7 @@
 
 	// timer update the queue status.
 	function pollStats(ms) {
-		request('http://10.148.196.183:3001/stats', function (data) {
+		request('http://10.148.204.189:3001/stats', function (data) {
 			$('#queued_count').text(data.inactiveCount);
 			$('#active_count').text(data.activeCount);
 			$('#failed_count').text(data.failedCount);
@@ -623,7 +619,7 @@
 	  tf = tf.substr(0, tf.length-4); // remove the extension.
 	  $('#result_title')[0].innerText = tf;
 
-	  var requrl = 'http://10.148.196.183:3000/result/' + env + '/' + tf;
+	  var requrl = 'http://10.148.204.189:3000/result/' + env + '/' + tf;
 	  $.get(requrl, 
 	  	function(result){
 	      // $(target).find('.modal-body').html(result.result);

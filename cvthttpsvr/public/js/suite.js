@@ -76,7 +76,7 @@ $(document).ready(function () {
 
 
 		// rest api - get the release per cl data at first.
-		var requrl = 'http://10.148.196.183:3000/historyPerf/'+ envId.toString() + '/' + suiteIdString;
+		var requrl = 'http://10.148.204.189:3000/historyPerf/'+ envId.toString() + '/' + suiteIdString;
 		$.get(requrl, 
 			function(result){
 				// caches this result at first.
@@ -224,14 +224,31 @@ $(document).ready(function () {
 
 				d3.selectAll("input").on("change", change);
 
-				d3.selectAll("rect").on("mouseover", mouseover);
+				d3.selectAll("rect")
+					.on("mouseover", mouseover)
+					.on("mouseleave", mouseleave);
+
 
 				var timeout = setTimeout(function() {
 				  d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
 				}, 2000);
 
-				function mouseover(d) {
+				var preColor;
+				function mouseover(d, i) {
+					//d3.select(rect[0][i]).style("fill", "red");
+					if(i != undefined)
+						console.log(i);
+					var rect =d3.select(d3.selectAll('rect')[0][i]);
+					preColor = rect.style("fill");
+					rect.style("fill", "red");
+				}
 
+				function mouseleave(d, i) {
+					if(i != undefined)
+						console.log(i);
+					var rect =d3.select(d3.selectAll('rect')[0][i]);
+					if(preColor)
+						rect.style("fill", preColor);
 				}
 
 				function change() {

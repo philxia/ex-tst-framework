@@ -139,6 +139,8 @@ app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
 			if(!fs.existsSync(perfFile))
 				return;
 			var perfcont = fs.readFileSync(path.join(resfolder, v, spath, sname, 'cvnperf.csv'), 'utf8');
+			if(perfcont.length < 1)
+				return;
 			var lines = perfcont.split('\n');
 			var obj = {};
 			lines.forEach(function(v1, i1, arr1) {
