@@ -17,10 +17,17 @@ runTest.success = 0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // new framework based on the state machine.
 // Testing object constructor.
-runTest.Testing = function(pack, envName, serverPath) {
+runTest.Testing = function(pack, envName, serverPath, sutiesFromServer) {
     // load the test suites.
-    var suitesString = fs.readFileSync("./cvtinstworkersvr/lib/testSuites.json", "utf8");
-    var suites = JSON.parse(suitesString);
+    var suites = {
+        'name' : 'smoke',
+        'suites' : sutiesFromServer};
+    if(sutiesFromServer == null)
+    {
+        var suitesString = fs.readFileSync("./cvtinstworkersvr/lib/testSuites.json", "utf8");
+        suites = JSON.parse(suitesString);
+    }    
+
     var suitesName = suites.name;
     var testcases = suites.suites;
     var testcaseCount = suites.suites.length;

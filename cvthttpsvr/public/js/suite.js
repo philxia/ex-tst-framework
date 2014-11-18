@@ -6,6 +6,31 @@ $(document).ready(function () {
 		delete window.cachedHistoryPerfResult;
 	});
 
+	// the click event for the suite case drop down menu.
+	$('.dropdown .dropdown-menu a').click(function(e) {
+
+		// skip the customized model dialog.
+		var action = e.target.attributes['action'];
+		if(action != null && action.value === 'check_performance')
+			return;
+
+		var href = e.target.href.split('#')[1];
+		alert(action.value + href);
+
+		// it is really strange that $.post works but $.ajax doesn't.
+		$.post('http://10.148.204.189:3000/generatebaseline', 
+			{
+				suiteId: href
+			},
+			function(data) {
+				if(data)
+					console.log(data);
+			},
+			"json"
+		);
+	});
+
+
 
 	$('.btn-group .dropdown-menu a').click(function(e) {
 		var casetitle = this.innerText;

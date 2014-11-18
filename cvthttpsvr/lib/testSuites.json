@@ -2,6 +2,11 @@
   "name": "smoke",
   "suites": [
     {
+      "name": "rac_advanced_sample_project_ch.rvt",
+      "path": ".\\2014\\",
+      "args": [".\\2014\\rac_advanced_sample_project_ch\\index.json", ".\\2014\\rac_advanced_sample_project_ch.rvt"]
+    },
+    {
       "name": "LinkRVT_4Cases.rvt",
       "path": ".\\2015\\",
       "args": [

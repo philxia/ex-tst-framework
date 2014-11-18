@@ -84,7 +84,7 @@ if (!module.parent) {
 	}, 20000);
 }
 
-function runTest(argument, jobId, genBenchmarks) {
+function runTest(argument, jobId, suites) {
 	console.log(argument);
 	var argStrings = argument.split(' ');
 	if (argStrings.length != 2)
@@ -96,6 +96,7 @@ function runTest(argument, jobId, genBenchmarks) {
 	var envId = fargStrings[1];;
 	var packId = parseInt(fargStrings[2]);
 	var filename = argStrings[1];
+	var isGenBaseline = (action === tstMgr_ns.Action_GenerateBenchmarks);
 
 	var env = db.envs[envId];
 	var envName = env.name;
@@ -110,16 +111,15 @@ function runTest(argument, jobId, genBenchmarks) {
 	};
 
 
-	var socket_server = require('./socket');
 	tstMgr_ns.messages.length = 0; //clean the msgs.
 
 
 	var exec_ns = require('./execTest').runTest;
-	var testingObject = new exec_ns.Testing(pack, envName, env.path);
+	var testingObject = new exec_ns.Testing(pack, envName, env.path, suites);
 	testingObject.jobId = jobId;
 	testingObject.envId = envId;
 	testingObject.packId = packId;
-	testingObject.genBenchmarks = !! genBenchmarks;
+	testingObject.genBenchmarks = !! isGenBaseline;
 	// create the benchmarks folder in this mode.
 	if (testingObject.genBenchmarks) {
 		// setup the directories for this benchmarks.
@@ -188,37 +188,7 @@ function doLoopCheckQueuedJobsAndRunTest() {
 							var jobdata = currentJob.data;
 							
 							var argument = jobdata.title;
-							console.log(argument);
-							var argStrings = argument.split(' ');
-							if (argStrings.length != 2)
-								throw 'The argument from client is invalid - ' + argument + '.';
-							var fargStrings = argStrings[0].split('_');
-							if (fargStrings.length != 3)
-								throw 'The argument from client is invalid - ' + argument + '.';
-							var action = fargStrings[0]
-							var envId = fargStrings[1];;
-							var packId = parseInt(fargStrings[2]);
-							var filename = argStrings[1];
-							var url = "http://localhost:8888/files/" + filename;
-							var envName = tstMgr_ns.getEnvName(parseInt(envId));
-							var filePath = path.join(tstMgr_ns.PackageFolder, envName, filename);
-							// if(envId == '4')
-							// {
-							// 	var file = fs.createWriteStream(filePath);
-							// 	http.get(url, function(res) {
-							// 		console.log("Got response: " + res.statusCode);
-							// 		res.pipe(file);
-							// 	}).on('error', function(e) {
-							// 		console.log("Got error: " + e.message);
-							// 	});
-
-								
-							// 	file.on("close", function(ex) {
-							// 		runTest(argument, currentJob.id);
-							// 	});
-							// }
-							// else
-								runTest(argument, currentJob.id);
+							runTest(argument, currentJob.id, jobdata.suites);
 						})
 					})
 				}

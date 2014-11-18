@@ -161,6 +161,26 @@ app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
 	}
 });
 
+// generate the baseline for the given task.
+app.post('/generatebaseline', function(req, res){
+	var body = req.body;
+	var suiteId = body.suiteId;
+
+	var suite = suites.smoke.suites[suiteId];
+
+	// first remove the old baseline if have.
+	var baselinePath = path.join(tstMgr_ns.BenchmarksFolder, suite.path, suite.name);
+	if(fs.existsSync(baselinePath))
+		fsextra.removeSync(baselinePath);
+
+	var pack = db.envs[2].packages[0];
+
+	// use the latest ReleasePerCL to build the baseline.
+	var argument = tstMgr_ns.Action_GenerateBenchmarks + "_2_" + suiteId + ' ' + pack.name;
+	createNewJob(argument, 'baseline generator', [suite]);
+	res.send({ message: 'baseline job created'});
+});
+
 // create new job api with the json input {packId, envId, filename}
 app.post('/create', function (req, res) {
 	var job = req.body;
@@ -249,7 +269,7 @@ if (!module.parent) {
 	doLoopCheckPackagesAndRunTest();
 }
 
-function createNewJob (argument, owner) {
+function createNewJob (argument, owner, suites) {
 	// send message to job queue and add a new job.
 	var data = {
 		'type': 'rvt2lmv',
@@ -259,6 +279,7 @@ function createNewJob (argument, owner) {
 			'success':0,
 			'fail':0,
 			'count':0,
+			'suites': suites
 		},
 		'options': {
 			'priority': 'high'
