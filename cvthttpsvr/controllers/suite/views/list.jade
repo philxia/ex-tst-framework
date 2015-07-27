@@ -19,7 +19,7 @@ html
 	header
 		include ../../../includes/head
 
-	body
+	body(style="overflow-y:scroll")
 		div.container-fluid
 			div.row
 				h2( style="float:left") #{suites.smoke.name} test suite 
@@ -137,9 +137,17 @@ html
 											span.caret
 										ul(class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1")
 											li(role="presentation")
-												a(role="menuitem" tabindex="-1" href="#"+ts.id action="generate_baseline") Generate Baseline
-											li(role="presentation")
 												a(role="menuitem" tabindex="-1" href="#"+ts.id action="check_performance" data-toggle="modal" data-target="#perfModal") Performance
+											li(role="presentation" class="divider")
+											li(role="presentation")
+												a(role="menuitem" tabindex="-1" href="#"+ts.id action="generate_baseline_rel_perCL") Gen Baseline(RelPerCL)
+											li(role="presentation")
+												a(role="menuitem" tabindex="-1" href="#"+ts.id action="generate_baseline_dev_perCL") Gen Baseline(DevPerCL)
+											li(role="presentation" class="divider")
+											li(role="presentation")
+												a(role="menuitem" tabindex="-1" href="#"+ts.id action="run_test_rel_perCL") Run(RelPerCL)
+											li(role="presentation")
+												a(role="menuitem" tabindex="-1" href="#"+ts.id action="run_test_dev_perCL") Run(DevPerCL)
 											li(role="presentation" class="divider")
 											li(role="presentation")
 												a(role="menuitem" tabindex="-1" href="#"+ts.id action="delete_case") Delete

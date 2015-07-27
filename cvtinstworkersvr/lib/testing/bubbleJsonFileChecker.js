@@ -10,10 +10,12 @@ var txtdiff_ns = require('./textComparer').TextComparer;
 var checker = exports.bubbleJsonFileChecker = {};
 
 
-checker.BubbleJsonFileChecker = function(context, testcase) {
+checker.BubbleJsonFileChecker = function(context, testcase, bubblePath) {
 	this.testcase = testcase;
 	this.context = context;
-	this.testcase.keyFilesPath = new Array();
+	if(this.testcase.keyFilesPath === undefined)
+		this.testcase.keyFilesPath = new Array();
+	this.bubblePath = bubblePath;
 }
 
 function traverBubbleChildren(bubble, func) {
@@ -41,19 +43,22 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
 
 	// 1. check if the test case bubble json is existed.
 	var indexJsonPath = this.testcase.args[0];
-	var genBubbleOutputPath = indexJsonPath.substr(0, indexJsonPath.length - 'index.json'.length);
-	genBubbleOutputPath = path.join(tstMgr_ns.OutputFolder,
+	var baseFolder = indexJsonPath.substr(0, indexJsonPath.length - 'index.json'.length);
+	baseFolder = path.join(tstMgr_ns.OutputFolder,
 		this.context.envName,
 		this.context.packNameWithoutExtension,
-		genBubbleOutputPath);
+		baseFolder);
+	var outputFoler = path.join(baseFolder, 'output');
+	var relativePath = this.bubblePath.substr(outputFoler.length+1);
 
-	var generatedBubbleJsonFilePath = path.join(genBubbleOutputPath, 'output\\bubble.json');
+	// baseFolder = path.join(baseFolder, 'output');
+	var generatedBubbleJsonFilePath = this.bubblePath;
 	if (!fs.existsSync(generatedBubbleJsonFilePath)) {
 		checkPoint.postCallback(callback, 'ERROR', this.testcase.prefix + 'Failed to generate the bubble.json file.');
 		return false;
 	} else
 		callback('SUCCESS', this.testcase.prefix + 'The bubble.json file is generated.');
-	checkPoint.setOutputPath(genBubbleOutputPath);
+	checkPoint.setOutputPath(generatedBubbleJsonFilePath);
 
 	// 2. read the json to object.
 	var genBubbleJsonObj = null;
@@ -62,7 +67,10 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
 		genBubbleJsonObj = JSON.parse(genBubbleJsonString);
 
 		if (scope.context.genBenchmarks) {
-			var bmBubbleJsonFilePath = path.join(scope.context.benchmarksPath, this.testcase.args[1], '\\bubble.json');
+			var bmBubbleJsonFilePath = path.join(scope.context.benchmarksPath, this.testcase.args[1], relativePath);
+			var bmBubbleJsonFolderPath = bmBubbleJsonFilePath.substr(0, bmBubbleJsonFilePath.length-'bubble.json'.length);
+			if(!fs.existsSync(bmBubbleJsonFolderPath))
+				fsextra.mkdirpSync(bmBubbleJsonFolderPath);
 			fsextra.copy(generatedBubbleJsonFilePath, bmBubbleJsonFilePath, function(err) {
 				if (err)
 					console.log(err);
@@ -71,10 +79,39 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
 			});
 
 		} else {
-			var bmBubbleJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, this.testcase.args[1], '\\bubble.json');
-			if (!fs.existsSync(bmBubbleJsonFilePath))
-				throw 'The benchmark bubble.json for this case does not existed.';
+			var bmBubbleJsonFilePath = path.join(tstMgr_ns.BenchmarksFolder, this.testcase.args[1], relativePath);
 			checkPoint.setBenchmarkPath(bmBubbleJsonFilePath);
+			var isBmPathUpdated = false;
+			if (!fs.existsSync(bmBubbleJsonFilePath))
+			{
+				// in some cases, the path is too long and be trimmed and we need some way to 
+				// handle this case.
+				// 1. try to iterate the bm folders to see if any foler name is part of this folder.
+				var obViewName = generatedBubbleJsonFilePath.substr(0
+					, generatedBubbleJsonFilePath.lastIndexOf("\\"));
+				obViewName = obViewName.substr(obViewName.lastIndexOf("\\")+1);
+				// twice can get the right folder.
+				var bmViewsFolder = bmBubbleJsonFilePath.substr(0, bmBubbleJsonFilePath.lastIndexOf("\\"));
+				bmViewsFolder = bmViewsFolder.substr(0, bmViewsFolder.lastIndexOf("\\"));
+				var bmViewsName = fs.readdirSync(bmViewsFolder);
+				var findIt = false;
+				var bmViewName = null;
+				for(var i=0; i<bmViewsName.length; i++)
+				{
+					if(obViewName.indexOf(bmViewsName[i]) === 0)
+					{
+						findIt = true;
+						bmViewName = bmViewsName[i];
+						bmBubbleJsonFilePath = path.join(bmViewsFolder, bmViewName, 'bubble.json');
+						checkPoint.setBenchmarkPath(bmBubbleJsonFilePath);
+						isBmPathUpdated = true;
+						break;
+					}
+				}
+
+				if(!findIt || !fs.existsSync(bmBubbleJsonFilePath))
+					throw 'The benchmark bubble.json for this case does not existed.';
+			}
 			// var bmBubbleJsonString = fs.readFileSync(bmBubbleJsonFilePath, 'utf8');
 			// var bmBubbleJsonObj = JSON.parse(bmBubbleJsonString);
 
@@ -88,7 +125,9 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
 			//     callback('SUCCESS', this.testcase.prefix + 'The bubble.json file is identical with the benchmark.');
 			//     result = true;
 			// }
-			var rst = txtdiff_ns.compareTexts(generatedBubbleJsonFilePath, bmBubbleJsonFilePath);
+			var rst = txtdiff_ns.compareTexts(generatedBubbleJsonFilePath
+				, bmBubbleJsonFilePath
+				, isBmPathUpdated);
 			if(rst === null)
 			{
 				callback('SUCCESS', this.testcase.prefix + 'The bubble.json file is identical with the benchmark.');
@@ -128,15 +167,15 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
 			var filePath = null;
 			if (urns[ii].indexOf('$file$') === 0) {
 				var urv = urns[ii].substr('$file$'.length + 1).replace(/\//g, '\\');
-				filePath = path.join(genBubbleOutputPath, urv);
+				filePath = path.join(baseFolder, urv);
 			} else {
-				filePath = path.join(genBubbleOutputPath, urns[ii]);
+				filePath = path.join(baseFolder, urns[ii]);
 			}
 			if (!fs.existsSync(filePath))
 				throw 'The urv - ' + urns[ii] + ' - does not existed.';
 			filesPath.push(filePath);
 		} catch (err) {
-			checkPoint.postCallback(callback, 'ERROR', testcase.prefix +
+			checkPoint.postCallback(callback, 'ERROR', this.testcase.prefix +
 				'Exception thrown when parse bubble.json with message - ' +
 				err);
 			return false;
@@ -148,5 +187,10 @@ checker.BubbleJsonFileChecker.prototype.checks = function(callback) {
 		checkPoint.setStatus(checkPoint_ns.SUCCESS);
 
 	// send the filesPath to testcase.
-	this.testcase.keyFilesPath = filesPath;
+	for(var i=0; i<filesPath.length; i++)
+	{
+		if(this.testcase.keyFilesPath.indexOf(filesPath[i]) < 0)
+			this.testcase.keyFilesPath.push(filesPath[i]);
+	}
+	
 }

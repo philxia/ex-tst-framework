@@ -4,6 +4,7 @@ var unzip = require('unzip');
 // var checkPoint_ns = require('./lib/testing/checkPoint').checkPoint;
 var checkPoint_processPackgeCmd = require('./lib/testing/processPackageCommand');
 var checkPoint_runExtractorCommand = require('./lib/testing/runExtractorCommand');
+var checkPoint_bubbleValidator = require('./lib/testing/bubbleValidator');
 
 var runTest = exports.runTest = {};
 runTest.cases = null;
@@ -57,18 +58,34 @@ runTest.Testing = function(pack, envName, serverPath, sutiesFromServer) {
     this.failureCount = 0;
     this.abortCount = 0;
 
-    // add a command to process the package.
-    this.checkPoints.push(new checkPoint_processPackgeCmd.processPackageCommand.ProcessPackageCommand(this));
+    if(false) //debug
+    {
+        // push the testcase to checkPoints.
+        for (var ii = 0; ii < this.testcaseCount; ii++) {
+            var testcase = testcases[ii];
+            // initialize the success and failures;
+            testcase.checkPoints = new Array();
+            testcase.index = ii + 1;
+            testcase.prefix = '[The ' + testcase.index + 'th test case] ';
+            this.checkPoints.push(
+                new checkPoint_bubbleValidator.bubbleValidator.BubbleValidator(this, testcase));
+        }
+    }
+    else
+    {
+        // add a command to process the package.
+        this.checkPoints.push(new checkPoint_processPackgeCmd.processPackageCommand.ProcessPackageCommand(this));
 
-    // push the testcase to checkPoints.
-    for (var ii = 0; ii < this.testcaseCount; ii++) {
-        var testcase = testcases[ii];
-        // initialize the success and failures;
-        testcase.checkPoints = new Array();
-        testcase.index = ii + 1;
-        testcase.prefix = '[The ' + testcase.index + 'th test case] ';
-        this.checkPoints.push(
-            new checkPoint_runExtractorCommand.runExtractorCommand.RunExtractorCommand(this, testcase));
+        // push the testcase to checkPoints.
+        for (var ii = 0; ii < this.testcaseCount; ii++) {
+            var testcase = testcases[ii];
+            // initialize the success and failures;
+            testcase.checkPoints = new Array();
+            testcase.index = ii + 1;
+            testcase.prefix = '[The ' + testcase.index + 'th test case] ';
+            this.checkPoints.push(
+                new checkPoint_runExtractorCommand.runExtractorCommand.RunExtractorCommand(this, testcase));
+        }
     }
 }
 

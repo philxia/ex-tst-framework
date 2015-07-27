@@ -16,18 +16,42 @@ $(document).ready(function () {
 
 		var href = e.target.href.split('#')[1];
 		alert(action.value + href);
+		if(action.value === 'generate_baseline_rel_perCL'
+			|| action.value === 'generate_baseline_dev_perCL')
+		{
+			var cf = action.value.substr('generate_baseline'.length+1);
 
-		// it is really strange that $.post works but $.ajax doesn't.
-		$.post('http://10.148.204.189:3000/generatebaseline', 
-			{
-				suiteId: href
-			},
-			function(data) {
-				if(data)
-					console.log(data);
-			},
-			"json"
-		);
+			// it is really strange that $.post works but $.ajax doesn't.
+			$.post('http://10.148.204.189:3000/generatebaseline', 
+				{
+					suiteId: href,
+					config: cf
+				},
+				function(data) {
+					if(data)
+						console.log(data);
+				},
+				"json"
+			);
+		}
+		else if(action.value === 'run_test_rel_perCL'
+			|| action.value === 'run_test_dev_perCL')
+		{
+			var cf = action.value.substr('run_test'.length+1);
+
+			// it is really strange that $.post works but $.ajax doesn't.
+			$.post('http://10.148.204.189:3000/runTest', 
+				{
+					suiteId: href,
+					config: cf
+				},
+				function(data) {
+					if(data)
+						console.log(data);
+				},
+				"json"
+			);
+		}
 	});
 
 
@@ -115,21 +139,32 @@ $(document).ready(function () {
 					window.cachedHistoryPerfResult[envId.toString()] = result;
 
 				var fileprops = result.information;
-				$('#tab_information').html('<p> File Name : '+ fileprops.name +'</p>' + 
-					'<p> Path : '+ fileprops.path +'</p>' + 
-					'<p> AllSheets : '+ fileprops.props.AllSheets +'</p>' + 
-					'<p> AllViews : '+ fileprops.props.AllViews +'</p>' + 
-					'<p> Existing 3D Views : '+ fileprops.props.Existing3DViews +'</p>' + 
-					// '<p> Exported 2D Views : '+ fileprops.props.Exported2DViews +'</p>' +
-					'<p> Exported 3D Views : '+ fileprops.props.Exported3DView +'</p>' + 
-					'<p> Exported 2D Sheets : '+ fileprops.props.ExportedSheets +'</p>' +
-					'<p> File Size : '+ fileprops.props.FileSize +'</p>');
+				if(fileprops.props === undefined)
+				{
+					$('#tab_information').html('<p> File Name : '+ fileprops.name +'</p>' + 
+						'<p> Path : '+ fileprops.path +'</p>');
+				}
+				else
+					$('#tab_information').html('<p> File Name : '+ fileprops.name +'</p>' + 
+						'<p> Path : '+ fileprops.path +'</p>' + 
+						'<p> AllSheets : '+ fileprops.props.AllSheets +'</p>' + 
+						'<p> AllViews : '+ fileprops.props.AllViews +'</p>' + 
+						'<p> Existing 3D Views : '+ fileprops.props.Existing3DViews +'</p>' + 
+						// '<p> Exported 2D Views : '+ fileprops.props.Exported2DViews +'</p>' +
+						'<p> Exported 3D Views : '+ fileprops.props.Exported3DView +'</p>' + 
+						'<p> Exported 2D Sheets : '+ fileprops.props.ExportedSheets +'</p>' +
+						'<p> File Size : '+ fileprops.props.FileSize +'</p>');
 
 				var layernames = [];
 				var samplenames = [];
 				var tickText = []; //RevitExtractor_x64_CL428691_20141008_0245
+				var ps = []
 				for(p in result)
+					ps.push(p);
+				ps.reverse();
+				for(var i=0; i<ps.length; i++)
 				{
+					var p = ps[i];
 					if(p === 'count' || p === 'information')
 						continue;
 					samplenames.push(p);

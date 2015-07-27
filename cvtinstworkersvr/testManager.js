@@ -23,9 +23,9 @@ testManager.ToolsFolder = 'd:\\tf\\tools\\';
 testManager.LogFolder = 'C:\\Log\\rvt\\';
 
 testManager.server_dev = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Dev'; //'\\\\Shasrvbsd02\\Dataxfer\\Phil Xia\\pack';
-testManager.server_devperchangelist = '\\\\usmanpdglstr01\\revit\\Cloud\\RevitExtractor\\Dev';
+testManager.server_devperchangelist = '\\\\usmanpdfilsrv1\\revit\\Cloud\\RevitExtractor\\Dev';
 testManager.server_release = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Release';
-testManager.server_relperchangelist = '\\\\usmanpdglstr01\\revit\\Cloud\\RevitExtractor\\Release';
+testManager.server_relperchangelist = '\\\\usmanpdfilsrv1\\revit\\Cloud\\RevitExtractor\\Release';
 
 
 testManager.Action_RunTest = 'runTest';

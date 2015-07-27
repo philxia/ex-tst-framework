@@ -280,7 +280,7 @@
 	 * Number of jobs fetched when "more" is clicked.
 	 */
 
-	var more = 100;
+	var more = 1000;
 
 	/**
 	 * Number of jobs shown.
@@ -428,10 +428,20 @@
 					if(job.priority === -10)
 						priorityText = 'normal';
 					// add a row to the table and set the test status to pending.
+					// button(class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown") Actions
+					// 	span.caret
+					// ul(class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1")
+					// 	li(role="presentation")
+					// 		a(role="menuitem" tabindex="-1" href="#"+ts.id action="generate_baseline") Generate Baseline
+					// 	li(role="presentation")
+					// 		a(role="menuitem" tabindex="-1" href="#"+ts.id action="check_performance" data-toggle="modal" data-target="#perfModal") Performance
 					var htmlText = '<tr id="' + jobid + '"><td><span class="label label-info">'+ job.type
 					+'</span></td><td>'+ priorityText+'</td><td><span class="label label-info">'+ job.data.owner
 					+'</span></td><td class="item"><a>' + testTitle + 
-					'</a></td><td>' + 'pending' + '</td><td></td><td><div class="progressbar"></div></td></tr>';
+					'</a></td><td>' + 'pending' + '</td><td></td><td><div class="progressbar"></div></td><td><div class="dropdown"><button id="dropdownMenu1" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Actions<span class="caret" /></button><ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#'
+					+ jobid +'" action="killjob">Kill</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#'
+					+ jobid +'" action="rerunjob">Rerun</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#'
+					+ jobid +'" action="delayjob">Delay</a></li></ul></div></td></tr>';
 					// if($("#jobsTable tr:first").length > 0)
 					// 	$("#jobsTable tr:first").before(htmlText);
 					// else
@@ -459,16 +469,65 @@
 
 					trObj.jobData = job;
 
-
-					// bound the event for a in tables.
-					$('#'+jobid).on('click', function(e) {
-						if(this.jobData === undefined)
+					// bound the event for the rerun button click
+					$('.dropdown .dropdown-menu a').on('click', function(e){
+						var action = e.target.attributes['action'].value;
+						if(action === undefined)
 							return;
 
-						window.jobData = this.jobData;
-						$('#myModal').resizable()
-						$('#myModal').modal('show');					
+						var href = e.target.href.split('#')[1];
+						var strs = href.split('-');
+						if(strs.length !== 2)
+							return;
+
+						jobid = strs[1];
+						if(action === "rerunjob")
+						{
+							$.ajax({
+							    url: 'http://10.148.204.189:3001/job/' + jobid + '/state/inactive',
+							    type: 'PUT',
+							    success: function(result) {
+							        // Do something with the result
+							        alert("Rerun success!");
+							    }
+							});
+						}
+						else if(action === "killjob")
+						{
+							$.ajax({
+							    url: 'http://10.148.204.189:3001/job/' + jobid,
+							    type: 'DELETE',
+							    success: function(result) {
+							        // Do something with the result
+							        alert("Kill job success!");
+							    }
+							});
+						}
+						else if(action === 'delayjob')
+						{
+							$.ajax({
+							    url: 'http://10.148.204.189:3001/job/' + jobid + '/state/delay',
+							    type: 'PUT',
+							    success: function(result) {
+							        // Do something with the result
+							        alert("Delay job success!");
+							    }
+							});
+						}
+						
+						
 					});
+
+
+					// bound the event for a in tables.
+					// $('#'+jobid).on('click', function(e) {
+					// 	if(this.jobData === undefined)
+					// 		return;
+
+					// 	window.jobData = this.jobData;
+					// 	$('#myModal').resizable()
+					// 	$('#myModal').modal('show');					
+					// });
 				}
 			};
 

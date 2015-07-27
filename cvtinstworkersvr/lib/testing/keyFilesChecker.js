@@ -49,9 +49,9 @@ checker.KeyFilesChecker.prototype.checks = function(callback) {
                 this.context.currentCheckPointIndex + 1, // inserts the new check points to the next position.
                 0, // no removing.
                 new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_attrs.json.gz'),
-                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_avs.json.gz'),
+                // new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_avs.json.gz'),
                 // new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_ids.json.gz'),
-                new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_offs.json.gz'),
+                // new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_offs.json.gz'),
                 new dbChecker.databaseChecker.DatabaseChecker(this.context, this.testcase, currentFolder + 'objects_vals.json.gz')            
                 );
         }

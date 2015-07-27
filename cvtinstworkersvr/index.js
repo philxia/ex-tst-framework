@@ -181,15 +181,21 @@ function doLoopCheckQueuedJobsAndRunTest() {
 					http.get('http://foo:bar@localhost:3001/jobs/rvt2lmv/inactive/0..0/asc', function(res) {
 						console.log('Got response of /jobs/rvt2lmv/inactive/0..0/asc: ' + res.statusCode);
 						res.setEncoding('utf8');
+
+						var jobcontent = "";
 						res.on('data', function(data) {					
 							console.log(data);
-							var queuedJob = JSON.parse(data); // is a array with one item.
+							jobcontent += data;
+							
+						});
+						res.on('end', function(){
+							var queuedJob = JSON.parse(jobcontent); // is a array with one item.
 							var currentJob = queuedJob[0];
 							var jobdata = currentJob.data;
 							
 							var argument = jobdata.title;
 							runTest(argument, currentJob.id, jobdata.suites);
-						})
+						});
 					})
 				}
 			});

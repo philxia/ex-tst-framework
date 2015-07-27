@@ -102,16 +102,29 @@ $(function() {
 			var envId = parseInt(argstrarr1arr[1]);
 			var packId = parseInt(argstrarr1arr[2]);
 
-			$.ajax({
-					type:'POST',
-					url: 'http://localhost:3000/create',
-					data: {
-						packId: packId,
-						envId: envId,
-						filename: filename
-					},
-					dataType: 'jsonp'
-				});
+			$.post('http://10.148.204.189:3000/create', 
+				{
+					packId: -1,
+					envId: envId,
+					filename: filename
+				},
+				function(data) {
+					if(data)
+						console.log(data);
+				},
+				"json"
+			);
+
+			// $.ajax({
+			// 		type:'POST',
+			// 		url: 'http://localhost:3000/create',
+			// 		data: {
+			// 			packId: packId,
+			// 			envId: envId,
+			// 			filename: filename
+			// 		},
+			// 		dataType: 'jsonp'
+			// 	});
 
 
 			if(!window.carouselLinks)

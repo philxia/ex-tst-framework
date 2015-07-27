@@ -10,35 +10,35 @@ exports.server_ip = '';
 var envs = exports.envs = [];
 envs.push({
     name: 'DevelopmentPerCL',
-    packages: null,
+    packages: [],
     path: tstMgr_ns.server_devperchangelist,
     id: 0,
     perChangelist: true
 });
 envs.push({
     name: 'Development',
-    packages: null,
+    packages: [],
     path: tstMgr_ns.server_dev,
     id: 1,
     perChangelist: false
 });
 envs.push({
     name: 'ReleasePerCL',
-    packages: null,
+    packages: [],
     path: tstMgr_ns.server_relperchangelist,
     id: 2,
     perChangelist: true
 });
 envs.push({
     name: 'Release',
-    packages: null,
+    packages: [],
     path: tstMgr_ns.server_release,
     id: 3,
     perChangelist: false
 });
 envs.push({
     name: 'Custom',
-    packages: null,
+    packages: [],
     path: tstMgr_ns.CustomPacksFolder,
     id: 4,
     perChangelist: false
@@ -130,48 +130,57 @@ function loadCustomPackageInformation (err, files, envIndex) {
 }
 
 // get all the files in these two folders.
-var fs = require('fs');
-fs.readdir(tstMgr_ns.server_devperchangelist, function(err, files) {
-    if(err)
-    {
-        console.log(err);
-        return;
-    }
-    loadPackagesInformation(err, files, 0);
-});
+exports.initDB = function(onCompleted) {
+    // body...
+    var fs = require('fs');
+    fs.readdir(tstMgr_ns.server_devperchangelist, function(err, files) {
+        if(err)
+        {
+            console.log(err);
+            return;
+        }
+        loadPackagesInformation(err, files, 0);
 
-fs.readdir(tstMgr_ns.server_dev, function(err, files) {
-    if(err)
-    {
-        console.log(err);
-        return;
-    }
-    loadPackagesInformation(err, files, 1);
-});
+    fs.readdir(tstMgr_ns.server_dev, function(err, files) {
+        if(err)
+        {
+            console.log(err);
+            return;
+        }
+        loadPackagesInformation(err, files, 1);
 
-fs.readdir(tstMgr_ns.server_relperchangelist, function(err, files) {
-    if(err)
-    {
-        console.log(err);
-        return;
-    }
-    loadPackagesInformation(err, files, 2);
-});
+    fs.readdir(tstMgr_ns.server_relperchangelist, function(err, files) {
+        if(err)
+        {
+            console.log(err);
+            return;
+        }
+        loadPackagesInformation(err, files, 2);
 
-fs.readdir(tstMgr_ns.server_release, function(err, files) {
-    if(err)
-    {
-        console.log(err);
-        return;
-    }
-    loadPackagesInformation(err, files, 3);
-});
 
-fs.readdir(path.join(tstMgr_ns.ResultsFolder, 'Custom'), function(err, files) {
-    if(err)
-    {
-        console.log(err);
-        return;
-    }
-    loadCustomPackageInformation(err, files, 4);
-});
+    fs.readdir(tstMgr_ns.server_release, function(err, files) {
+        if(err)
+        {
+            console.log(err);
+            return;
+        }
+        loadPackagesInformation(err, files, 3);
+
+     fs.readdir(path.join(tstMgr_ns.ResultsFolder, 'Custom'), function(err, files) {
+        if(err)
+        {
+            console.log(err);
+            return;
+        }
+        loadCustomPackageInformation(err, files, 4);
+
+        // the db initial completed.
+        if(onCompleted)
+            onCompleted();
+
+    }); // end of custom       
+    }); // end of server_rel
+    }); // end of server_relPerCL
+    }); // end of server_dev
+    }); // end of server_devPerCL
+};

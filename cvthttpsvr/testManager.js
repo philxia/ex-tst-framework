@@ -21,10 +21,9 @@ testManager.CustomPacksFolder = 'd:\\tf\\packs\\Custom\\'
 testManager.ToolsFolder = 'd:\\tf\\tools\\';
 
 testManager.server_dev = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Dev'; //'\\\\Shasrvbsd02\\Dataxfer\\Phil Xia\\pack';
-testManager.server_devperchangelist = '\\\\usmanpdglstr01\\revit\\Cloud\\RevitExtractor\\Dev';
-testManager.server_release = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Release';
-testManager.server_relperchangelist = '\\\\usmanpdglstr01\\revit\\Cloud\\RevitExtractor\\Release';
-
+testManager.server_devperchangelist = '\\\\usmanpdfilsrv1\\revit\\Cloud\\RevitExtractor\\Dev';
+testManager.server_release = '\\\\manrevstore04\\Data\\Cloud\\RevitExtractor\\Release';//'D:\\tf\\results\\Packages';
+testManager.server_relperchangelist = '\\\\usmanpdfilsrv1\\revit\\Cloud\\RevitExtractor\\Release';
 
 testManager.Action_RunTest = 'runTest';
 testManager.Action_BrowseResult = 'browseResult';
@@ -33,7 +32,7 @@ testManager.Action_GenerateBenchmarks = 'generateBenchmarks';
 testManager.Action_RunTestForCustomPackage = 'runCTest';
 
 
-testManager.Timeout_PackagesMonitor = 600000; // 10 min
+testManager.Timeout_PackagesMonitor = 20000; // 10 min
 
 
 

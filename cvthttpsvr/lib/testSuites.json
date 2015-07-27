@@ -2,6 +2,12 @@
   "name": "smoke",
   "suites": [
     {
+      "name": "notrvtfile.rvt",
+      "path": ".\\errormessage\\",
+      "args": [".\\errormessage\\notrvtfile\\index.json", ".\\errormessage\\notrvtfile.rvt"],
+      "returncode": -536870935
+    },
+    {
       "name": "rac_advanced_sample_project_ch.rvt",
       "path": ".\\2014\\",
       "args": [".\\2014\\rac_advanced_sample_project_ch\\index.json", ".\\2014\\rac_advanced_sample_project_ch.rvt"]
@@ -160,6 +166,14 @@
       }
     },
     {
+      "name": "Monte Cristo 2015_PQ_Sheets.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\Monte Cristo 2015_PQ_Sheets\\index.json",
+        ".\\2015\\Monte Cristo 2015_PQ_Sheets.rvt"
+      ]
+    },
+    {
       "name": "Chinese+project02-R2015.rvt",
       "path": ".\\2015\\",
       "args": [
@@ -181,8 +195,7 @@
       "path": ".\\2015\\",
       "args": [
         ".\\2015\\Project_OVE_Architecture_2015\\index.json",
-        ".\\2015\\Project_OVE_Architecture_2015.rvt",
-        "/no2d"
+        ".\\2015\\Project_OVE_Architecture_2015.rvt"
       ],
       "props": {
         "FileSize": "566.44140625MB",
@@ -210,6 +223,46 @@
         "Exported2DViews": "243",
         "ExportedSheets": "243"
       }
+    },
+    {
+      "name": "Autodesk Hospital - 2016.rvt",
+      "path": ".\\2016\\",
+      "args": [
+        ".\\2016\\Autodesk Hospital - 2016\\index.json",
+        ".\\2016\\Autodesk Hospital - 2016.rvt"
+      ]      
+    },
+    {
+      "name": "IdatExampleProject.rvt",
+      "path": ".\\2016\\",
+      "args": [
+        ".\\2016\\IdatExampleProject\\index.json",
+        ".\\2016\\IdatExampleProject.rvt"
+      ]      
+    },
+    {
+      "name": "Office_A.rvt",
+      "path": ".\\2015\\Office\\",
+      "args": [
+        ".\\2015\\Office\\Office_A\\index.json",
+        ".\\2015\\Office\\Office_A.rvt"
+      ]      
+    },
+    {
+      "name": "Project1_withunicodeinPI2014.rvt",
+      "path": ".\\2014\\",
+      "args": [
+        ".\\2014\\Project1_withunicodeinPI2014\\index.json",
+        ".\\2014\\Project1_withunicodeinPI2014.rvt"
+      ]      
+    },
+    {
+      "name": "Project1_withunicodeinPI2015.rvt",
+      "path": ".\\2015\\",
+      "args": [
+        ".\\2015\\Project1_withunicodeinPI2015\\index.json",
+        ".\\2015\\Project1_withunicodeinPI2015.rvt"
+      ]      
     }
   ]
 }

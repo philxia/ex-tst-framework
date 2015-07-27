@@ -94,7 +94,7 @@ checker.RunExtractorCommand.prototype.checks = function(callback) {
     // go next checker if this test is done.
     if (scope.isDone) {
         scope.context.executingCmd = false;
-        if (scope.returnCode != 0)
+        if (scope.returnCode != 0 && scope.testcase.returncode != scope.returnCode)
             scope.checkPoint.postCallback(callback, 'ERROR', 'Failed to extract the revit model.');
     }
 }

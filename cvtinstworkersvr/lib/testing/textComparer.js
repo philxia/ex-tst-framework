@@ -3,7 +3,7 @@ var diff = require('../diffmatchpatch/diffmatchpatch');
 
 var checker = exports.TextComparer = {};
 
-function dummyVarSections (argument) {
+function dummyVarSections (argument, ignoreFilePath) {
 	var lines = argument.split('\n');
 	var newContent;
 	for(var ii=0; ii<lines.length; ii++)
@@ -25,12 +25,20 @@ function dummyVarSections (argument) {
 					tlstrarr[0] === "\"role\"" &&
 					tlstrarr[1].trim() === "\"3d\",")
 					line = "\"viewableID\":\"dummy_value\",";
+			} else if(ignoreFilePath){
+				if(tag === "\"intermediateFile\"")
+					line = "\"intermediateFile\": dummy_value,";
+				else if(tag === "\"urn\"")
+					line = "\"urn\": dummy_value,";
 			}
 		}
 		else{
 			// solve the unique/viewable id because the view is generated on the fly.
 			// "6da34a42-6730-4812-a9e0-26020e33f074-0004d73c"
-			strtmp = strtmp.replace(/\"/g,'');// remove the ".
+			// "6da34a42-6730-4812-a9e0-26020e33f074-0004d73c", 
+			strtmp = strtmp.substring(strtmp.indexOf("\"") + 1, 
+				strtmp.lastIndexOf("\"") - strtmp.indexOf("\""));
+			// strtmp = strtmp.replace(/\"/g,'');// remove the ".
 			strarr = strtmp.split('-');
 			if(strarr.length === 6 && strtmp.length === 45)
 			{
@@ -42,12 +50,26 @@ function dummyVarSections (argument) {
 	return newContent;
 }
 
-checker.compareTexts = function(txtFile1, txtFile2) {
+checker.compareTexts = function(txtFile1, txtFile2, ignoreFilePath) {
 	var dmp = new diff.diff_match_patch();
 	var d1 = fs.readFileSync(txtFile1, 'utf8');
+	d1 = d1.replace(/[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]/g, ' ');
+
 	var d2 = fs.readFileSync(txtFile2, 'utf8');
-	var a = dmp.diff_linesToChars_( dummyVarSections(d1.toString()), 
-		dummyVarSections(d2.toString()));
+	d2 = d2.replace(/[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]/g, ' ');
+
+	// format the json.
+	var j1 = JSON.parse(d1);
+	var j2 = JSON.parse(d2);
+
+	// use 3 spaces as indent.
+	d1 = JSON.stringify(j1, null, '   ');
+	d2 = JSON.stringify(j2, null, '   ');
+
+	var a = dmp.diff_linesToChars_( 
+		dummyVarSections(d1.toString(), ignoreFilePath), 
+		dummyVarSections(d2.toString(), ignoreFilePath)
+		);
 	var lineText1 = a.chars1;
 	var lineText2 = a.chars2;
 	var lineArray = a.lineArray;

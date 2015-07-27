@@ -47,7 +47,7 @@
     },{
         "name": "Project_OVE_Architecture_2015.rvt",
         "path": ".\\2015\\",
-        "args": [".\\2015\\Project_OVE_Architecture_2015\\index.json", ".\\2015\\Project_OVE_Architecture_2015.rvt", "/no2d"]
+        "args": [".\\2015\\Project_OVE_Architecture_2015\\index.json", ".\\2015\\Project_OVE_Architecture_2015.rvt"]
     },{
         "name": "SeaResort.rvt",
         "path": ".\\2015\\",

@@ -118,6 +118,7 @@ app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
 	var suiteId = parseInt(req.params.suiteId);
 	var envId = parseInt(req.params.evnId);
 	var envName = tstMgr_ns.getEnvName(envId);
+	var limitCount = 15;
 
 	if(suiteId < 0 || suiteId > suites.smoke.suites.length)
 	{
@@ -134,10 +135,17 @@ app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
 		var folders = fs.readdirSync(resfolder);
 		var result = {};
 		var count = 0;
-		folders.forEach(function(v, i, arr) {
+
+		folders.reverse();
+		for(var i=0; i<folders.length; i++)
+		{
+			if(count >= limitCount)
+				break;
+
+			var v = folders[i];
 			var perfFile = path.join(resfolder, v, spath, sname, 'cvnperf.csv');
 			if(!fs.existsSync(perfFile))
-				return;
+				continue;
 			var perfcont = fs.readFileSync(path.join(resfolder, v, spath, sname, 'cvnperf.csv'), 'utf8');
 			if(perfcont.length < 1)
 				return;
@@ -149,7 +157,7 @@ app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
 			});
 			result[v] = obj;
 			count ++;
-		});
+		}
 		result.count = count;
 		result.information = suite;
 
@@ -165,6 +173,7 @@ app.get('/historyPerf/:evnId/:suiteId', provides('json'), function(req, res) {
 app.post('/generatebaseline', function(req, res){
 	var body = req.body;
 	var suiteId = body.suiteId;
+	var config = body.config;
 
 	var suite = suites.smoke.suites[suiteId];
 
@@ -173,11 +182,44 @@ app.post('/generatebaseline', function(req, res){
 	if(fs.existsSync(baselinePath))
 		fsextra.removeSync(baselinePath);
 
-	var pack = db.envs[2].packages[0];
+	var envsId = 0;
+	if(config === 'dev_perCL') // rel_perCL or dev_perCL.
+		envsId = 0;
+	else if(config === 'rel_perCL')
+		envsId = 2;
+	var pack = db.envs[envsId].packages[0];
 
 	// use the latest ReleasePerCL to build the baseline.
-	var argument = tstMgr_ns.Action_GenerateBenchmarks + "_2_" + suiteId + ' ' + pack.name;
+	var argument = tstMgr_ns.Action_GenerateBenchmarks + "_" + envsId.toString() + "_" + suiteId + ' ' + pack.name;
+	console.log(argument);
 	createNewJob(argument, 'baseline generator', [suite]);
+	res.send({ message: 'baseline job created'});
+});
+
+// run test for given task.
+app.post('/runTest', function(req, res) {
+	var body = req.body;
+	var suiteId = body.suiteId;
+	var config = body.config;
+
+	var suite = suites.smoke.suites[suiteId];
+
+	// first remove the old baseline if have.
+	var testPath = path.join(tstMgr_ns.ResultsFolder, suite.path, suite.name);
+	if(fs.existsSync(testPath))
+		fsextra.removeSync(testPath);
+
+	var envsId = 0;
+	if(config === 'dev_perCL') // rel_perCL or dev_perCL.
+		envsId = 0;
+	else if(config === 'rel_perCL')
+		envsId = 2;
+	var pack = db.envs[envsId].packages[0];
+
+	// use the latest ReleasePerCL to build the baseline.
+	var argument = tstMgr_ns.Action_RunTest + "_" + envsId.toString() + "_" + suiteId + ' ' + pack.name;
+	console.log(argument);
+	createNewJob(argument, 'run test - ' + suite.name, [suite]);
 	res.send({ message: 'baseline job created'});
 });
 
@@ -216,7 +258,7 @@ app.post('/create', function (req, res) {
 
 	
 	file.on("close", function(ex) {
-		createNewJob(argument, 'phil.xia');
+		createNewJob(argument, 'phil.xia', suites.smoke.suites);
 		res.send({ message: 'job created'});
 	});
 
@@ -266,7 +308,9 @@ if (!module.parent) {
 		res.sendfile(__dirname + '/index.html');
 	});
 
-	doLoopCheckPackagesAndRunTest();
+	db.initDB(function(){
+		doLoopCheckPackagesAndRunTest();	
+	});
 }
 
 function createNewJob (argument, owner, suites) {
@@ -402,7 +446,7 @@ function runTest(argument, jobId, genBenchmarks) {
 }
 
 
-function copyFile(source, target, cb) {
+function copyFile(packId, owner, source, target, cb) {
     var cbCalled = false;
 
     var rd = fs.createReadStream(source);
@@ -414,13 +458,13 @@ function copyFile(source, target, cb) {
         done(err);
     });
     wr.on("close", function(ex) {
-        done();
+        done(null, packId, owner);
     });
     rd.pipe(wr);
 
-    function done(err) {
+    function done(err, p, o) {
         if (!cbCalled) {
-            cb(err);
+            cb(err, p, o);
             cbCalled = true;
         }
     }
@@ -451,14 +495,18 @@ function doLoopCheckPackagesAndRunTest() {
 				// copy the package to local.
 				var serverFilePath = path.join(db.envs[ii].path, lastestpack.name);
 				var filePath = path.join(tstMgr_ns.PackageFolder, owner, lastestpack.name);
-				copyFile(serverFilePath, filePath, function(err) {
+
+				// here is very tricky - because the callback in copyFile will read the vars here like
+				// packId, owner
+
+				copyFile(packId, owner, serverFilePath, filePath, function(err, p, o) {
 					if(err)
 					{
 						console.log(err.toString('utf8'));
 					}	
 					else
 					{
-						createNewJob(packId, owner);
+						createNewJob(p, o, suites.smoke.suites);
 					}
 				});
 			}

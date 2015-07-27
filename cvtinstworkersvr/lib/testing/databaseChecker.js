@@ -21,8 +21,6 @@ checker.DatabaseChecker = function(context, testcase, dbFilePath) {
     this.dbFilePath = dbFilePath;
     this.extractCount = 0;
     this.fileName = '';
-    if (!fs.existsSync(this.dbFilePath))
-        throw 'The database does not existed at the give path - ' + this.dbFilePath;
 
     this.checkPoint = new checkPoint_ns.CheckPoint(checkPoint_ns.DatabaseCheck);
     this.testcase.checkPoints.push(this.checkPoint);
@@ -34,6 +32,18 @@ checker.DatabaseChecker = function(context, testcase, dbFilePath) {
 // 2. Adds the check points for the json files.
 checker.DatabaseChecker.prototype.checks = function(callback) {
     var scope = this;
+    if (!fs.existsSync(this.dbFilePath))
+    {
+        scope.checkPoint.postCallback(callback, 'ERROR',
+            scope.testcase.prefix +
+            'The database does not existed at the give path - ' +
+            scope.dbFilePath + '.');
+        scope.isDone = true;
+        scope.returnCode = 0;
+        return;
+    }
+
+
     if (scope.extractCount === 2) {
         scope.isDone = true;
         scope.returnCode = 0;
